@@ -58,7 +58,6 @@ The neural network we will be using in this exercise requires a 1D-vector of len
 ```julia
 using Flux
 v_train = Flux.flatten(d_train.features)
-nothing #| hide
 ```
 
 You should now use *OneHotArrays.jl* to transform the target array to vectors of 10 elements, with `1` at the index of the target digit.
@@ -78,7 +77,6 @@ m = Chain(
           Dense(32,10),
           softmax
          )
-nothing #| hide
 ```
 
 What happens if we apply this neural network to one of the images?
@@ -111,14 +109,12 @@ The loss function provides this measure. It returns a numerical value that repre
 
 ```julia
 loss(m,x, y) = Flux.Losses.crossentropy(m(x),y)
-nothing #| hide
 ```
 
 To properly train the neural network we wish to minimize the loss function. To do so, we will be using a variant of gradient descent called ADAM.
 
 ```julia
 optimizer = Flux.setup(Adam(), m)
-nothing #| hide
 ```
 
 When training a neural network, we often need to go over the training data multiple times. Each full pass over the training data is called an epoch.
@@ -126,7 +122,6 @@ When training a neural network, we often need to go over the training data multi
 ```julia
 using IterTools: ncycle
 dataset = ncycle([(v_train, Y)], 200)
-nothing #| hide
 ```
 
 The `dataset` storage constructed in the cell above tells us to train for 200 epochs. This means that the network will see the training data 200 times.
@@ -192,7 +187,6 @@ for i in 1:10
    r = argmax(a)-1
    println("Image classified as ", r, " with target ", d_test.targets[i], ".")
 end
-nothing #| hide
 ```
 
 The results seem pretty good at first glance.
