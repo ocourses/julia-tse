@@ -9,31 +9,18 @@ jupyter: julia-1.11
 include("activate.jl")
 ```
 
-In Julia, understanding the fundamental types and data structures is essential for efficient coding and problem-solving. This page provides an introduction to some of the basic types in Julia, including integers, floating-point numbers, strings, and composite types like arrays and tuples. We’ll also explore more advanced data structures and their practical uses.
+In the previous sections of this lecture, you’ve already encountered glimpses of Julia’s **type system** through the different kinds of data we’ve introduced. Whether you're a beginner or looking to deepen your understanding of Julia's type system, this page will help you get familiar with the core building blocks for handling data efficiently in Julia. 
 
-You'll learn about:
+In particular, we’ll explore four key ideas: 
 
-- **Basic Types** such as integers, floating-point numbers, and strings.
-- **Data Structures** like arrays, vectors, matrices, dictionaries, tuples, and `NamedTuple`.
-- The importance of **Type Declarations** and how to use them effectively.
-- How to work with **Collections** and **Composite Types** to model more complex data.
+- **Type hierarchies**, which define how Julia organizes types and supports generalization; 
+- **Type conversion and promotion**, which explain how Julia decides what happens when different types interact in operations; 
+- **Composite types**, which let us bundle related data into new structures; 
+- **Parametric types**, which provide a way to write generic and efficient code by making types themselves more flexible.
 
-Whether you're a beginner or looking to deepen your understanding of Julia's type system, this page will help you get familiar with the core building blocks for handling data efficiently in Julia.
+Mastering these concepts will give you deeper insight into Julia’s design and help you write code that is both elegant and performant (which we will go deeper into on next page).
 
-In this section, we will delve into some of the more advanced features of Julia's type system and error handling. We will explore the hierarchical structure of types, how to define and work with parametric types, as well as how to handle type conversions and promotions. Additionally, we will look at how to manage errors in Julia, including common error types and exception handling mechanisms.
-
-By the end of this page, you'll have a deeper understanding of Julia's flexible and powerful type system, which is essential for writing efficient, type-safe code. We will also cover how to manage and handle errors gracefully to ensure that your programs run smoothly.
-
-Topics Covered:
-
-- **Type Hierarchies**: Understanding Julia's abstract and concrete types.
-- **Type Annotations and Declarations**: How to specify types in functions and variables.
-- **Parametric Types**: Creating generic types and functions.
-- **Type Conversion and Promotion**: Working with different types and converting between them.
-- **Union Types**: Handling multiple types in a single variable.
-- **Special Types**: Working with `Nothing`, `Any`, and `Missing`.
-- **Errors and Exception Handling**: Raising and handling errors with `try`/`catch` blocks.
-
+By the end of this page, you'll have a deeper understanding of Julia's flexible and powerful type system, which is essential for writing efficient, type-safe code. 
 
 ## Introduction to Types in Julia
 
