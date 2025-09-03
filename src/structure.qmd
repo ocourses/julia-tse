@@ -422,35 +422,52 @@ In summary, scoping rules in Julia allow for clear management of variable access
 
 ## Modules
 
-Modules can be seen as "boxes" in which you organise related functions. Such a "box" can be reused in other program. To have access to the function from "box" `B`, you should add `using B` at the beginning of your program. To call some function `f` stored in `B`, you type `B.f`. Thus modules avoid conflicts on function names by providing a seperate namespace. This means that a function `f` from the main program will indeed be seen as a different function than `B.f`. 
+Modules can be seen as "boxes" in which you organise related functions. Such a "box" can be reused in other programs. 
 
-Find bellow an example of the definition of a simple module.
+Let `B` be a locally written module (not from a package). In this module, a function `f` which returns a `Vector{Float64}` with `a` elements. This function is made visible to the outside world of the module by exporting it: `export f`.
 
 ```{julia}
-module MyModule
+module B
 
-# Defining a function inside the module
-function greet(name)
-    println("Hello, $name !")
+# Use
+using Random
+
+# Public
+export f
+
+# Function
+function f(a::Int)
+    return rand(a)
 end
 
-# Defining a constant inside the module
-const Pi = 3.14159
-
-end  # End of the module
+end
 ```
 
-Let us now use the function and variable in another program.
+To have access to the function from "box" `B`, you should add `using .B` at the beginning of your program. To call the function `f` defined in `B`, you type `B.f`. 
 
 ```{julia}
-using .MyModule  # Importing the module
+# Use
+using .B
 
-MyModule.greet("Alice")  # Calling the function from MyModule
-println(MyModule.Pi)     # Accessing the constant from MyModule
+# Call
+B.f(7)
 ```
 
+The `.` is necessary because `B` is a module in the local environment. This is a short hand for:
+
+```julia
+using Pkg; Pkg.activate(".")
+include("./B.jl")
+using .B
+```
+With `B.f` we can see that modules avoid conflicts on function names by providing a seperate namespace. This means that a function `f` from the main program will indeed be seen as a different function than `B.f`. 
 
 ## Exercices
+
+### Exercise Instructions
+1. For each exercise, implement the required functions in a new Julia script or interactive session.
+2. Test your functions with different inputs to ensure they work as expected.
+3. Comment on your code to explain the logic behind each part, especially where you utilize control flow and scope.
 
 ### Exercise 1: Temperature Converter
 Write a function `convert_temperature` that takes a temperature value and a keyword argument `unit` that can either be `"C"` for Celsius or `"F"` for Fahrenheit. The function should convert the temperature to the other unit and return the converted value. Use a conditional statement to determine the conversion formula:
@@ -611,8 +628,3 @@ even_numbers = filter_even(numbers)
 println(even_numbers)  # Outputs: [2, 4, 6, 8, 10]
 ```
 :::
-
-### Exercise Instructions
-1. For each exercise, implement the required functions in a new Julia script or interactive session.
-2. Test your functions with different inputs to ensure they work as expected.
-3. Comment on your code to explain the logic behind each part, especially where you utilize control flow and scope.
