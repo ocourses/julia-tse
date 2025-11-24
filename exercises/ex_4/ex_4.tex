@@ -1,0 +1,93 @@
+\documentclass{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{circuitikz} 
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{natbib}
+\usepackage{fourier}
+\bibpunct{[}{]}{,}{n}{}{,~}
+\usepackage{minted}
+
+\title{Software for Data Science: Julia}
+\date{10/11/2025}
+
+\begin{document}
+\maketitle
+\section*{Exercise 1}
+
+Write a function \texttt{convert\_temperature} that takes a temperature value and keyword argument \texttt{unit} (either "C" or "F"). Convert the temperature to the other unit. Use a conditional statement to determine the conversion formula:
+
+\begin{itemize}
+    \item If the unit is "C", convert to Fahrenheit using the formula: 
+        $$F = C \times \frac{9}{5} + 32 $$.
+    \item If the unit is "F", convert to Celsius using the formula: 
+        $$C = (F-32) \times \frac{5}{9} $$
+\end{itemize}
+
+If the unit is anything else, throw an \texttt{ArgumentError}. Find bellow an expected output example.
+
+\begin{minted}{julia}
+println(convert_temperature(100, unit="C")) # Output: 212.0
+println(convert_temperature(32, unit="F"))  # Output: 0.0
+\end{minted}
+
+\section*{Exercise 2}
+
+Create a function \texttt{safe\_divide} that catches division by zero and prints an error message. Find bellow an expected output example.
+
+\begin{minted}{julia}
+println(safe_divide(10, 2)) # Output: 5.0
+println(safe_divide(10, 0)) # Output: Error: Division by zero is not allowed.
+\end{minted}
+
+\section*{Exercise 3}
+
+Create a function \texttt{make\_factorial} that returns a closure. This closure should compute the factorial of a number. The closure should capture a variable that keeps track of the number of times it has been called. When the closure is called, it should return the factorial of the number and the call count. Find bellow an expected output example.
+
+\begin{minted}{julia}
+factorial_closure = make_factorial()
+result, count = factorial_closure(5)
+println(result)  # Outputs: 120
+result, count = factorial_closure(3)
+println(result)  # Outputs: 6
+println("Function called ", count, " times")  # Outputs: 2 times
+\end{minted}
+
+\section*{Exercise 4}
+
+Write a function \texttt{filter\_even} that takes an array of integers as input and returns a new array containing only the even numbers from the input array. Use a loop and a conditional statement to check each number.
+
+Additionally, implement a helper function \texttt{is\_even} that checks if a number is even. Use the \texttt{filter\_even} function to filter an array of numbers, and print the result. Find bellow an expected output example.
+
+\begin{minted}{julia}
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+even_numbers = filter_even(numbers)
+println(even_numbers)  # Outputs: [2, 4, 6, 8, 10]
+\end{minted}
+
+\section*{Exercise 5}
+
+Create a module \texttt{Greeter} that exports a function \texttt{hello}, which returns "Hello, name!". Find bellow an expected output example.
+
+\begin{minted}{julia}
+using .Greeter
+println(hello("World")) # Output: Hello, World!
+\end{minted}
+
+
+\end{document}

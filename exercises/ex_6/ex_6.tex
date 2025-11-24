@@ -1,0 +1,93 @@
+\documentclass{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{circuitikz} 
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{natbib}
+\usepackage{fourier}
+\bibpunct{[}{]}{,}{n}{}{,~}
+\usepackage{minted}
+
+\title{Software for Data Science: Julia}
+\date{10/11/2025}
+
+\begin{document}
+\maketitle
+\section*{Exercise 1}
+
+Draw a schematic representing the relationship between the CPU, registers, caches, RAM, and disk, as explained in the course material. Briefly explain the data flow and why minimizing trips to RAM is important for performance.
+
+\noindent
+Research the approximate number of clock cycles it takes to move data from RAM to CPU. Explain how this latency influences the design of high-performance code in Julia.
+
+\section*{Exercise 2}
+
+Let us consider the following Julia function \texttt{combine\_values(a, b)} , that concatenates or adds its two inputs depending on their types:
+
+\begin{minted}{julia}
+function combine_values(a, b)
+    if isa(a, String) && isa(b, String)
+        return a * b   # String concatenation
+    else
+        return a + b   # Addition for numbers
+    end
+end
+
+\end{minted}
+
+\noindent
+Use the \texttt{@code\_llvm} macro to inspect the generated LLVM intermediate representation when calling:
+
+\begin{itemize}
+    \item \texttt{combine\_values(2, 3)} (two integers)
+
+    \item \texttt{combine\_values(1.5, 2.5)} (two floats)
+
+    \item \texttt{combine\_values(3, 4.5)} (integer and float)
+
+    \item \texttt{combine\_values("foo", "bar")} (two strings)
+\end{itemize}
+
+\noindent
+Summarize how the LLVM code differs across these calls, particularly focusing on how the function handles type specialization (e.g., addition vs. concatenation) and type promotion if any.
+
+\section*{Exercise 3}
+
+Define a parametric immutable struct \texttt{Wrapper\{T\}} that holds a single field \texttt{value} of type \texttt{T}.
+
+\noindent
+Write a function \texttt{add\_wrappers(a::Wrapper, b::Wrapper)} that returns a new Wrapper whose value is the sum of the \texttt{value} fields of \texttt{a} and \texttt{b}.
+
+\noindent
+Use the macro \texttt{@code\_warntype} to check the type stability of \texttt{add\_wrappers} when called with:
+
+\begin{itemize}
+    \item Two \texttt{Wrapper\{Int\}} instances
+
+    \item Two \texttt{Wrapper\{Float64\}} instances
+
+    \item One \texttt{Wrapper\{Int\}} and one \texttt{Wrapper\{Float64\}} instance
+\end{itemize}
+
+\noindent
+Notice if any type instability occurs (typically due to mixing types). Modify the \texttt{add\_wrappers} function to use promote so that the returned \texttt{Wrapper} always has a consistent concrete type, regardless of input types. 
+
+\noindent
+Re-check type stability of the modified function using \texttt{@code\_warntype}. Explain how parametric types and promotion help ensure type stability when working with custom types.
+
+\end{document}

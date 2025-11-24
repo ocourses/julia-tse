@@ -1,0 +1,442 @@
+\documentclass{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{circuitikz} 
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{natbib}
+\usepackage{fourier}
+\bibpunct{[}{]}{,}{n}{}{,~}
+\usepackage{minted}
+
+\title{Software for Data Science: Julia}
+\date{10/11/2025}
+
+\begin{document}
+\maketitle
+\section*{Graph project: Epidemic spreading}
+
+\textit{Inspired from a project at INP-ENSEEIHT by B. Vieublé.}
+
+\medskip
+
+It is easy to realise that knowing how illnesses spread is vital to our own protection. How can we predict whether a disease will cause an epidemic, how many people it will infect, which people it will infect, and whether or not it is dangerous to society as a whole ? Also, how can we determine which techniques to use in fighting an epidemic once it begins ? One way to answer all of these questions is through mathematical modeling. 
+
+\subsection*{Environment and packages installation}
+
+Start by adding the following packages to your work environment. 
+
+\begin{minted}{julia}
+using Graphs
+using GraphPlot
+using Colors
+using Plots
+using JLD2
+\end{minted}
+
+\paragraph{Question 0} Look up the documentation of these packages. What are they used for ?
+
+\subsection*{Part 1 - SIS model}
+
+SIS is a compartmental model, i.e. a model where the population is divided into subgroups that represent the disease status of its members. SIS stands for Susceptible $\rightarrow$ Infected $\rightarrow$ Susceptible where the susceptible group contains those who remain susceptible to the infection, and the infected group consists of those who not only have the disease but are also in the contagious period of the disease.
+
+Combine with a contact network approach, this model can capture contact patterns (family, company, friends). Each vertex represents an individual in the host population, and contacts between two individuals are represented by an edge that connects the two. The probability of transmitting the disease from an infected to a susceptible individual along one of these edges or contacts is $\beta$ (= infection rate). The probability to cure is $\alpha$ (= curing rate).
+
+In order for a disease to begin spreading through a network, the disease must be introduced into the population, either through infecting a proportion of the population or through infecting one individual. As time moves forward, the disease will spread away from those initially infected, and two things may occur simultaneously at each time step $t$. First, each infected individual will spread disease to each of its contacts with a probability $\beta$. Secondly, each infectious individual will recover at a rate, $\alpha$ , at which point the individual will then no longer infect any of its contacts. After the disease has run its course, we can determine how the disease affected the network by calculating various quantities that help us better understand the outbreak. 
+
+\medskip
+
+\textit{P. Van Mieghem, J. Omic, R. E. Kooij, “Virus Spread in Networks”, IEEE/ACM Transaction on Networking (2009)}
+
+\paragraph{Contact networks sample} In this tutorial, we will use the following sets of individuals. First, \texttt{karate} which is a famous set from a problem in graph theory: the Zachary's karate club.
+
+\begin{minted}{julia}
+karate = smallgraph(:karate)
+nodecolor = [colorant"lightseagreen"]
+gplot(karate,nodefillc=nodecolor)
+\end{minted}
+
+We also consider the set \texttt{students}, which represents a community where connections are denser within a group with a given specialization (e.g. data science) but connections between groups with different specializations are rarer.
+
+\begin{minted}{julia}
+c=[[10,0,0] [0.1,10,0] [0.1,0.1,10]]
+n=[100,70,50]
+students = stochastic_block_model(c,n)
+nodecolor = [colorant"lightseagreen"]
+gplot(students,nodefillc=nodecolor, nodestrokec=nodecolor, 
+      nodestrokelw = zeros(Float32, nv(students)))
+\end{minted}
+
+Last, \texttt{neigh} which represents a neighborhood composed of 1000 people.
+
+\begin{minted}{julia}
+neigh = barabasi_albert(1000, 1)
+nodecolor = [colorant"lightseagreen"]
+gplot(neigh,nodefillc=nodecolor, nodestrokec=nodecolor,
+      nodestrokelw = zeros(Float32, nv(neigh)))
+\end{minted}
+
+We denote by \texttt{state} a vector containing the disease status of each vertex where Susceptible=0 and Infected=1. Then \texttt{state} is an \texttt{Array\{Int32,1\}} of length the number of vertices. This array in addition to a graph (represented internally by an adjacency matrix or an adjacency list) will be the data structure of our model.
+
+In \texttt{Array\{Int32,1\}}, \texttt{Int32} refers to the kind of data in the array, here 32 bits integers, 1 refers to the dimension of the array, here we have a 1-dimensional structure, thus a vector.
+
+\paragraph{Question 1 - Setup} For each graph in the graph sample (\texttt{karate}, \texttt{students}, \texttt{neigh}) initialize the state array by assigning each vertex to susceptible and add randomly one or numerous infected people. Plot the graph using \texttt{gplot} and \texttt{draw}, infected should appear in a different color (\texttt{colorant"orange"}). Use functions in order to avoid code duplication. 
+
+\paragraph{Question 2 - Spread the infection} Implement the function SIS (respect the header and the specifications). You can use \texttt{rand} to translate the probabilities. Test your algorithm on \texttt{karate}, \texttt{students} and \texttt{neigh} with arbitrary $\beta$, $\alpha$, and $t$.
+
+\begin{minted}{julia}
+function SIS(net,state,beta,alpha,t)
+    """Take a contact network at a certain state and apply t time steps
+    of an SIS model.
+    
+    PARAMS
+       net (LightGraph): graph representing the contact network
+       state (Array{Int32,1}): disease status of each vertex
+       beta (Float64): infection rate
+       alpha (Float64): curing rate
+       t (Int32): number of time step
+    
+    RETURNS
+        (Array{Int32,1}): The new state of the contact network after t time steps.
+    """ 
+
+    [...]    
+
+    return [...] 
+end
+\end{minted}
+
+In the SIS model of this project, every disease is characterized by:
+
+\begin{itemize}
+    \item The infection rate $\beta$ representing the chance of infection when being in contact with an infected individual.
+    \item The curing rate $\alpha$ representing the chance of being cured of the disease.
+    \item The effective spreading rate $\tau=\beta\alpha$ representing the capacity of the disease to spread. The effective spreading rate $\tau$ increases with $\beta$ (easier infection) and decreases with $\alpha$ (easier recovery).
+\end{itemize}
+
+We are now willing to understand what are the influences of these parameters as well as the contact network shape on an epidemic.
+
+\paragraph{Question 3 - Simulate the epidemic} Implement the function \texttt{Simulation\_SIS} (respect the header and the specifications).
+
+\begin{minted}{julia}
+function Simulation_SIS(net,nbinf,betas,alphas,t,nbsimu)
+    """Take a contact network, different diseases (defined by 
+    different parameters alpha and beta), a number of initial
+    infected people and process nbsimu simulations of SIS over
+    t time steps. You will provide the prediction of the 
+    percentage of infected at each time t as well as the 
+    spreading rate of each disease.
+    
+    PARAMS
+       net (LightGraph): graph representing the contact network
+       nbinf (Int32): number of infected at the start of each 
+            simulation
+       betas (Array{Float64,1}): array of infection rate on edges
+       alphas (Array{Float64,1}): array of curing rate on vertices
+       t (Int32): number of time step
+       nbsimu (Int32): number of simulations
+    
+    RETURNS
+        (Array{Float64,2}): the prediction of the percentage of 
+            infected at each time step and for each disease. The 
+            first dimension contains the time steps and the second
+            contains the diseases
+        (Array{Float64,1}): effective spreading rate for each 
+            disease
+    """
+
+    [...]
+
+    return [...]
+end
+\end{minted}
+
+\paragraph{Question 4 - Understand the epidemic} Run the two scripts below and describe what you see. Conclude on the influence of $\tau$, $\beta$, and $\alpha$ on an epidemic we can model with SIS.
+
+\begin{minted}{julia}
+betas=[0.05,0.1,0.01,0.4,0.04,0.05,0.005]
+alphas=[0.05,0.1,0.01,0.1,0.01,0.1,0.01]
+
+predictions, taus = Simulation_SIS(karate,2,betas,alphas,1000,1000)
+
+Plots.plot(predictions, label=taus',xlabel="Time",ylabel="% of infected")
+\end{minted}
+
+and
+
+\begin{minted}{julia}
+betas = [0.05, 0.049, 0.1,0.15,0.25,0.35,0.45,0.55,0.65,0.75,0.85,0.95]
+alphas = [0.2, 0.1, 0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2]
+
+predictions, taus = Simulation_SIS(neigh,100,betas,alphas,1000,100)
+
+Plots.plot(predictions, label=taus',xlabel="Time",ylabel="% of infected")
+\end{minted}
+
+\paragraph{Question 5 - Visualize} Implement a script plotting the maximum percentage of infected people according to $\tau$ over 300 time steps for 3 contact networks:
+
+\begin{itemize}
+    \item A regular graph of 200 vertices with degree 2.
+    \item A regular graph of 200 vertices with degree 5.
+    \item A regular graph of 200 vertices with degree 10.
+\end{itemize}
+
+You can use the function \texttt{random\_regular\_graph(n,d)} of \texttt{LightGraphs}. As you probably need to use a certain number of different values of $\tau$ to visualize something interesting (the more there are the more the figure will be smooth) you should fix $\alpha$ and make $\beta$ vary.
+
+\subsection*{Part 2 - SIR and SAIR model}
+
+Unfortunately SIS model is valuable for diseases we can catch back since a cured person can get ill again. This is true for the flu, the cold, etc. However a disease like COVID-19 might create immunity for whom already got it and SIS can not take into account immune or dead persons. That is why we propose in this part to consider another model more adapted to COVID-19 called SIR. It stands for Susceptible $\rightarrow$ Infected $\rightarrow$ Recovered where the susceptible group contains those who remain susceptible to the infection, the infected group consists of those who not only have the disease but are also in the contagious period of the disease, and the recovered group contains those who were ill, got cured, are not contagious and can not get ill anymore.
+
+\medskip
+
+\textit{M. Youssef and C. Scoglio, "An individual-based approach to SIR epidemics in contact networks", Journal of Theoretical Biology 283 (2011)}
+
+\medskip
+
+One limitation of SIR is that it does not model the reaction of humans when they feel the presence of the epidemic. Indeed, if feeling threatened or surrounded by infected, an individual may change its behaviors: wear mask, wash its hands, etc. This result in a smaller infection rate. That is why in this part we will also consider a variant of SIR, called SAIR, which stands for Susceptible $\rightarrow$ Alert $\rightarrow$ Infected $\rightarrow$ Recovered. A susceptible individual becomes infected by the infection rate $\beta_{0}$, an infected individual recovers and gets immune by the curing rate $\alpha$, an individual can observe the states of its neighbors, then a susceptible individual might go to the alert state if surrounded by infected individuals with an alert rate $\kappa$ on each contact with an infected, an alert inividual becomes infected by the infection rate $\beta_{1}$ where $0<\beta_{1}<\beta_{0}$. In our simple SAIR model, an individual can not go back to a susceptible state when he got into the alert state.
+
+\medskip
+
+\textit{F. Darabi Sahneh and C. Scoglio, "Epidemic Spread in Human Networks", 50th IEEE Conf. Decision and Contol, Orlando, Florida (2011)}
+
+\subsubsection*{2.1 SIR}
+
+The vector containing the disease status state has to change a bit since we added a new state. Hence it will be an \texttt{Array\{Int32,1\}} where Susceptible=0, Infected=1, and Recovered=2.
+
+\paragraph{Question 6 - Spread the infection} Implement the function SIR (respect the header and the specifications). You can use \texttt{rand} to translate the probabilities. Test your algorithm on \texttt{karate}, \texttt{students}, and \texttt{neigh} with arbitrary $\beta$, $\alpha$, and $t$. Recovered vertices should appear in a different color (\texttt{colorant"purple"}).
+
+\begin{minted}{julia}
+function SIR(net,state,beta,alpha,t)
+    """Take a contact network at a certain state and apply t time steps
+    of an SIR model.
+    
+    PARAMS
+       net (LightGraph): graph representing the contact network
+       state (Array{Int32,1}): disease status of each vertex
+       beta (Float64): infection rate
+       alpha (Float64): curing rate
+       t (Int32): number of time step
+    
+    RETURNS
+        (Array{Int32,1}): The new state of the contact network after t time steps.
+    """
+
+    [...]
+
+    return [...]
+end
+\end{minted}
+
+\paragraph{Question 7 - Simulate the epidemic}  Implement the function \texttt{Simulation\_SIR} (respect the header and the specifications).
+
+\begin{minted}{julia}
+function Simulation_SIR(net,nbinf,betas,alphas,t,nbsimu)
+    """Take a contact network, different diseases (defined by 
+    different parameters alpha and beta), a number of initial
+    infected people and process nbsimu simulations of SIR over
+    t time steps. You will provide the prediction of the 
+    percentage of infected at each time t as well as the 
+    spreading rate of each disease.
+    
+    PARAMS
+       net (LightGraph): graph representing the contact network
+       nbinf (Int32): number of infected at the start of each 
+            simulation
+       betas (Array{Float64,1}): array of infection rate on edges
+       alphas (Array{Float64,1}): array of curing rate on vertices
+       t (Int32): number of time step
+       nbsimu (Int32): number of simulations
+    
+    RETURNS
+        (Array{Float64,3}): the prediction of the percentage of 
+            infected, the percentage of susceptible and the 
+            percentage of recovered at each time step and for each 
+            disease. The first dimension contains the time steps,
+            the second contains the diseases, and the third the status
+            (Infected: [:,:,1], Recovered: [:,:,2], Susceptible: [:,:,3])
+        (Array{Float64,1}): effective spreading rate for each 
+            disease
+    """
+
+    [...]
+
+    return [...]
+end
+\end{minted}
+
+\paragraph{Question 8} Run the script below and describe what you see. Why does the infected curve not behave the same as for SIS ?
+
+\begin{minted}{julia}
+predictions, taus = Simulation_SIR(students,2,[0.3],[0.2],50,1000)
+
+Plots.plot([predictions[:,:,1] predictions[:,:,2] predictions[:,:,3]],
+           label=["Infected" "Recovered" "Susceptible"],xlabel="t",ylabel="%")
+\end{minted}
+
+\paragraph{Question 9} As previously, plot the evolution of the percentage of infected for many $\tau$. Describe what you see.
+
+\paragraph{Question 10} Implement a script plotting the number of infected over 75 time steps for $\beta=0.3$ and $\alpha=0.2$ fixed and on 3 contact networks:
+
+\begin{itemize}
+    \item A regular graph of 200 vertices with degree 2.
+    \item A regular graph of 200 vertices with degree 5.
+    \item A regular graph of 200 vertices with degree 10.
+\end{itemize}
+
+\subsubsection*{2.2 SAIR}
+
+The vector containing the disease status state has to change a bit since we added a new state. Hence it will be an \texttt{Array\{Int32,1\}} where Susceptible=0, Infected=1, Recovered=2, and Alert=3.
+
+\paragraph{Question 11} Implement the function SAIR (respect the header and the specifications). You can use \texttt{rand} to translate the probabilities. Test your algorithm on \texttt{karate}, \texttt{students}, and \texttt{neigh} with arbitrary $\beta$, $\alpha$, and $t$. Alerted vertices should appear in a different color (\texttt{colorant"lightgreen"}).
+
+\begin{minted}{julia}
+function SAIR(net,state,beta0,beta1,alpha,kappa,t)
+    """Take a contact network at a certain state and apply t time steps
+    of an SAIR model.
+    
+    PARAMS
+       net (LightGraph): graph representing the contact network
+       state (Array{Int32,1}): disease status of each vertex
+       beta0 (Float64): infection rate when not alert
+       beta1 (Float64): infection rate when alert
+       alpha (Float64): curing rate
+       kappa (Float64): alerting rate
+       t (Int32): number of time step
+    
+    RETURNS
+        (Array{Int32,1}): The new state of the contact network after t time steps.
+    """ 
+
+    [...]     
+
+    return [...]
+end
+\end{minted}
+
+\paragraph{Question 12} Implement the function \texttt{Simulation\_SAIR} (respect the header and the specifications).
+
+\begin{minted}{julia}
+function Simulation_SAIR(net,nbinf,betas0,betas1,alphas,kappas,t,nbsimu)
+    """Take a contact network, different diseases (defined by 
+    different parameters alpha and beta), a number of initial
+    infected people and process nbsimu simulations of SAIR over
+    t time steps. You will provide the prediction of the 
+    percentage of infected at each time t as well as the 
+    spreading rate of each disease.
+    
+    PARAMS
+       net (LightGraph): graph representing the contact network
+       nbinf (Int32): number of infected at the start of each 
+            simulation
+       betas0 (Array{Float64,1}): array of infection rate when not alert on edges
+       betas1 (Array{Float64,1}): array of infection rate when alert on edges
+       alphas (Array{Float64,1}): array of curing rate on vertices
+       kappas (Array{Float64,1}): array of alerting rate on edges
+       t (Int32): number of time step
+       nbsimu (Int32): number of simulations
+    
+    RETURNS
+        (Array{Float64,3}): the prediction of the percentage of 
+            infected, the percentage of susceptible and the 
+            percentage of recovered at each time step and for each 
+            disease. The first dimension contains the time steps,
+            the second contains the diseases, and the third the status
+            (Infected: [:,:,1], Recovered: [:,:,2], Susceptible: [:,:,3])
+        (Array{Float64,1}): effective spreading rate for each 
+            disease
+    """
+
+    [...]
+
+    return [...]
+end
+\end{minted}
+
+\paragraph{Question 13} Run the script below comparing the number of infected of SAIR and SIR and comment what you see.
+
+\begin{minted}{julia}
+predictions1, taus1 = Simulation_SAIR(neigh,2,[0.2],[0.1],[0.1],[0.4],100,1000)
+predictions2, taus2 = Simulation_SIR(neigh,2,[0.2],[0.1],100,1000)
+
+Plots.plot([predictions1[:,:,1] predictions2[:,:,1]],
+           label=["SAIR" "SIR"],xlabel="t",ylabel="%")
+\end{minted}
+
+\subsection*{Part 3 - Discover patient zero}
+
+ In the two previous parts you may have realised that understanding and controlling the spread of epidemics on contact networks is an important task. However, information about the origin of the epidemic could be also extremely useful to reduce or prevent future outbreaks. Thus, in this part we will focus on algorithm solutions to answer this issue.
+
+The stochastic nature of infection propagation makes the estimation of the epidemic origin intrinsically hard: indeed, different initial conditions can lead to the same configuration at the observation time. Methods such as the distance centrality or the Jordan center try to approximate it. They both rely on spatial information by stating that the first infected is probably at the center of the cluster of infection. Mathematically:
+
+\begin{itemize}
+    \item Build the subgraph $G$ of the contact network formed from the vertices $I$ that are infected or recovered vertices of the contact network. The jordan center is expressed as $\min_{v\in I}\max_{n \in I}d(v,n)$where $d(\cdot,\cdot)$ is the distance (= the shortest path) between two vertices in the subgraph $G$ (if it is not a weighted graph, each edge accounts for 1 unit of distance).
+
+    \item The distance centrality is expressed as $\min_{v\in I}\sum_{n\in I}d(v,n)(\delta_{n,I}+\delta_{n,R}/\alpha)$, where $\delta_{n,I=1}$ if the vertex $n$ is infected (= 0 otherwise), $\delta_{n,R=1}$ if the vertex $n$ is recovered (= 0 otherwise), and $d(\cdot,\cdot)$ is the distance in the subgraph $G$. You may note that in distance centrality we increase the weight of the recovered vertices by a factor $1/\alpha$, it translates the fact that recovered vertices tend to be closer to the origin of the epidemic since they probably got ill before.
+\end{itemize}
+
+We formulate the problem as follow: given a contact network and a snapshot of epidemic spread at a certain time, determine the infection source. A snapshot is a given state array for a contact network.
+
+\medskip
+
+\textit{A. Y. Lokhov, M. Mézard, H. Ohta, and L. Zdeborová, "Inferring the origin of an epidemic with a dynamic message-passing algorithm", Physical Review (2014)}
+
+\medskip
+
+\paragraph{Question 14} Implement the function \texttt{jordan} (respect the header and the specifications). You will need to use the function \texttt{dijkstra\_shortest\_paths} of the \texttt{LighGraphs} library, refer to the documentation for more information. If there are multiple minimal vertices, then return the first one.
+
+\begin{minted}{julia}
+function jordan(g,state)
+    """Find patient zero by mean of the jordan center method.
+    
+    PARAMS
+        g (LightGraph): graph representing the contact network
+        state (Array{Int32,1}): disease status of each vertex
+    
+    RETURNS
+        (Int32): the patient zero vertex number 
+    """
+
+    [...]
+
+    return [...]
+end
+\end{minted}
+
+\paragraph{Question 15} Implement the function distance (respect the header and the specifications). You will need to use the function \texttt{dijkstra\_shortest\_paths} of the \texttt{LighGraphs} library, refer to the doc for more information. If there are multiple minimal vertices, then return the first one.
+
+\begin{minted}{julia}
+function distance(g,state,alpha=1.)
+    """Find patient zero by mean of the distance centrality method.
+    
+    PARAMS
+        g (LightGraph): graph representing the contact network
+        state (Array{Int32,1}): disease status of each vertex
+        alpha (Float64): curing rate
+    
+    RETURNS
+        (Int32): the patient zero vertex number 
+    """
+
+    [...]
+
+    return [...]
+end
+\end{minted}
+
+\paragraph{Question 16} Let us consider the contact network to be \texttt{karate} for two different patient zero and a $50 \times 50$ grid. Set a zero patient ("Z"). Spread the infection over several time iterations with SAIR. Then run your jordan ("J") and distance ("D") approximations. Plot "Z", "J" and "D" in \texttt{colorant"lightblue"} on the graph.
+
+\end{document}

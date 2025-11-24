@@ -1,0 +1,142 @@
+\documentclass{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{circuitikz} 
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{natbib}
+\usepackage{fourier}
+\bibpunct{[}{]}{,}{n}{}{,~}
+\usepackage{minted}
+
+\title{Software for Data Science: Julia}
+\date{24/11/2025}
+
+\begin{document}
+\maketitle
+\section*{Exercise 1}
+
+\medskip
+\noindent
+Find bellow a list of topics covered in this Julia lecture. Choose 4 topics. Take some time to go over the lecture again. Prepare a presentation of these topics for the group.
+
+\begin{itemize}
+    \item Packages and working environment;
+    \item Comments, printing;
+    \item Comparison and arithmetic operations;
+    \item Control flows (if, while, for, break, continue);
+    \item Data (dictionary, dataframes);
+    \item Functions (keyword arguments, optional arguments, bang convention, broadcasting);
+    \item Error handling;
+    \item Scoping and closures;
+    \item Modules;
+    \item Typing (abstract, concrete, conversion, promotion);
+    \item User defined types (composite types, mutability, constructors);
+    \item Basic hardware;
+    \item Type stability.
+\end{itemize}
+
+\section*{Exercise 2}
+
+\medskip
+\noindent
+\texttt{DataFrames.jl} provides in‑memory tabular data structures similar to R \texttt{data.frames} or Python’s pandas \texttt{DataFrame}.
+
+\begin{minted}{julia}
+using DataFrames
+\end{minted}
+
+\medskip
+\noindent
+A \texttt{DataFrame} is a table: columns have names and types, rows are observations.
+\begin{itemize}
+    \item Columns are vectors of equal length; different columns can have different types (e.g., Int64, Float64, String, Union{Missing, T}).
+    \item Missing values are represented with missing and handled via Union{Missing, T} column types.
+\end{itemize}
+
+\medskip
+\noindent
+Even though in pratice data will usually not be added by hand in the \texttt{DataFrame}, it can be done the following way.
+
+\begin{minted}{julia}
+df = DataFrame(
+    id      = 1:2,
+    name    = ["Alice", "Thomas"],
+    score   = [8.5, 7.0],
+    passed  = [true, true]
+)
+\end{minted}
+
+\paragraph{Import and clean}
+
+\medskip
+\noindent
+In this exercise, we will be working with the following data.
+
+\begin{minted}{julia}
+df = DataFrame(
+    id      = 1:10,
+    name    = ["Alice", "Thomas", "Xiaobo", "Imane", "Lucia", "Rohan", "Camille", 
+    "Sophie", "Fatoumata", "Noé"],
+    score   = [-1, 13.5, 14, 12, 16, missing, 10, 15, 17, 7],
+    passed  = [false, true, true, true, true, false, true, true, true, false]
+)
+\end{minted}
+
+\medskip
+\noindent
+Write this table to a CSV file using \texttt{write} from \texttt{CSV.jl}. Then load this file using the \texttt{read} method.
+
+\medskip
+\noindent
+Have a close look at the data in the table. Use \texttt{filter} in order to sort out missing students and invalid grades, i.e. each grade $x$ should $0 \ge x \ge 20$. To check for the value \texttt{missing} use \texttt{ismissing}. 
+
+\paragraph{Exploratory analysis}
+
+\medskip
+\noindent
+Use the \texttt{mean}, \texttt{minimum} and \texttt{minimum} to compute statistics on the students grades. Look into the documentation of Julia to find the function to determine the minimum/maximum of an array and the associated index. Which student go the best/worse grade ?
+
+\paragraph{Relational analysis}
+
+\medskip
+\noindent
+Let the bellow table be the gender associated to the students. Operate a \texttt{join} between \texttt{df} and \texttt{df\_gender} to join gender information with exam records. What is the difference between the \texttt{innerjoin}, \texttt{outerjoin} and \texttt{leftjoin} functions ?
+
+\begin{minted}{julia}
+df_gender = DataFrame(
+    id      = 1:10,
+    gender  = ["F", "M", "M", "F", "F", "M", "M", "F", "F", "M"],
+)
+\end{minted}
+
+\paragraph{Performance}
+
+\medskip
+\noindent
+Compare the performance between row-wise looping and column-wise transformations using \texttt{BenchmarkTools.jl}. A standard \texttt{for} loop will be used to go over the rows and to act on the column broadcasting will be used.
+
+\begin{minted}{julia}
+N = 1000000
+df = DataFrame(value = rand(N))
+\end{minted}
+
+\medskip
+\noindent
+To do this comparison, multiply each value in the data set by 2. Evaluate the time required for this operation on the whole table with \texttt{@btime}. 
+
+\end{document}
