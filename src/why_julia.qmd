@@ -1,6 +1,7 @@
 ---
 title: "Why Julia?"
 page-layout: article
+jupyter: julia-1.12
 ---
 
 Welcome to the world of [Julia](https://julialang.org)! This page will introduce you to the language, explaining why it’s gaining popularity, and highlighting some key features that make Julia a unique tool for scientific computing and general-purpose programming.

@@ -451,8 +451,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="preprocess-the-dataset">Preprocess the dataset</h3>
 <p>The neural network we will be using in this exercise requires a 1D-vector of length 784 input. Start by flattening the matrices representing the images of our dataset using <em>Flux.jl</em>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Flux</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>v_train <span class="op">=</span> Flux.<span class="fu">flatten</span>(d_train.features)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cn">nothing</span> <span class="co">#| hide</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>v_train <span class="op">=</span> Flux.<span class="fu">flatten</span>(d_train.features)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You should now use <em>OneHotArrays.jl</em> to transform the target array to vectors of 10 elements, with <code>1</code> at the index of the target digit.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">OneHotArrays</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> <span class="fu">onehotbatch</span>(d_train.targets,<span class="fl">0</span><span class="op">:</span><span class="fl">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -464,8 +463,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>          <span class="fu">Dense</span>(<span class="fl">28</span><span class="op">*</span><span class="fl">28</span>,<span class="fl">32</span>,relu),</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">Dense</span>(<span class="fl">32</span>,<span class="fl">10</span>),</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>          softmax</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>         )</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="cn">nothing</span> <span class="co">#| hide</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>         )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>What happens if we apply this neural network to one of the images?</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">m</span>(v_train[<span class="op">:</span>,<span class="fl">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="callout callout-style-default callout-caution no-icon callout-titled">
@@ -506,15 +504,12 @@ Warning
 </div>
 <p>When a neural network makes predictions (like classifying an image as a “3” instead of a “7”), we need a way to measure the difference between the predicted output and the actual (true) target.</p>
 <p>The loss function provides this measure. It returns a numerical value that represents the “error” — the higher the value, the worse the prediction. Since we have a classification problem in this exercise, a typical loss choice is the cross-entropy loss.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loss</span>(m,x, y) <span class="op">=</span> Flux.Losses.<span class="fu">crossentropy</span>(<span class="fu">m</span>(x),y)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cn">nothing</span> <span class="co">#| hide</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loss</span>(m,x, y) <span class="op">=</span> Flux.Losses.<span class="fu">crossentropy</span>(<span class="fu">m</span>(x),y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To properly train the neural network we wish to minimize the loss function. To do so, we will be using a variant of gradient descent called ADAM.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> Flux.<span class="fu">setup</span>(<span class="fu">Adam</span>(), m)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="cn">nothing</span> <span class="co">#| hide</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> Flux.<span class="fu">setup</span>(<span class="fu">Adam</span>(), m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>When training a neural network, we often need to go over the training data multiple times. Each full pass over the training data is called an epoch.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">IterTools</span>: ncycle</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> <span class="fu">ncycle</span>([(v_train, Y)], <span class="fl">200</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cn">nothing</span> <span class="co">#| hide</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> <span class="fu">ncycle</span>([(v_train, Y)], <span class="fl">200</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The <code>dataset</code> storage constructed in the cell above tells us to train for 200 epochs. This means that the network will see the training data 200 times.</p>
 <p>Let’s <strong>train</strong> the neural network now!</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Flux.<span class="fu">train!</span>(loss, m, dataset, optimizer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -580,8 +575,7 @@ Write manually the training loop based on above stated steps using <em>Flux.jl</
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>   a <span class="op">=</span> <span class="fu">m</span>(v_b)</span>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>   r <span class="op">=</span> <span class="fu">argmax</span>(a)<span class="op">-</span><span class="fl">1</span></span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">println</span>(<span class="st">"Image classified as "</span>, r, <span class="st">" with target "</span>, d_test.targets[i], <span class="st">"."</span>)</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="cn">nothing</span> <span class="co">#| hide</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The results seem pretty good at first glance.</p>
 <div class="callout callout-style-default callout-caution no-icon callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">

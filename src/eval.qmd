@@ -1,7 +1,7 @@
 ---
 title: "Auto-evaluation"
 page-layout: article
-jupyter: julia-1.11
+jupyter: julia-1.12
 ---
 
 ```{julia}
@@ -22,7 +22,7 @@ nothing #| hide
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). Which of the following defines a variable `x` with value `10` in Julia?**"
+md"**Question $(string(NUMQUESTION)). Which of the following defines a variable `x` with value `10` in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -40,7 +40,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). Which keyword is used to define a function in Julia?**"
+md"**Question $(string(NUMQUESTION)). Which keyword is used to define a function in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -58,7 +58,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). Which symbol is used for element-wise operations in Julia (e.g., squaring each element of a vector)?**"
+md"**Question $(string(NUMQUESTION)). Which symbol is used for element-wise operations in Julia (e.g., squaring each element of a vector)?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -76,7 +76,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). What is the output of this code?**"
+md"**Question $(string(NUMQUESTION)). What is the output of this code?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -103,7 +103,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). What does the `end` keyword do in Julia?**"
+md"**Question $(string(NUMQUESTION)). What does the `end` keyword do in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -121,7 +121,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). Which expression returns the number of elements in a vector `v`?**"
+md"**Question $(string(NUMQUESTION)). Which expression returns the number of elements in a vector `v`?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -139,7 +139,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). What does `===` do in Julia?**"
+md"**Question $(string(NUMQUESTION)). What does `===` do in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -157,43 +157,69 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). How do you stop a loop early in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
 ```
 
-<p style="margin-top:-50px"> </p>
+<p style="margin-top:-30px"> </p>
+
+```julia
+result = 0
+for i in 1:10
+    if i == 5
+        break
+    end
+    result += i
+end
+println(result)
+```
+
+<p style="margin-top:-20px"> </p>
 
 ```{julia}
 #| echo: false
-choices = ["`stop`",
-           "`exit`",
-           "`break`",
-           "`return`"]
-answer = 3
+choices = ["`10`",
+           "`15`",
+           "`55`",
+           "`45`"]
+answer = 1
 radioq(choices, answer)
 ```
 
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). How do you skip the current iteration of a loop in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
 ```
 
-<p style="margin-top:-50px"> </p>
+<p style="margin-top:-30px"> </p>
+
+```julia
+result = Int[]
+for i in 1:6
+    if i % 2 == 0
+        continue
+    end
+    push!(result, i)
+end
+println(result)
+```
+
+<p style="margin-top:-20px"> </p>
 
 ```{julia}
 #| echo: false
-choices = ["`skip`",
-           "`next`",
-           "`continue`",
-           "`pass`"]
-answer = 3
+choices = ["`[1, 3, 5]`",
+           "`[2, 4, 6]`",
+           "`[1, 2, 3, 4, 5, 6]`",
+           "`[]`"]
+answer = 1
 radioq(choices, answer)
 ```
 
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). Which of the following is a valid `for` loop in Julia?**"
+md"**Question $(string(NUMQUESTION)). Which of the following is a valid `for` loop in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -208,6 +234,84 @@ answer = 2
 radioq(choices, answer)
 ```
 
+```{julia}
+#| echo: false
+NUMQUESTION += 1
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+a = [1, 2, 3]
+b = [1, 2, 3]
+println(a == b)
+println(a === b)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`true`, `false` — `==` compares values, `===` checks same object in memory.",
+           "`true`, `true` — both operators check value equality.",
+           "`false`, `false` — arrays are never considered equal.",
+           "`true`, `true` — identical contents imply identical memory."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+x = 7
+result = x > 5 ? "big" : "small"
+println(result)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`\"big\"`",
+           "`\"small\"`",
+           "`true`",
+           "`7`"]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+v = [1, 2, 3]
+println(v .^ 2)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`[1, 4, 9]`",
+           "`[2, 4, 6]`",
+           "`[1, 2, 3]`",
+           "`9` — the last element squared."]
+answer = 1
+radioq(choices, answer)
+```
+
 ### Type Hierarchies
 
 ```{julia}
@@ -219,7 +323,7 @@ nothing #| hide
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). What is the purpose of an abstract type in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is the purpose of an abstract type in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -237,7 +341,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). Which of the following types is a concrete type?**"
+md"**Question $(string(NUMQUESTION)). Which of the following types is a concrete type?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -252,7 +356,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). What does the `isconcretetype` function return for `AbstractFloat`?**"
+md"**Question $(string(NUMQUESTION)). What does the `isconcretetype` function return for `AbstractFloat`?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -268,7 +372,7 @@ radioq(choices, answer)
 #| echo: false
 NUMQUESTION += 1
 md"""
-**Question $(NUMQUESTION). What will the following code return?**
+**Question $(string(NUMQUESTION)). What will the following code return?**
 """
 ```
 
@@ -290,7 +394,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). What is the purpose of the `isa` operator in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is the purpose of the `isa` operator in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -309,7 +413,7 @@ radioq(choices, answer)
 #| echo: false
 NUMQUESTION += 1
 md"""
-**Question $(NUMQUESTION). What will be the result of the following code?**
+**Question $(string(NUMQUESTION)). What will be the result of the following code?**
 """
 ```
 
@@ -332,7 +436,7 @@ radioq(choices, answer)
 #| echo: false
 NUMQUESTION += 1
 md"""
-**Question $(NUMQUESTION). What will the following code return?**
+**Question $(string(NUMQUESTION)). What will the following code return?**
 """
 ```
 
@@ -359,7 +463,7 @@ radioq(choices, answer)
 #| echo: false
 NUMQUESTION += 1
 md"""
-**Question $(NUMQUESTION). What does the `<:` operator check in Julia?**
+**Question $(string(NUMQUESTION)). What does the `<:` operator check in Julia?**
 """
 ```
 
@@ -378,7 +482,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1
-md"**Question $(NUMQUESTION). What is the result of the following code?**"
+md"**Question $(string(NUMQUESTION)). What is the result of the following code?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -403,7 +507,7 @@ radioq(choices, answer)
 #| echo: false
 NUMQUESTION += 1
 md"""
-**Question $(NUMQUESTION). What does the `supertype` function return for `Float64`?**
+**Question $(string(NUMQUESTION)). What does the `supertype` function return for `Float64`?**
 """
 ```
 
@@ -422,6 +526,51 @@ answer = 4
 radioq(choices, answer)
 ```
 
+```{julia}
+#| echo: false
+NUMQUESTION += 1
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+println(42 isa Int64)
+println(42 isa Real)
+println(Int64 <: Real)
+println(42 <: Real)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`true`, `true`, `true`, `false` (or error) — `<:` is for types, not values.",
+           "`true`, `true`, `true`, `true` — all four return `true`.",
+           "`true`, `false`, `true`, `false` — `isa Real` only matches abstract types.",
+           "`false`, `false`, `true`, `false` — `isa` only matches concrete types."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1
+md"**Question $(string(NUMQUESTION)). Starting from `Float64`, what is the correct chain of supertypes up to `Any`?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`Float64` → `AbstractFloat` → `Real` → `Number` → `Any`",
+           "`Float64` → `Real` → `Number` → `Any`",
+           "`Float64` → `Number` → `Real` → `AbstractFloat` → `Any`",
+           "`Float64` → `AbstractFloat` → `Number` → `Any`"]
+answer = 1
+radioq(choices, answer)
+```
+
 ### Type Conversion and Promotion
 
 
@@ -434,7 +583,7 @@ nothing #| hide
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What does the `convert` function do in Julia?**"
+md"**Question $(string(NUMQUESTION)). What does the `convert` function do in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -452,41 +601,41 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the output of the following code?**"
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
 ```
 
 <p style="margin-top:-30px"> </p>
 
 ```julia
-println(round(Int, 3.14))   # Rounds 3.14 to the nearest integer, output: 3
-println(floor(Int, 3.14))   # Floors 3.14 to the nearest integer, output: 3
-println(convert(Float64, 5))  # Converts Int to Float64, output: 5.0
-println(string(123))         # Converts Int to String, output: "123"
+println(round(Int, 3.14))
+println(floor(Int, 3.14))
+println(convert(Float64, 5))
+println(string(123))
 ```
 
 <p style="margin-top:-20px"> </p>
 
 ```{julia}
 #| echo: false
-choices = ["3, 3, 5.0, '123'",
+choices = ["3, 3, 5.0, \"123\"",
            "3, 3, 5.0, 123",
-           "3, 3.14, 5, '123'",
-           "5.0, 3, 5, '123'"]
-answer = 1
+           "3, 3.14, 5, \"123\"",
+           "5.0, 3, 5, \"123\""]
+answer = 2
 radioq(choices, answer)
 ```
 
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What happens when an integer is assigned to a `Float64` variable in Julia?**"
+md"**Question $(string(NUMQUESTION)). What happens when an integer is assigned to a `Float64` variable in Julia?**"
 ```
 
 <p style="margin-top:-30px"> </p>
 
 ```julia
-y::Float64 = 10  # The integer 10 is automatically converted to 10.0 (Float64)
-println(y)       # Output: 10.0
+y::Float64 = 10
+println(y)
 ```
 
 <p style="margin-top:-20px"> </p>
@@ -504,17 +653,17 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What does the `promote` function do in Julia?**"
+md"**Question $(string(NUMQUESTION)). What does the `promote` function do in Julia?**"
 ```
 
 <p style="margin-top:-30px"> </p>
 
 ```julia
-a, b = promote(3, 4.5)  # Promotes both values to Float64
-println(a)              # Output: 3.0
-println(b)              # Output: 4.5
-println(typeof(a))      # Output: Float64
-println(typeof(b))      # Output: Float64
+a, b = promote(3, 4.5)
+println(a)
+println(b)
+println(typeof(a))
+println(typeof(b))
 ```
 
 <p style="margin-top:-20px"> </p>
@@ -532,13 +681,13 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What will happen if we try to add an `Int` and a `String` in Julia?**"
+md"**Question $(string(NUMQUESTION)). What will happen if we try to add an `Int` and a `String` in Julia?**"
 ```
 
 <p style="margin-top:-30px"> </p>
 
 ```julia
-println(3 + "Hello")  # Attempting to add Int and String
+println(3 + "Hello")
 ```
 
 <p style="margin-top:-20px"> </p>
@@ -549,6 +698,56 @@ choices = ["It will throw a type error.",
            "It will concatenate the string and the number.",
            "It will promote the number to a string.",
            "Julia will automatically convert both to a common type."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1
+md"**Question $(string(NUMQUESTION)). What are the types of `a`, `b`, and `c` after the following `promote` call?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+a, b, c = promote(1, 2.0, 3//1)
+println(typeof(a), " ", typeof(b), " ", typeof(c))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`Float64 Float64 Float64` — all promoted to the common type.",
+           "`Int64 Float64 Rational{Int64}` — no promotion occurs.",
+           "`Int64 Int64 Int64` — floats are converted to Int.",
+           "`Rational Float64 Rational` — Rational is the common type."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+println(floor(Int, -2.3))
+println(round(Int, -2.5))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`-3`, `-2` — `floor` rounds toward −∞; `round` uses banker's rounding.",
+           "`-2`, `-3` — both round toward zero.",
+           "`-3`, `-3` — both round toward −∞.",
+           "`-2`, `-2` — both round toward zero."]
 answer = 1
 radioq(choices, answer)
 ```
@@ -564,7 +763,7 @@ nothing #| hide
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What does the `Nothing` type represent in Julia?**"
+md"**Question $(string(NUMQUESTION)). What does the `Nothing` type represent in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -582,7 +781,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the result of calling the following function in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is the result of calling the following function in Julia?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -613,31 +812,17 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the advantage of using `Any` as a type in Julia?**"
+md"**Question $(string(NUMQUESTION)). What happens to Julia's compiler when a function's return type is inferred as `Any`?**"
 ```
 
-<p style="margin-top:-30px"> </p>
-
-```julia
-# Example of using `Any` as a type
-function describe(value::Any)
-    println("Value: ", value)
-    println("Type: ", typeof(value))
-end
-
-describe(42)         # Works with Int
-describe("Hello")    # Works with String
-describe(3.14)       # Works with Float64
-```
-
-<p style="margin-top:-20px"> </p>
+<p style="margin-top:-50px"> </p>
 
 ```{julia}
 #| echo: false
-choices = ["It allows variables to hold any type, making the code flexible.",
-           "It increases performance by restricting the type of variable.",
-           "It prevents runtime errors related to data types.",
-           "It makes type inference more precise."]
+choices = ["The compiler cannot optimize the function, which degrades performance.",
+           "The function runs faster because it skips all type checks.",
+           "The function becomes type-stable by definition.",
+           "The function can only accept `Any`-typed arguments."]
 answer = 1
 radioq(choices, answer)
 ```
@@ -645,7 +830,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What does the following code do in Julia?**"
+md"**Question $(string(NUMQUESTION)). What does the following code do in Julia?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -676,7 +861,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the purpose of the `skipmissing` function in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is the purpose of the `skipmissing` function in Julia?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -711,33 +896,55 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the main use of the `Missing` type in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
 ```
 
 <p style="margin-top:-30px"> </p>
 
 ```julia
-# Example of using `missing` in an array
-data = [1, 2, missing, 4, 5]
-
-# Check for missing values in the array
-for item in data
-    if item === missing
-        println("Missing data detected.")
-    else
-        println("Value: ", item)
-    end
-end
+data = Union{Int, Missing}[1, missing, 3]
+println(typeof(data[2]))
+println(ismissing(data[2]))
 ```
 
 <p style="margin-top:-20px"> </p>
 
 ```{julia}
 #| echo: false
-choices = ["To represent missing or unknown data in a collection.",
-           "To represent variables with no value assigned.",
-           "To hold any type of data including missing entries.",
-           "To prevent errors when dealing with `Nothing`."]
+choices = ["`Missing`, `true`",
+           "`Nothing`, `false`",
+           "`Missing`, `false`",
+           "`Int64`, `true`"]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+function find_value(d::Dict, key)
+    return get(d, key, nothing)
+end
+
+result = find_value(Dict("a" => 1), "b")
+println(result === nothing)
+println(typeof(result))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`true`, `Nothing` — the key does not exist; `get` returns the default.",
+           "`false`, `Int64` — the key is found.",
+           "`true`, `Missing` — missing and nothing are the same.",
+           "`false`, `Nothing` — the function always returns `Nothing`."]
 answer = 1
 radioq(choices, answer)
 ```
@@ -753,7 +960,7 @@ nothing #| hide
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is a `Union` type in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is a `Union` type in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -771,7 +978,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the output of the following code?**"
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -800,7 +1007,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). Which of the following scenarios would benefit from using a `Union` type?**"
+md"**Question $(string(NUMQUESTION)). Which of the following scenarios would benefit from using a `Union` type?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -830,35 +1037,39 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What happens when a value of a type not listed in the `Union` is passed to a function?**"
+md"**Question $(string(NUMQUESTION)). Two methods exist for `process`. Which one is called by `process(3//1)`?**"
 ```
 
 <p style="margin-top:-30px"> </p>
 
 ```julia
-function process_number(x::Union{Int, Float64})
-    println("The input is: ", x)
+function process(x::Union{Int, Float64})
+    return x * 2
 end
 
-process_number("Hello")  # Trying to pass a String
+function process(x::Real)
+    return x + 1
+end
+
+println(process(3//1))
 ```
 
 <p style="margin-top:-20px"> </p>
 
 ```{julia}
 #| echo: false
-choices = ["It will throw a `MethodError` because `String` is not part of the Union.",
-           "It will automatically convert the string to an integer.",
-           "It will work without issue because `String` is compatible with `Union`.",
-           "It will throw a `TypeError` due to the type mismatch."]
-answer = 1
+choices = ["`6//1` — the `Union{Int, Float64}` method is called because `Rational <: Int`.",
+           "`4//1` — the `Real` method is called because `Rational` is not `Int` or `Float64`.",
+           "`6.0` — the value is promoted to `Float64`.",
+           "`MethodError` — no matching method exists."]
+answer = 2
 radioq(choices, answer)
 ```
 
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). How does the `add_one` function handle both `Int` and `Float64` types?**"
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -868,18 +1079,35 @@ function add_one(x::Union{Int, Float64})
     return x + 1
 end
 
-println(add_one(3))     # Output: 4 (Int)
-println(add_one(2.5))   # Output: 3.5 (Float64)
+println(add_one(Int8(3)))
 ```
 
 <p style="margin-top:-20px"> </p>
 
 ```{julia}
 #| echo: false
-choices = ["It works for both types without needing separate methods.",
-           "It throws an error for `Int` but works for `Float64`.",
-           "It requires type checking before execution.",
-           "It only works for `Float64` types."]
+choices = ["`4` — `Int8` is a subtype of `Int`, so the method matches.",
+           "`4` as `Int8`.",
+           "`MethodError` — `Int8` is not `Int` (which is `Int64` on 64-bit systems).",
+           "`4.0` — `Int8` is promoted to `Float64`."]
+answer = 3
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What does `Int <: Union{Int, Float64}` return, and what does it mean?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`true` — `Int` is one of the types listed in the `Union`, so it is a subtype.",
+           "`false` — `Int` is a concrete type, so it cannot be a subtype of a `Union`.",
+           "`true` — every type is a subtype of every `Union`.",
+           "`false` — `<:` only works between two concrete types."]
 answer = 1
 radioq(choices, answer)
 ```
@@ -895,7 +1123,7 @@ nothing #| hide
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the primary purpose of type annotations in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is the primary purpose of type annotations in Julia?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -913,7 +1141,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). Which of the following correctly applies a type annotation to a variable?**"
+md"**Question $(string(NUMQUESTION)). Which of the following correctly applies a type annotation to a variable?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -932,7 +1160,7 @@ radioq(choices, answer)
 #| echo: false
 NUMQUESTION += 1 
 md"""
-**Question $(NUMQUESTION). What will happen if the following code is executed?**
+**Question $(string(NUMQUESTION)). What will happen if the following code is executed?**
 """
 ```
 
@@ -961,7 +1189,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). In Julia, what will the following code output?**"
+md"**Question $(string(NUMQUESTION)). In Julia, what will the following code output?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -982,6 +1210,34 @@ answer = 1
 radioq(choices, answer)
 ```
 
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What happens when the following function is called with `f(\"hello\")`?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+function f(x::T) where T <: Real
+    return x * 2
+end
+
+f("hello")
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`MethodError` — `String` is not a subtype of `Real`.",
+           "`\"hellohello\"` — the `*` operator works on strings too.",
+           "`TypeError` — the return type annotation is violated.",
+           "The function works because `T` is inferred as `String`."]
+answer = 1
+radioq(choices, answer)
+```
+
 ### Parametric Types
 
 ```{julia}
@@ -993,25 +1249,37 @@ nothing #| hide
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is a parametric type in Julia?**"
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
 ```
 
-<p style="margin-top:-50px"> </p>
+<p style="margin-top:-30px"> </p>
+
+```julia
+struct MyPair{T, S}
+    first::T
+    second::S
+end
+
+p = MyPair(1, 2.0)
+println(typeof(p))
+```
+
+<p style="margin-top:-20px"> </p>
 
 ```{julia}
 #| echo: false
-choices = ["A type that is defined for a specific data type.",
-           "A type that can work with multiple data types, specified by parameters.",
-           "A type that can only work with abstract types.",
-           "A type that doesn't require any parameters."]
-answer = 2
+choices = ["`MyPair{Int64, Float64}`",
+           "`MyPair{Number, Number}`",
+           "`MyPair{Any, Any}`",
+           "`MyPair{Int64, Int64}`"]
+answer = 1
 radioq(choices, answer)
 ```
 
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the role of `T` and `S` in the `Pair` struct example?**"
+md"**Question $(string(NUMQUESTION)). What is the role of `T` and `S` in the `Pair` struct example?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -1022,8 +1290,8 @@ struct Pair{T, S}
     second::S
 end
 
-pair1 = Pair(1, "apple")  # Pair of Int and String
-pair2 = Pair(3.14, true)  # Pair of Float64 and Bool
+pair1 = Pair(1, "apple")
+pair2 = Pair(3.14, true)
 ```
 
 <p style="margin-top:-20px"> </p>
@@ -1041,13 +1309,13 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What happens when you instantiate `Pair(1, 'apple')` in the provided code?**"
+md"**Question $(string(NUMQUESTION)). What happens when you instantiate `Pair(1, 'apple')` in the provided code?**"
 ```
 
 <p style="margin-top:-30px"> </p>
 
 ```julia
-pair1 = Pair(1, "apple")  # Pair of Int and String
+pair1 = Pair(1, "apple")
 ```
 
 <p style="margin-top:-20px"> </p>
@@ -1056,16 +1324,16 @@ pair1 = Pair(1, "apple")  # Pair of Int and String
 #| echo: false
 choices = ["It will create a pair with an `Int` and a `String`.",
            "It will throw an error because `Int` and `String` can't be combined.",
-           "It will create a pair with `Int64` and `String`.",
+           "It will create a pair with `Int` and `String`.",
            "It will cause a runtime error because the types don't match."]
-answer = 2
+answer = 1
 radioq(choices, answer)
 ```
 
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the benefit of using parametric types like `AbstractContainer{T}`?**"
+md"**Question $(string(NUMQUESTION)). What is the benefit of using parametric types like `AbstractContainer{T}`?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -1097,7 +1365,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What does the `print_container_info` function do?**"
+md"**Question $(string(NUMQUESTION)). What does the `print_container_info` function do?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -1112,18 +1380,18 @@ end
 
 ```{julia}
 #| echo: false
-choices = ["It prints the type of the container.",
+choices = ["It prints the type of the values in the container.",
            "It prints the number of elements in the container.",
            "It prints the values inside the container.",
            "It returns the type of the container."]
-answer = 2
+answer = 1
 radioq(choices, answer)
 ```
 
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the purpose of `AbstractContainer{T}` in the code example?**"
+md"**Question $(string(NUMQUESTION)). What is the purpose of `AbstractContainer{T}` in the code example?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -1147,7 +1415,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What would be the output of `print_container_info(vec)` if `vec` is `VectorContainer([1, 2, 3])`?**"
+md"**Question $(string(NUMQUESTION)). What would be the output of `print_container_info(vec)` if `vec` is `VectorContainer([1, 2, 3])`?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -1160,18 +1428,18 @@ vec = VectorContainer([1, 2, 3])
 
 ```{julia}
 #| echo: false
-choices = ["It will print the type `Vector{Int}`.",
-           "It will print the type `AbstractContainer{Int}`.",
+choices = ["It will print `Container holds values of type: Int64`.",
+           "It will print `Container holds values of type: Vector{Int64}`.",
            "It will print the values inside the container.",
            "It will throw an error because `VectorContainer` is not defined."]
-answer = 2
+answer = 1
 radioq(choices, answer)
 ```
 
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). How does using parametric types help with code reusability?**"
+md"**Question $(string(NUMQUESTION)). How does using parametric types help with code reusability?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1182,7 +1450,55 @@ choices = ["It reduces the need to define separate functions for different data 
            "It forces you to create new types for every use case.",
            "It makes the code less reusable.",
            "It requires more boilerplate code."]
-answer = 2
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+struct RealPair{T <: Real}
+    first::T
+    second::T
+end
+
+println(typeof(RealPair(1, 2)))
+println(typeof(RealPair(1.0, 2.0)))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`RealPair{Int64}`, `RealPair{Float64}`",
+           "`RealPair{Real}`, `RealPair{Real}`",
+           "`RealPair{Number}`, `RealPair{Number}`",
+           "`RealPair{Any}`, `RealPair{Any}`"]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What happens when `RealPair(\"a\", \"b\")` is called?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`TypeError` — `String` violates the `T <: Real` constraint.",
+           "`RealPair{String}` is created because `String` is concrete.",
+           "`RealPair{Any}` is created as a fallback.",
+           "The constructor silently converts the strings to numbers."]
+answer = 1
 radioq(choices, answer)
 ```
 
@@ -1197,7 +1513,7 @@ nothing #| hide
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). Which error type is raised when an index is out of bounds in an array?**"
+md"**Question $(string(NUMQUESTION)). Which error type is raised when an index is out of bounds in an array?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1215,7 +1531,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What does the following code do in Julia?**"
+md"**Question $(string(NUMQUESTION)). What does the following code do in Julia?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -1244,7 +1560,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What happens when the following `try`/`catch` block is executed?**"
+md"**Question $(string(NUMQUESTION)). What happens when the following `try`/`catch` block is executed?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -1272,7 +1588,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the purpose of the `finally` block in Julia's exception handling?**"
+md"**Question $(string(NUMQUESTION)). What is the purpose of the `finally` block in Julia's exception handling?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1290,7 +1606,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What is the output of the following code?**"
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -1334,7 +1650,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). Which of the following is an appropriate use case for the `finally` block?**"
+md"**Question $(string(NUMQUESTION)). Which of the following is an appropriate use case for the `finally` block?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1345,6 +1661,52 @@ choices = ["Ensuring a file is closed after reading, regardless of errors.",
            "To catch all exceptions without handling them.",
            "To prevent specific types of errors from being raised.",
            "To handle errors and return a value from the `finally` block."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What happens when `try` is used with `finally` but without `catch`?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+try
+    error("oops")
+finally
+    println("cleanup")
+end
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`cleanup` is printed and then the error propagates normally.",
+           "The error is silently ignored because `finally` handled it.",
+           "`cleanup` is printed and then execution continues normally.",
+           "The `finally` block is skipped because there is no `catch`."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What type of error is thrown by `sqrt(-1.0)` in Julia?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`DomainError` — the argument is outside the valid domain.",
+           "`ArgumentError` — the argument type is incorrect.",
+           "`MethodError` — no `sqrt` method exists for negative numbers.",
+           "`InexactError` — the result cannot be represented exactly."]
 answer = 1
 radioq(choices, answer)
 ```
@@ -1360,7 +1722,7 @@ nothing #| hide
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). What does it mean for a function in Julia to be *type stable*?**"
+md"**Question $(string(NUMQUESTION)). What does it mean for a function in Julia to be *type stable*?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1378,7 +1740,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). Which Julia macro is commonly used to check for type stability?**"
+md"**Question $(string(NUMQUESTION)). Which Julia macro is commonly used to check for type stability?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1396,7 +1758,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). Which of the following best describes a type-unstable function?**"
+md"**Question $(string(NUMQUESTION)). Which of the following best describes a type-unstable function?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1414,7 +1776,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). Consider the function:**"
+md"**Question $(string(NUMQUESTION)). Consider the function:**"
 ```
 
 <p style="margin-top:-30px"> </p>
@@ -1440,7 +1802,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). In Julia, which type causes the biggest problems for type inference when used as a return type?**"
+md"**Question $(string(NUMQUESTION)). In Julia, which type causes the biggest problems for type inference when used as a return type?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1458,7 +1820,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). Which of the following is volatile (non permanent) memory?**"
+md"**Question $(string(NUMQUESTION)). Which of the following is volatile (non permanent) memory?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1476,7 +1838,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). Which component temporarily stores instructions and data for quick access by the CPU?**"
+md"**Question $(string(NUMQUESTION)). Which component temporarily stores instructions and data for quick access by the CPU?**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1495,7 +1857,7 @@ radioq(choices, answer)
 ```{julia}
 #| echo: false
 NUMQUESTION += 1 
-md"**Question $(NUMQUESTION). he basic unit of data in computer hardware is:**"
+md"**Question $(string(NUMQUESTION)). The basic unit of data in computer hardware is:**"
 ```
 
 <p style="margin-top:-50px"> </p>
@@ -1507,5 +1869,887 @@ choices = ["Word.",
            "Bit.", 
            "Nibble."]
 answer = 3
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). Consider two functions below. Which one is type-stable when called with an `Int` argument?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+function f1(x)
+    return x > 0 ? x : 0.0
+end
+
+function f2(x)
+    return x > 0 ? x : zero(x)
+end
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`f2` — `zero(x)` preserves the type of `x`, so the return type is always the same.",
+           "`f1` — returning `0.0` ensures a consistent `Float64` output.",
+           "Both are type-stable since they return a number.",
+           "Neither is type-stable because they use a conditional."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). A function returns `Union{Int, Float64}` depending on its input value. What is the main performance consequence?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["The compiler cannot specialize the caller's code, causing dynamic dispatch overhead.",
+           "The function runs twice as fast because it handles two types.",
+           "There is no consequence; Julia handles `Union` types efficiently.",
+           "The function is automatically rewritten by the compiler to return `Float64`."]
+answer = 1
+radioq(choices, answer)
+```
+
+### Functions
+
+```{julia}
+#| echo: false
+NUMQUESTION = 0
+nothing #| hide
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). Which of the following is the correct syntax for a keyword argument with a default value?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`function f(x; n=10)`",
+           "`function f(x, n=10)`",
+           "`function f(x, n::default=10)`",
+           "`function f(x; n::required)`"]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+function greet(name; greeting="Hello")
+    println("$greeting, $name!")
+end
+
+greet("Alice")
+greet("Bob", greeting="Hi")
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`Hello, Alice!` then `Hi, Bob!`",
+           "`Hello, Alice!` then `Hello, Bob!`",
+           "`Hi, Alice!` then `Hi, Bob!`",
+           "Error — keyword arguments cannot have default values."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). By convention, what does a trailing `!` in a Julia function name indicate?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["The function modifies (mutates) one or more of its arguments.",
+           "The function may throw an exception.",
+           "The function is defined in a module.",
+           "The function returns a boolean value."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+function sum_all(args...)
+    total = 0
+    for x in args
+        total += x
+    end
+    return total
+end
+
+println(sum_all(1, 2, 3))
+println(sum_all(10))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`6` then `10`",
+           "`6` then `0`",
+           "Error — variadic functions cannot have zero extra arguments.",
+           "`1` then `10`"]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+function double(x)
+    x * 2
+end
+
+println(double(5))
+println(double("hi"))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`10` then `\"hihi\"` — the last expression is the implicit return value.",
+           "`10` then error — `*` is not defined for strings.",
+           "`nothing` then `nothing` — no explicit `return` means `nothing` is returned.",
+           "`10` then `\"hi\"` — strings ignore the multiplier."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+v = [3, 1, 2]
+sort(v)
+println(v)
+sort!(v)
+println(v)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`[3, 1, 2]` then `[1, 2, 3]` — `sort` returns a new array; `sort!` mutates in place.",
+           "`[1, 2, 3]` then `[1, 2, 3]` — both sort in place.",
+           "`[3, 1, 2]` then `[3, 1, 2]` — neither modifies the original.",
+           "Error — `sort!` requires a different argument type."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+f(x) = x^2
+v = [1, 2, 3, 4]
+println(f.(v))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`[1, 4, 9, 16]` — broadcasting applies `f` element-wise.",
+           "`[1, 2, 3, 4]` — broadcasting does not change the values.",
+           "Error — broadcasting syntax `.` requires the function to accept arrays.",
+           "`16` — the function is applied to the entire array."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). Three methods are defined for `describe`. Which method is called by `describe(3.14)`?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+describe(x::Int)     = println("integer: ", x)
+describe(x::Float64) = println("float: ", x)
+describe(x)          = println("other: ", x)
+
+describe(3.14)
+describe(42)
+describe("hello")
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`float: 3.14`, `integer: 42`, `other: hello` — Julia dispatches on the most specific matching method.",
+           "`other: 3.14`, `other: 42`, `other: hello` — the fallback method is always called.",
+           "`float: 3.14`, `float: 42`, `other: hello` — all numbers use the float method.",
+           "Error — multiple methods with the same name are not allowed."]
+answer = 1
+radioq(choices, answer)
+```
+
+### Data Structures
+
+```{julia}
+#| echo: false
+NUMQUESTION = 0
+nothing #| hide
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). How do you create a `Dict` mapping `\"a\"` to `1` and `\"b\"` to `2` in Julia?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`Dict(\"a\" => 1, \"b\" => 2)`",
+           "`{\"a\": 1, \"b\": 2}`",
+           "`Dict[\"a\" = 1, \"b\" = 2]`",
+           "`HashMap(\"a\", 1, \"b\", 2)`"]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+d = Dict("x" => 10, "y" => 20)
+d["z"] = 30
+println(length(d))
+println(get(d, "w", -1))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`3` then `-1` — the dict has 3 entries; `get` returns the default for missing keys.",
+           "`2` then `-1` — `d[\"z\"] = 30` fails because the key doesn't exist.",
+           "`3` then `0` — `get` returns `0` for missing numeric keys.",
+           "`3` then error — accessing a missing key throws a `KeyError`."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the difference between `v[2:4]` and `@view v[2:4]`?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`v[2:4]` creates a copy of the slice; `@view v[2:4]` creates a view that shares memory with `v`.",
+           "Both create a copy; `@view` is just syntax sugar.",
+           "`v[2:4]` creates a view; `@view v[2:4]` creates a copy.",
+           "`@view` is only valid for matrices, not vectors."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+A = [1 2; 3 4]
+B = [5 6; 7 8]
+println(A * B)
+println(A .* B)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`[19 22; 43 50]` then `[5 12; 21 32]` — `*` is matrix multiplication; `.*` is element-wise.",
+           "`[5 12; 21 32]` then `[19 22; 43 50]` — the operators are swapped.",
+           "`[19 22; 43 50]` then `[19 22; 43 50]` — both operators perform matrix multiplication.",
+           "Error — matrix operations require the `LinearAlgebra` package."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What does the `\\` operator do when applied to a matrix `A` and vector `b`?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["It solves the linear system `Ax = b` for `x`.",
+           "It performs element-wise division of `A` by `b`.",
+           "It computes the matrix inverse of `A`.",
+           "It returns the dot product of `A` and `b`."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+A = [2.0 1.0; 1.0 3.0]
+b = [5.0, 10.0]
+x = A \ b
+println(round.(x, digits=4))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`[1.0, 3.0]` — the solution to the 2×2 linear system.",
+           "`[2.5, 3.33]` — the element-wise division result.",
+           "`[5.0, 10.0]` — the right-hand side is returned unchanged.",
+           "Error — `\\` requires an integer matrix."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+d = Dict("score" => 0)
+
+function update!(d, key, val)
+    d[key] = val
+end
+
+update!(d, "score", 42)
+println(d["score"])
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`42` — `Dict` is passed by reference; the function mutates the original.",
+           "`0` — the function receives a copy of the dict.",
+           "Error — you cannot pass a `Dict` to a function.",
+           "`0` — only the `!` convention guarantees in-place mutation."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+v = [10, 20, 30, 40, 50]
+w = v[2:4]
+w[1] = 999
+println(v[2])
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`20` — `v[2:4]` creates a copy; modifying `w` does not affect `v`.",
+           "`999` — slicing creates a view; modifying `w` also modifies `v`.",
+           "Error — you cannot assign to a slice.",
+           "`30` — Julia shifts the index by one."]
+answer = 1
+radioq(choices, answer)
+```
+
+### Composite Types
+
+```{julia}
+#| echo: false
+NUMQUESTION = 0
+nothing #| hide
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the key difference between `struct` and `mutable struct` in Julia?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["Fields of a `struct` cannot be changed after creation; fields of a `mutable struct` can.",
+           "`struct` allows inheritance; `mutable struct` does not.",
+           "`mutable struct` is faster because it avoids type checks.",
+           "Both are identical; `mutable` is just a naming convention."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+struct Point
+    x::Float64
+    y::Float64
+end
+
+p = Point(3.0, 4.0)
+println(p.x)
+println(fieldnames(Point))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`3.0` then `(:x, :y)` — field access uses `.`; `fieldnames` returns a tuple of symbols.",
+           "`3.0` then `[\"x\", \"y\"]` — `fieldnames` returns a vector of strings.",
+           "`3.0` then `(x, y)` — `fieldnames` returns a tuple of variable names.",
+           "Error — `fieldnames` is not defined for user-defined structs."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What happens when you try to modify a field of an immutable `struct`?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+struct Circle
+    radius::Float64
+end
+
+c = Circle(5.0)
+c.radius = 10.0
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["An error is thrown — fields of immutable structs cannot be reassigned.",
+           "The field is updated silently.",
+           "A new `Circle` is created with the updated radius.",
+           "A warning is shown but execution continues."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+mutable struct Counter
+    count::Int
+end
+
+c = Counter(0)
+c.count += 1
+c.count += 1
+println(c.count)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`2` — `mutable struct` allows field modification.",
+           "`0` — the struct is copied on assignment.",
+           "Error — `+=` is not defined for struct fields.",
+           "`1` — only the last assignment is kept."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+struct LinearTransform
+    slope::Float64
+    intercept::Float64
+end
+
+(lt::LinearTransform)(x) = lt.slope * x + lt.intercept
+
+lt = LinearTransform(2.0, 3.0)
+println(lt(5))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`13.0` — the struct is called like a function: `2.0 * 5 + 3.0`.",
+           "`10.0` — only the slope is applied.",
+           "Error — structs cannot be used as functions.",
+           "`13` as `Int` — integer inputs produce integer outputs."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). An inner constructor is defined below. What happens when `SafeValue(-5)` is called?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+struct SafeValue
+    value::Float64
+    function SafeValue(v)
+        v < 0 && error("Value must be non-negative")
+        new(v)
+    end
+end
+
+SafeValue(-5)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["An error is thrown: `\"Value must be non-negative\"`.",
+           "`SafeValue(-5.0)` is created silently.",
+           "`SafeValue(0.0)` is created — negative values are clamped to 0.",
+           "A warning is displayed but the struct is created."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What does `fieldnames(Point)` return for `struct Point; x::Float64; y::Float64; end`?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`(:x, :y)` — a tuple of symbols.",
+           "`[\"x\", \"y\"]` — a vector of strings.",
+           "`(Float64, Float64)` — a tuple of field types.",
+           "`2` — the number of fields."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+struct Box{T}
+    value::T
+end
+
+b1 = Box(42)
+b2 = Box(3.14)
+println(typeof(b1))
+println(typeof(b2))
+println(Box{Int} <: Box{Real})
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`Box{Int64}`, `Box{Float64}`, `false` — parametric structs are invariant; `Box{Int}` is NOT a subtype of `Box{Real}`.",
+           "`Box{Int64}`, `Box{Float64}`, `true` — because `Int64 <: Real`.",
+           "`Box{Any}`, `Box{Any}`, `true` — all `Box` types collapse to `Box{Any}`.",
+           "Error — parametric structs require explicit type parameters."]
+answer = 1
+radioq(choices, answer)
+```
+
+### Scoping, Closures and Modules
+
+```{julia}
+#| echo: false
+NUMQUESTION = 0
+nothing #| hide
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+x = 10
+
+function f()
+    x = 20
+    println(x)
+end
+
+f()
+println(x)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`20` then `10` — `x` inside `f` is a local variable; the global `x` is unchanged.",
+           "`20` then `20` — `f` modifies the global `x`.",
+           "`10` then `10` — `f` reads the global `x` and prints it.",
+           "Error — you cannot shadow a global variable inside a function."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+function make_adder(n)
+    return x -> x + n
+end
+
+add5 = make_adder(5)
+println(add5(3))
+println(add5(10))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`8` then `15` — `add5` is a closure that captures `n = 5`.",
+           "`3` then `10` — `n` is not captured; the closure returns the input unchanged.",
+           "`5` then `5` — the closure always returns `n`.",
+           "Error — closures cannot capture variables from the enclosing scope."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+function make_counter()
+    count = 0
+    increment! = () -> (count += 1; count)
+    return increment!
+end
+
+counter = make_counter()
+println(counter())
+println(counter())
+println(counter())
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`1` then `2` then `3` — the closure mutates the captured variable `count`.",
+           "`1` then `1` then `1` — each call creates a fresh `count = 0`.",
+           "`0` then `1` then `2` — the count starts at 0 and increments after printing.",
+           "Error — closures cannot modify captured variables."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What does the `export` keyword do inside a module?**"
+```
+
+<p style="margin-top:-50px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["It makes the listed names available without module-prefix qualification when using `using`.",
+           "It copies the module's functions into the global namespace permanently.",
+           "It restricts access to the listed names from outside the module.",
+           "It exports the module to a separate `.jl` file."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+module MyMath
+    export square
+    square(x) = x^2
+    cube(x) = x^3
+end
+
+using .MyMath
+println(square(4))
+println(MyMath.cube(3))
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`16` then `27` — `square` is exported so it can be used directly; `cube` requires the module prefix.",
+           "`16` then error — `cube` is not accessible because it wasn't exported.",
+           "`16` then `27` — all module functions are accessible without a prefix.",
+           "Error — `using .MyMath` only works if `MyMath` is in a separate file."]
+answer = 1
+radioq(choices, answer)
+```
+
+```{julia}
+#| echo: false
+NUMQUESTION += 1 
+md"**Question $(string(NUMQUESTION)). What is the output of the following code?**"
+```
+
+<p style="margin-top:-30px"> </p>
+
+```julia
+x = 1
+
+for i in 1:3
+    x = x + i
+end
+
+println(x)
+```
+
+<p style="margin-top:-20px"> </p>
+
+```{julia}
+#| echo: false
+choices = ["`7` — `for` loops in the REPL/global scope can read and modify outer variables.",
+           "`1` — the loop variable `x` is local and does not affect the outer `x`.",
+           "Error — `x` is not defined inside the `for` loop scope.",
+           "`6` — only the loop body sum `1+2+3` is computed."]
+answer = 1
 radioq(choices, answer)
 ```

@@ -10,6 +10,7 @@ project:
 
 execute:
   freeze: auto
+  jupyter: julia-1.12
 
 filters:
   - auto-dark

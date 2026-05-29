@@ -1,7 +1,7 @@
 ---
 title: "Core Syntax and Operations"
 page-layout: article
-jupyter: julia-1.11
+jupyter: julia-1.12
 ---
 
 ```{julia}
