@@ -1,0 +1,100 @@
+\documentclass{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{circuitikz} 
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{natbib}
+\usepackage{fourier}
+\bibpunct{[}{]}{,}{n}{}{,~}
+
+\title{Software for Data Science: Julia}
+\date{17/11/2025}
+
+\begin{document}
+\maketitle
+\section*{Exercise 1}
+
+Assign different values to new variables (\texttt{x}, \texttt{y}, and \texttt{z}), such as an integer, a floating-point number, and a string. What type does Julia infer for each? Use the \texttt{typeof} function to check.
+
+\noindent
+Try reassigning one variable (e.g., \texttt{x}) to a value of a different type. What happens to its inferred type?
+
+\section*{Exercise 2}
+
+Declare a new variable with an explicit type using the \texttt{::} operator. For example, force \texttt{x} to be \texttt{Float64}. 
+
+\noindent
+Experiment by assigning a value incompatible with the declared type. What error do you see?
+
+\section*{Exercise 3}
+
+Create a tuple that mixes different types (e.g., an integer, a float, and a string). Use the \texttt{typeof} function to inspect the type of the whole tuple.
+
+\noindent
+Access the individual elements and use \texttt{typeof} to check their types.
+
+\section*{Exercise 4}
+
+Define a struct called \texttt{Book} with the following fields: title (\texttt{String}), author (\texttt{String}), and pages (\texttt{Int}). Create two instances of \texttt{Book} and print out their fields.
+
+\noindent
+Now, define a \texttt{mutable struct} called \texttt{LibraryBook} with the same fields as \texttt{Book} but add a new Boolean field called \texttt{checked\_out} (set to false by default). Create a \texttt{LibraryBook} instance for one of your book titles, change its \texttt{checked\_out} status to true, and print the updated struct.
+
+\noindent
+Write a function that takes a \texttt{LibraryBook} as input and prints a message that tells whether the book is checked out or available.
+
+
+\section*{Exercise 5}
+
+In this exercise the goal is to do a manual conversion from decimal numbers to binary.
+
+\noindent
+Pick the following decimal numbers: $13$, $25$, and $42$.
+
+\noindent
+For each number, follow these steps by hand:
+
+\begin{itemize}
+    \item Divide the number by $2$ and write down the remainder.
+
+    \item Take the integer quotient from the previous division and repeat the process (divide by $2$, write the remainder).
+
+    \item Continue until the quotient is $0$.
+
+    \item The binary representation is the sequence of remainders, read from last to first (bottom to top).
+\end{itemize}
+
+\noindent
+Example (provided for $13$):
+
+\begin{itemize}
+    \item $13 \div 2 = 6$ remainder $1$
+
+    \item $6 \div 2 = 3$ remainder $0$
+
+    \item $3 \div 2 = 1$ remainder $1$
+
+    \item $1 \div 2 = 0$ remainder $1$
+    
+    \item Binary: Write remainders from bottom to top: $1101$
+\end{itemize}
+
+\noindent
+Now, complete the steps for $25$ and $42$.
+
+\end{document}

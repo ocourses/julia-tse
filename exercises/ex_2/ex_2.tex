@@ -1,0 +1,141 @@
+\documentclass{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{circuitikz} 
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{natbib}
+\usepackage{fourier}
+\bibpunct{[}{]}{,}{n}{}{,~}
+\usepackage{minted}
+
+\title{Software for Data Science: Julia}
+\date{27/10/2025}
+
+\begin{document}
+\maketitle
+\section*{Mental traces for debugging}
+
+The following exercises have been solved by a student. He might have made some mistakes. Read the assignment and mentally go over his code. Explain his mistakes or underline the reason why the code is correct. Do not execute the code snippets on your computer!
+
+\subsection*{Exercise 1}
+
+Let $array$ be a list of letters. Replace every $"r"$ by a $"l"$.
+
+\begin{minted}{julia}
+array   = ["a", "r", "b", "l", "c", "r", "d"]
+s_array = length(array)
+for i in 1:s_array
+    if array[i] = "r"
+        array[i] = "l"
+    end
+end
+\end{minted}
+
+\subsection*{Exercise 2}
+
+Let $x$ a variable which takes values in $\mathbb{N}$. If the value is even, print $x$.
+
+\begin{minted}{julia}
+x = 4
+if x%2 == 0
+    println(x)
+\end{minted}
+
+\subsection*{Exercise 3}
+
+Let $y$ a variable. Increment $y$ such that as long as it is not greater then $42$, print $"No \; answer \; yet"$. 
+
+\begin{minted}{julia}
+y = 26
+while (y < 42)
+    println("No answer yet")
+end
+\end{minted}
+
+\subsection*{Exercise 4}
+
+Let $z$ be a variable taking values in $\mathbb{R}$. Print $"Big"$ when it is greatter then $2000$ and $"Small"$ otherwise.
+
+\begin{minted}{julia}
+z = 1999
+if z >= 2000
+    println("Big")
+    else
+    println("Small")
+          end
+\end{minted}
+
+\subsection*{Exercise 5}
+
+Let $n$ be an integer bigger than $30$. By going over all integers from $1$ to $n$, print only the ones in the range $[10:20]$. Then print the value of the last integer of the loop $+5$.
+
+\begin{minted}{julia}
+n = 55
+for i in 1:n
+    if i >= 10 && i <= 20
+        println(i)
+    end
+end
+println(i+5)
+\end{minted}
+
+\section*{End boss exercise}
+
+There are five mistakes in the following script. Determine them by mentally going over the script.
+
+\begin{minted}{julia}
+# This script computes basic statistics and the 3/4 quartile for a list of numbers
+
+function compute_stats(data)
+    n = length(data)
+    sum_val = 0
+
+    # Check
+    @assert n >= 0 "The dataset must contain at least one value!"
+
+    # Compute 3/4 quartile
+    sorted_data = sort(data)
+    idx = Int(floor(3 * n / 4))  
+    q34 = sorted_data[idx]      
+
+    # Compute mean value
+    for x in data
+        sum_val += x
+    end
+
+    mean_val = sum_val / n
+
+    # Compute variance
+    variance = sum([(x - mean_val)^2 for x in data]) / (n - 1)
+    std_dev = squareroot(variance)
+
+    return mean_val, variance, q34
+end
+
+# Array
+numbers = [3, 7, 2, 9, 11, 14, 17, 21]
+
+# Evaluation
+mean_val, var_val, std_val, q34 = compute_stats(numbers)
+
+# Show
+println("The mean value is "*string(numbers[mean_val]))
+
+\end{minted}
+
+\end{document}

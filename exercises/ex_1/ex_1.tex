@@ -1,0 +1,104 @@
+\documentclass{article}
+
+% Language setting
+\usepackage[english]{babel}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{lmodern}
+
+\title{Software for Data Science: Julia}
+\date{27/10/2025}
+
+\begin{document}
+\maketitle
+
+\section*{Basics}
+
+\begin{enumerate}
+    \item Assign the number \(22\) to a variable called \texttt{age}.
+    
+    \item Use the command \texttt{@show} to print the value. 
+
+    \item Use \texttt{typeof()} to check what kind of data is stored in \texttt{age}.
+
+    \item Reassign \texttt{age} to the text \texttt{"Twenty two"}.
+    
+    \item Again, print the value and the kind of data stored in \texttt{age}.
+    
+    \item \textit{Question:} What happened ?
+\end{enumerate}
+
+\section*{Unicode Variables}
+
+\begin{enumerate}
+    \item Define two variables \(\alpha = 7\) and \(\beta = 3\) using unicode.
+    
+    \item Create a new variable \(\gamma = \alpha + \beta\).
+    
+    \item Print \(\gamma\) with a message using \texttt{println("γ = \$γ")}.
+    
+    \item Use \texttt{typeof()} to verify the kind of data of \(\alpha, \beta,\) and \(\gamma\).
+\end{enumerate}
+
+\section*{Printing Output}
+
+\begin{enumerate}
+    \item Assign your name to a variable \texttt{name} and a number \(year = 2025\).
+    
+    \item Use \texttt{println()} and \texttt{@show} to output \texttt{name} and \texttt{year}.
+    
+    \item Compare the outputs produced by \texttt{println} and \texttt{@show}.
+\end{enumerate}
+
+\section*{Arithmetic Operations}
+
+\begin{enumerate}
+    \item Assign \(a = 8\) and \(b = 3\).
+    
+    \item Compute and print the following results:
+    \[
+    a + b, \quad a - b, \quad a \times b, \quad a / b, \quad a // b, \quad a \bmod b
+    \]
+    
+    \item Identify which results represent integer kind of data ($\mathbb{N}$), which represent rational kind ($\mathbb{Q}$), and which represent floating-point kind ($\mathbb{R}$).
+    
+    \item Evaluate:
+    \[
+    2 + 3 \times 4^2 \quad \text{and} \quad (2 + 3) \times 4^2
+    \]
+    Explain how parentheses change the result.
+    
+    \item Use the modulo operation to check if a number is even or odd:
+    \begin{verbatim}
+    n = 17
+    if n % 2 == 0
+        println("Even")
+    else
+        println("Odd")
+    end
+    \end{verbatim}
+    
+    \item Calculate the average of \(x = 10\), \(y = 20\), and \(z = 35\), and print the result with its kind of data.
+\end{enumerate}
+
+\section*{Logical Operators}
+
+\begin{enumerate}
+    \item Let \(p = \texttt{true}\) and \(q = \texttt{false}\).
+    
+    \item Compute and display the results of:
+    \[
+    p \ \&\&\ q, \quad p \ || \ q, \quad \text{and} \quad !p
+    \]
+    
+    \item Write a short program that checks whether a number \(x\) is both positive and even.
+\end{enumerate}
+
+\end{document}
