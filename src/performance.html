@@ -523,7 +523,7 @@ window.Quarto = {
 <p>In column-major order, the elements of each column are stored contiguously in memory. When the CPU accesses data, it pulls in cache lines (typically 64 bytes) from RAM into cache. So access patterns matter a lot.</p>
 <section id="cache-friendly-access" class="level5">
 <h5 class="anchored" data-anchor-id="cache-friendly-access">Cache-Friendly Access</h5>
-<div id="d68614c4" class="cell" data-execution_count="2">
+<div id="ae39356f" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sum <span class="op">=</span> <span class="fl">0</span>.</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>m</span>
@@ -534,7 +534,7 @@ window.Quarto = {
 </section>
 <section id="cache-unfriendly-access" class="level5">
 <h5 class="anchored" data-anchor-id="cache-unfriendly-access">Cache-Unfriendly Access</h5>
-<div id="910c5766" class="cell" data-execution_count="3">
+<div id="aa907171" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sum <span class="op">=</span> <span class="fl">0</span>.</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>m</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n</span>
@@ -620,7 +620,7 @@ e_{\text{encoded}} = e + \text{bias} = 2 + 1023 = 1025
 <section id="hinting-the-type" class="level3">
 <h3 class="anchored" data-anchor-id="hinting-the-type">Hinting the type</h3>
 <p>In the Julia programming language, type information is not mandatory. Let us examine, from the <em>software</em> perspective, how providing hints to the type inference algorithm allows us to maximize fast executing. First, let’s try to understand what the type inference algorithm is trying to do.</p>
-<div id="fe1f6ebf" class="cell" data-execution_count="4">
+<div id="9d687d40" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="fl">2</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fl">3</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>a<span class="op">+</span>b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -645,7 +645,7 @@ e_{\text{encoded}} = e + \text{bias} = 2 + 1023 = 1025
 </div>
 </div>
 <p>The type of <code>a</code> and <code>b</code> was found here by human knowledge. The type inference algorithm would have associated <code>Any</code> to both <code>a</code> and <code>b</code>. Indeed, the global scope of the REPL is too dynamic to be optimized. Further in thid section we will, thus, only consider type inference in functions.</p>
-<div id="39adb348" class="cell" data-execution_count="5">
+<div id="aae821e2" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">f</span>(a,b)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">+</span>b</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -655,7 +655,7 @@ e_{\text{encoded}} = e + \text{bias} = 2 + 1023 = 1025
 </div>
 <p>Function <code>f</code> adds input variables <code>a</code> and <code>b</code>, for which no type hints are provided. Using <code>@code_llvm</code>, let us have a look at the associated CPU instructions for input variables of different types. <em>The instructions generated by the compiler bellow are not in the Assembly language but in the intermediate representation (IR). It could be seen as a hardware agnostic Assembly language.</em></p>
 <p>First, we run <code>f</code> to sum two integers, <code>1+2</code>.</p>
-<div id="78fb7b2a" class="cell" data-execution_count="6">
+<div id="2f0544cb" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_llvm</span> <span class="fu">f</span>(<span class="fl">1</span>,<span class="fl">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>; Function Signature: f(Int64, Int64)
@@ -671,7 +671,7 @@ top:
 </div>
 </div>
 <p>Then, we run <code>f</code> to sum two floating point numbers, <code>1.5+2.5</code>.</p>
-<div id="b332196a" class="cell" data-execution_count="7">
+<div id="b10aa978" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_llvm</span> <span class="fu">f</span>(<span class="fl">1.5</span>,<span class="fl">2.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>; Function Signature: f(Float64, Float64)
@@ -704,7 +704,7 @@ top:
 </div>
 </div>
 <p>Let us have a look at what happens when we mix types in the function call. We run <code>f</code> to add an integer <code>1</code> and a floating point number <code>2.5</code>.</p>
-<div id="fe4068e9" class="cell" data-execution_count="8">
+<div id="20aa3d41" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_llvm</span> <span class="fu">f</span>(<span class="fl">1</span>,<span class="fl">2.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>; Function Signature: f(Int64, Float64)
@@ -731,7 +731,7 @@ top:
 <section id="type-unstability" class="level3">
 <h3 class="anchored" data-anchor-id="type-unstability">Type unstability</h3>
 <p>In the previous examples, identifying the type of the returned value was a relatively straightforward process. Let us examine the function <code>h</code>, which breaks type stability. We are interested in understanding the reasons behind this problem and techniques to prevent it in our own code, with the aim of achieving optimal performance.</p>
-<div id="f169c1cf" class="cell" data-execution_count="9">
+<div id="19a00729" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">h</span>(x,y)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  z <span class="op">=</span> x <span class="op">+</span> y</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> z <span class="op">&lt;</span> <span class="fl">2</span></span>
@@ -745,7 +745,7 @@ top:
 </div>
 </div>
 <p>Using <code>@code_warntype</code> provides type labels for all the variables of a function. We are particularly interested in the type returned by <code>h</code>.</p>
-<div id="f058ada3" class="cell" data-execution_count="10">
+<div id="1f38ce27" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_warntype</span> <span class="fu">h</span>(<span class="fl">2</span>,<span class="fl">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>MethodInstance for h(::Int64, ::Int64)
@@ -790,7 +790,7 @@ Body::Union{Float64, Int64}
 </div>
 </div>
 <p>An other maner to determine type-stability of a function is to use <code>@inferred</code>.</p>
-<div id="0392fc3a" class="cell" data-execution_count="11">
+<div id="da979274" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Test</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="pp">@inferred</span> <span class="fu">h</span>(<span class="fl">2</span>,<span class="fl">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
@@ -820,7 +820,7 @@ Stacktrace:
 </div>
 <div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div id="fc323144" class="cell" data-execution_count="12">
+<div id="6f2182e8" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_warntype</span> <span class="fu">f</span>(<span class="fl">2</span>,<span class="fl">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>MethodInstance for f(::Int64, ::Int64)
@@ -837,7 +837,7 @@ Body::Int64
 </div>
 </div>
 <p>The type of the sum of those two integers was correctly inferred: <code>Body::Int64</code>. Let us confirm with <code>@inferred</code>.</p>
-<div id="007a7bfe" class="cell" data-execution_count="13">
+<div id="fb9bf9bb" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@inferred</span> <span class="fu">f</span>(<span class="fl">2</span>,<span class="fl">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>7</code></pre>
