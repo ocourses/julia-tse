@@ -1,63 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ocourses.github.io/julia-tse/assets/latex/macros.html</loc>
-    <lastmod>2026-05-29T09:45:12.851Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/index.html</loc>
-    <lastmod>2026-05-29T09:45:12.895Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/src/structure.html</loc>
-    <lastmod>2026-05-29T09:45:12.940Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/src/index.html</loc>
-    <lastmod>2026-05-29T09:45:12.939Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/src/performance.html</loc>
-    <lastmod>2026-05-29T09:45:12.940Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/src/getting_started.html</loc>
-    <lastmod>2026-05-29T09:45:12.896Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/src/foretaste_of_julia_code.html</loc>
-    <lastmod>2026-05-29T09:45:12.896Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/src/syntax.html</loc>
-    <lastmod>2026-05-29T09:45:12.940Z</lastmod>
-  </url>
-  <url>
     <loc>https://ocourses.github.io/julia-tse/about.html</loc>
-    <lastmod>2026-05-29T09:45:12.849Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/src/why_julia.html</loc>
-    <lastmod>2026-05-29T09:45:12.940Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/src/root_finding.html</loc>
-    <lastmod>2026-05-29T09:45:12.940Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ocourses.github.io/julia-tse/src/eval.html</loc>
-    <lastmod>2026-05-29T09:45:12.896Z</lastmod>
+    <lastmod>2026-09-27T20:19:12.590Z</lastmod>
   </url>
   <url>
     <loc>https://ocourses.github.io/julia-tse/src/machine_learning.html</loc>
-    <lastmod>2026-05-29T09:45:12.940Z</lastmod>
+    <lastmod>2026-09-27T20:19:12.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/testing.html</loc>
+    <lastmod>2026-09-27T20:19:12.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/structure.html</loc>
+    <lastmod>2026-09-27T20:19:12.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/getting_started.html</loc>
+    <lastmod>2026-09-27T20:19:12.620Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/index.html</loc>
+    <lastmod>2026-09-27T20:19:12.649Z</lastmod>
   </url>
   <url>
     <loc>https://ocourses.github.io/julia-tse/src/developer_setup.html</loc>
-    <lastmod>2026-05-29T09:45:12.896Z</lastmod>
+    <lastmod>2026-09-27T20:19:12.620Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/assets/latex/macros.html</loc>
+    <lastmod>2026-09-27T20:19:12.592Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/index.html</loc>
+    <lastmod>2026-09-27T20:19:12.620Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/eval.html</loc>
+    <lastmod>2026-09-27T20:19:12.620Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/root_finding.html</loc>
+    <lastmod>2026-09-27T20:19:12.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/performance.html</loc>
+    <lastmod>2026-09-27T20:19:12.649Z</lastmod>
   </url>
   <url>
     <loc>https://ocourses.github.io/julia-tse/src/types.html</loc>
-    <lastmod>2026-05-29T09:45:12.940Z</lastmod>
+    <lastmod>2026-09-27T20:19:12.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/why_julia.html</loc>
+    <lastmod>2026-09-27T20:19:12.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/foretaste_of_julia_code.html</loc>
+    <lastmod>2026-09-27T20:19:12.620Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ocourses.github.io/julia-tse/src/syntax.html</loc>
+    <lastmod>2026-09-27T20:19:12.649Z</lastmod>
   </url>
 </urlset>
