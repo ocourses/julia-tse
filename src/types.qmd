@@ -759,3 +759,101 @@ println("Complex number with the largest real part: ", max_z)
 ```
 :::
 
+
+### Exercise 3: Inferred and declared types
+
+1. Assign values of different types to three new variables `u`, `v` and `w`: an integer, a floating-point number and a string. Which type does Julia infer for each of them? Use `typeof` to check.
+2. Declare a new variable `temperature` with the explicit type `Float64`, using the `::` operator. Then assign to it:
+    - the integer `20`: what is the value and the type of `temperature` after this assignment?
+    - the string `"hot"`: which error do you get?
+3. Create a tuple mixing different types (an integer, a floating-point number and a string). Use `typeof` to inspect the type of the tuple, then the type of each of its elements.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 3
+```{julia}
+u, v, w = 1, 2.5, "Julia"
+@show typeof(u) typeof(v) typeof(w);
+```
+
+A global variable can be declared with a type. Julia then **converts** every value assigned to it into this type, when a conversion exists:
+
+```{julia}
+temperature::Float64 = 20.5
+temperature = 20          # the integer 20 is converted to 20.0
+@show temperature typeof(temperature);
+```
+
+```{julia}
+#| error: true
+temperature = "hot"       # no conversion from String to Float64
+```
+
+The type of a tuple is the tuple of the types of its elements:
+
+```{julia}
+mixed = (1, 2.5, "three")
+@show typeof(mixed)
+for element in mixed
+    println(element, " :: ", typeof(element))
+end
+```
+:::
+
+### Exercise 4: Books and library
+
+1. Define a `struct` called `Book` with the fields `title` (`String`), `author` (`String`) and `pages` (`Int`). Create two instances of `Book` and print their fields.
+2. Define a `mutable struct` called `LibraryBook` with the same fields as `Book` plus a Boolean field `checked_out`. Add a constructor so that `checked_out` is `false` by default, that is `LibraryBook(title, author, pages)` is valid.
+3. Create a `LibraryBook`, change its `checked_out` status to `true`, and print it.
+4. Write a function `status(book::LibraryBook)` which prints whether the book is checked out or available.
+5. What happens if you try to modify the field `pages` of a `Book`?
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 4
+See the section [Constructor methods](#constructor-methods): an outer constructor can call the default constructor with the value `false` for the last field.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 4
+```{julia}
+struct Book
+    title::String
+    author::String
+    pages::Int
+end
+
+book1 = Book("Dune", "Frank Herbert", 412)
+book2 = Book("Foundation", "Isaac Asimov", 255)
+for book in (book1, book2)
+    println(book.title, " by ", book.author, ", ", book.pages, " pages")
+end
+```
+
+```{julia}
+mutable struct LibraryBook
+    title::String
+    author::String
+    pages::Int
+    checked_out::Bool
+end
+
+# Outer constructor: a new book is available by default
+LibraryBook(title, author, pages) = LibraryBook(title, author, pages, false)
+
+function status(book::LibraryBook)
+    state = book.checked_out ? "checked out" : "available"
+    println("\"", book.title, "\" is ", state, ".")
+end
+
+library_book = LibraryBook("Dune", "Frank Herbert", 412)
+status(library_book)
+library_book.checked_out = true
+status(library_book)
+```
+
+A `Book` is immutable, so its fields cannot be modified:
+
+```{julia}
+#| error: true
+book1.pages = 500
+```
+:::
