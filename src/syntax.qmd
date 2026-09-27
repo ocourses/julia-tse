@@ -652,7 +652,7 @@ println(i+5)
 The loop prints correctly the integers from $10$ to $20$. However, the variable `i` of a `for` loop only exists **inside** the loop (see [Scope of variables in `for` loops](structure.qmd#scope-of-variables-in-for-loops)): the last line raises an `UndefVarError`. Since the last integer of the loop is `n`, write `println(n + 5)`.
 :::
 
-### Exercise 7 ⭐: The Collatz sequence
+### Exercise 7: The Collatz sequence
 
 Starting from an integer $n \geq 1$, the [Collatz sequence](https://en.wikipedia.org/wiki/Collatz_conjecture) is built as follows: if $n$ is even, divide it by $2$; otherwise, replace it by $3n + 1$. The (still unproven!) Collatz conjecture states that the sequence always reaches $1$.
 
@@ -682,7 +682,7 @@ println("steps = $steps, highest value = $highest")
 Starting from $27$, a small number, the sequence climbs up to $9232$ before going back down to $1$!
 :::
 
-### Exercise 8 ⭐: The sieve of Eratosthenes
+### Exercise 8: The sieve of Eratosthenes
 
 The [sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes) finds all the prime numbers up to $N$:
 
@@ -718,7 +718,7 @@ println(length(primes), " prime numbers up to $N")
 ```
 :::
 
-### Exercise 9 ⭐⭐⭐: Fast matrix exponentiation
+### Exercise 9: Fast matrix exponentiation
 
 The Fibonacci numbers, defined by $F_0 = 0$, $F_1 = 1$ and $F_{k+1} = F_k + F_{k-1}$, satisfy
 $$

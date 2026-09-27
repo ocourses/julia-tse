@@ -428,7 +428,7 @@ end
 Parametric types keep the concrete type of the field in the type of the struct (`Wrapper{Float64}`), so the compiler knows it; `promote` ensures that the output type depends only on the input **types**, not on their values.
 :::
 
-### Exercise 5 ⭐⭐: Hunting type instabilities
+### Exercise 5: Hunting type instabilities
 
 Each of the following functions returns a correct value, but is **not type-stable**:
 

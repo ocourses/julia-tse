@@ -858,7 +858,7 @@ book1.pages = 500
 ```
 :::
 
-### Exercise 5 ⭐⭐: A callable polynomial
+### Exercise 5: A callable polynomial
 
 A polynomial $p(x) = c_0 + c_1 x + \dots + c_n x^n$ can be stored as the vector of its coefficients $[c_0, c_1, \dots, c_n]$. To evaluate it, the [Horner method](https://en.wikipedia.org/wiki/Horner%27s_method) avoids computing the powers of $x$:
 $$
@@ -895,7 +895,7 @@ p = Poly([1, -3, 2])
 The result `p(0.5)` is a `Float64` while `p(1)` is an `Int64`: the type of the result follows the types of `x` and of the coefficients.
 :::
 
-### Exercise 6 ⭐⭐⭐: Interval arithmetic and promotion
+### Exercise 6: Interval arithmetic and promotion
 
 [Interval arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) computes with intervals $[a, b]$ instead of numbers, to obtain guaranteed bounds of a result (for instance in the presence of measurement errors). The operations are defined so that the result contains all the possible values:
 $$

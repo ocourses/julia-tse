@@ -729,7 +729,7 @@ Even corrected, this function still has a problem with a dataset of size `n = 1`
 :::
 :::
 
-### Exercise 6 ⭐⭐: Remember the results with a closure
+### Exercise 6: Remember the results with a closure
 
 Some functions are expensive to evaluate. If they are called several times with the same argument, we can store the results in a *cache* to avoid recomputing them: this technique is called **memoization**.
 
@@ -778,7 +778,7 @@ fib_memo = memoize(fib)
 The second call of `fib_memo(35)` is instantaneous: the result is in the cache. But `fib_memo(36)` calls `fib(36)`, whose recursive calls `fib(35)` and `fib(34)` call **`fib`**, not `fib_memo`: they do not use the cache. To benefit from memoization in a recursive function, the recursive calls must themselves go through the cache.
 :::
 
-### Exercise 7 ⭐⭐: Variable number of arguments and keywords
+### Exercise 7: Variable number of arguments and keywords
 
 Write a function `summary_line` which takes **any number** of numerical values and returns a string giving their minimum, their mean and their maximum:
 

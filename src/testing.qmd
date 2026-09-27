@@ -289,9 +289,9 @@ In the package directory, `] test` can also be run from a terminal with `julia -
 
 ## Exercises
 
-The exercises are ranked by difficulty: ⭐ for getting started, ⭐⭐ for more involved ones. For each exercise, work in a script or in the REPL, after `using Test`.
+For each exercise, work in a script or in the REPL, after `using Test`.
 
-### Exercise 1 ⭐: Your first test set
+### Exercise 1: Your first test set
 
 Consider the function `convert_temperature` defined above.
 
@@ -336,7 +336,7 @@ end;
 ```
 :::
 
-### Exercise 2 ⭐⭐: Catch the bugs with your tests
+### Exercise 2: Catch the bugs with your tests
 
 We want a function computing the median of a vector. Here is its contract:
 
@@ -463,7 +463,7 @@ The bugs were:
 - `median_6` uses the integer division `÷`: `median_6([1, 2])` returns `1` instead of `1.5`.
 :::
 
-### Exercise 3 ⭐⭐: The tests are red, fix the code
+### Exercise 3: The tests are red, fix the code
 
 The [bisection method](root_finding.qmd) finds a root of a continuous function $f$ on an interval $[a, b]$ such that $f(a)$ and $f(b)$ have opposite signs, by halving the interval repeatedly. Here is a first implementation, with its contract:
 
@@ -588,7 +588,7 @@ end;
 ```
 :::
 
-### Exercise 4 ⭐⭐: Some tests are missing
+### Exercise 4: Some tests are missing
 
 The following function gives the honours associated with an exam grade:
 
