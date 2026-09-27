@@ -652,6 +652,114 @@ println(i+5)
 The loop prints correctly the integers from $10$ to $20$. However, the variable `i` of a `for` loop only exists **inside** the loop (see [Scope of variables in `for` loops](structure.qmd#scope-of-variables-in-for-loops)): the last line raises an `UndefVarError`. Since the last integer of the loop is `n`, write `println(n + 5)`.
 :::
 
+### Exercise 7 ⭐: The Collatz sequence
+
+Starting from an integer $n \geq 1$, the [Collatz sequence](https://en.wikipedia.org/wiki/Collatz_conjecture) is built as follows: if $n$ is even, divide it by $2$; otherwise, replace it by $3n + 1$. The (still unproven!) Collatz conjecture states that the sequence always reaches $1$.
+
+1. Starting from $n = 6$, compute by hand the sequence until it reaches $1$.
+2. Using a `while` loop, compute for $n = 27$ the number of steps needed to reach $1$, and the highest value reached by the sequence.
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 7
+Use the ternary operator `? :` for the update, the integer division `÷` (type `\div` then `Tab`) so that `n` remains an integer, and `max` to keep track of the highest value.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 7
+From $6$: $6 \to 3 \to 10 \to 5 \to 16 \to 8 \to 4 \to 2 \to 1$, that is $8$ steps.
+
+```{julia}
+n = 27
+steps = 0
+highest = n
+while n != 1
+    n = n % 2 == 0 ? n ÷ 2 : 3n + 1
+    steps += 1
+    highest = max(highest, n)
+end
+println("steps = $steps, highest value = $highest")
+```
+Starting from $27$, a small number, the sequence climbs up to $9232$ before going back down to $1$!
+:::
+
+### Exercise 8 ⭐: The sieve of Eratosthenes
+
+The [sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes) finds all the prime numbers up to $N$:
+
+- write all the integers from $2$ to $N$;
+- take the first integer $i$ which is not crossed out: it is prime. Cross out all its multiples $i^2, i^2 + i, i^2 + 2i, \dots$;
+- repeat with the next integer not crossed out, as long as $i^2 \leq N$.
+
+1. Create a vector `is_prime` of $N = 100$ Booleans, all equal to `true` (use the function `trues`), and set `is_prime[1]` to `false`.
+2. Implement the sieve with two nested `for` loops.
+3. Print the list of prime numbers up to $100$. How many are there?
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 8
+The range `i^2:i:N` goes from `i^2` to `N` by steps of `i`. The function `findall` returns the indices of the `true` values of a vector, and `isqrt(N)` is the integer part of $\sqrt{N}$.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 8
+```{julia}
+N = 100
+is_prime = trues(N)
+is_prime[1] = false
+for i in 2:isqrt(N)
+    if is_prime[i]
+        for j in i^2:i:N
+            is_prime[j] = false  # j is a multiple of i
+        end
+    end
+end
+primes = findall(is_prime)
+println(primes)
+println(length(primes), " prime numbers up to $N")
+```
+:::
+
+### Exercise 9 ⭐⭐⭐: Fast matrix exponentiation
+
+The Fibonacci numbers, defined by $F_0 = 0$, $F_1 = 1$ and $F_{k+1} = F_k + F_{k-1}$, satisfy
+$$
+A^n = \begin{pmatrix} F_{n+1} & F_n \\ F_n & F_{n-1} \end{pmatrix}
+\quad \text{with} \quad
+A = \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix}.
+$$
+Computing $A^n$ with $n - 1$ matrix products is slow for large $n$. The **exponentiation by squaring** uses the binary decomposition of $n$: for instance, $A^{13} = A^{8} A^{4} A^{1}$ since $13 = 8 + 4 + 1$, and $A^2, A^4, A^8$ are obtained by squaring successively. The algorithm reads:
+
+- start with `result` equal to the identity matrix and `base` equal to $A$;
+- while $n > 0$: if $n$ is odd, multiply `result` by `base`; then square `base` and divide $n$ by $2$ (integer division).
+
+1. Implement this algorithm for $n = 30$ and deduce $F_{30}$.
+2. Compare your result with `A^n`, computed by Julia.
+3. Count the number of matrix products performed, and compare with the naive method.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 9
+```{julia}
+A = [1 1; 1 0]
+n = 30
+result = [1 0; 0 1]  # identity matrix
+base = A
+k = n
+products = 0
+while k > 0
+    if k % 2 == 1
+        result = result * base
+        products += 1
+    end
+    base = base * base
+    products += 1
+    k = k ÷ 2
+end
+println("F_$n = ", result[1, 2])
+println("Same as A^n: ", result == A^n)
+println("Number of products: $products (instead of $(n - 1))")
+```
+The number of products is of the order of $2 \log_2(n)$ instead of $n - 1$: for $n = 10^6$, about $40$ products instead of a million! Julia uses the same idea to compute `A^n` when `n` is an integer (see the function `Base.power_by_squaring`).
+:::
+
 ### Least Squares Regression Line
 
 We propose a first exercise about [simple linear regression](https://en.wikipedia.org/wiki/Simple_linear_regression). The data are excerpted from this [example](https://www.ncl.ac.uk/webtemplate/ask-assets/external/maths-resources/statistics/regression-and-correlation/simple-linear-regression.html) and saved into [data.csv](data.csv). We propose an [ordinary least squares](https://en.wikipedia.org/wiki/Ordinary_least_squares) formulation which is a type of [linear least squares](https://en.wikipedia.org/wiki/Linear_least_squares) method for choosing the unknown parameters in a linear regression model by the principle of least squares: minimizing the sum of the squares of the differences between the observed dependent variable (values of the variable being observed) in the input dataset and the output of the (linear) function of the independent variable.
