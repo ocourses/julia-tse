@@ -73,25 +73,28 @@ Stopping criteria for the bisection method include:
 ```{julia}
 function bisection(f, a, b; tol=1e-12, max_iter=100)
     # Check if the initial interval is valid
-    if f(a) * f(b) > 0
-        error("The function must have opposite signs at the endpoints a and b.")
-    end
-    
+    a < b || throw(ArgumentError("a must be smaller than b"))
+    fa, fb = f(a), f(b)
+    fa == 0 && return a, 0  # a is already a root
+    fb == 0 && return b, 0  # b is already a root
+    fa * fb < 0 || throw(ArgumentError("f(a) and f(b) must have opposite signs"))
+
     # Initialize variables
     mid = (a + b) / 2
     iter_count = 0
-    
+
     while (b - a) / 2 > tol && iter_count < max_iter
         iter_count += 1
         mid = (a + b) / 2
-        
+        fmid = f(mid)
+
         # Check if the midpoint is a root
-        if abs(f(mid)) ≤ tol
+        if abs(fmid) ≤ tol
             return mid, iter_count
-        elseif f(a) * f(mid) < 0
-            b = mid  # Root is in [a, mid]
+        elseif fa * fmid < 0
+            b = mid           # Root is in [a, mid]
         else
-            a = mid  # Root is in [mid, b]
+            a, fa = mid, fmid # Root is in [mid, b]
         end
     end
     
@@ -137,30 +140,31 @@ Below is the Julia code for the analysis:
 using Plots
 
 function bisection_analysis(f, a, b; tol=1e-12, max_iter=100, true_root=nothing)
-    if f(a) * f(b) > 0
-        error("The function must have opposite signs at the endpoints a and b.")
-    end
+    a < b || throw(ArgumentError("a must be smaller than b"))
+    fa, fb = f(a), f(b)
+    fa * fb ≤ 0 || throw(ArgumentError("f(a) and f(b) must have opposite signs"))
 
     midpoints = []
     errors = []
     iter_count = 0
     mid = (a + b) / 2
-    
+
     while (b - a) / 2 > tol && iter_count < max_iter
         iter_count += 1
         mid = (a + b) / 2
+        fmid = f(mid)
         push!(midpoints, mid)
-        
+
         if !isnothing(true_root)
             push!(errors, abs(mid - true_root))
         end
 
-        if abs(f(mid)) ≤ tol
+        if abs(fmid) ≤ tol
             break
-        elseif f(a) * f(mid) < 0
+        elseif fa * fmid ≤ 0 # also keeps [a, mid] when f(a) == 0
             b = mid
         else
-            a = mid
+            a, fa = mid, fmid
         end
     end
     
