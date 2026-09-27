@@ -857,3 +857,130 @@ A `Book` is immutable, so its fields cannot be modified:
 book1.pages = 500
 ```
 :::
+
+### Exercise 5 ⭐⭐: A callable polynomial
+
+A polynomial $p(x) = c_0 + c_1 x + \dots + c_n x^n$ can be stored as the vector of its coefficients $[c_0, c_1, \dots, c_n]$. To evaluate it, the [Horner method](https://en.wikipedia.org/wiki/Horner%27s_method) avoids computing the powers of $x$:
+$$
+p(x) = c_0 + x\,\Big(c_1 + x\,\big(c_2 + \dots + x\,(c_{n-1} + x\, c_n)\big)\Big).
+$$
+
+1. Define a parametric struct `Poly{T<:Number}` with a field `coeffs` of type `Vector{T}`.
+2. Make it **callable** (see [Function-like Object](#function-like-object-callable-struct)): `p(x)` evaluates the polynomial at `x` with the Horner method, starting from the leading coefficient $c_n$.
+3. Write a function `degree(p::Poly)`.
+4. With `p = Poly([1, -3, 2])`, that is $p(x) = 1 - 3x + 2x^2$, compute `p(0)`, `p(1)`, `p(0.5)`, and evaluate `p` on the vector `[0, 1, 2]` with broadcasting.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 5
+```{julia}
+struct Poly{T<:Number}
+    coeffs::Vector{T}   # [c_0, c_1, ..., c_n]
+end
+
+function (p::Poly)(x)
+    n = length(p.coeffs)
+    result = p.coeffs[n]            # c_n
+    for k in n-1:-1:1
+        result = result * x + p.coeffs[k]
+    end
+    return result
+end
+
+degree(p::Poly) = length(p.coeffs) - 1
+
+p = Poly([1, -3, 2])
+@show p(0) p(1) p(0.5) degree(p)
+@show p.([0, 1, 2]);
+```
+The result `p(0.5)` is a `Float64` while `p(1)` is an `Int64`: the type of the result follows the types of `x` and of the coefficients.
+:::
+
+### Exercise 6 ⭐⭐⭐: Interval arithmetic and promotion
+
+[Interval arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) computes with intervals $[a, b]$ instead of numbers, to obtain guaranteed bounds of a result (for instance in the presence of measurement errors). The operations are defined so that the result contains all the possible values:
+$$
+[a, b] + [c, d] = [a + c,\, b + d], \quad
+[a, b] - [c, d] = [a - d,\, b - c], \quad
+[a, b] \times [c, d] = [\min P,\, \max P]
+$$
+with $P = \{ac, ad, bc, bd\}$.
+
+1. Define a parametric struct `Interval{T<:Real}` with two fields `lo` and `hi`. Write an **inner constructor** which throws an `ArgumentError` if `lo > hi`, and outer constructors so that `Interval(1, 2)`, `Interval(1, 2.5)` (the bounds are promoted to a common type) and `Interval(3)` (the interval $[3, 3]$) are valid.
+2. Extend the operators `+`, `-` and `*` of `Base` to intervals, as well as the function `in`, so that `1.5 in Interval(1, 2)` is `true`. To extend a function of `Base`, define for instance `Base.:+(a::Interval, b::Interval) = ...`.
+3. We want to mix intervals and real numbers: `Interval(1, 2) + 1`, `2 * Interval(1, 2)`... Rather than writing all the combinations by hand, use the [promotion mechanism](https://docs.julialang.org/en/v1/manual/conversion-and-promotion/):
+    - define `Base.convert(::Type{Interval{T}}, x::Real) where {T<:Real}`, which converts a number $x$ to the interval $[x, x]$, and a method converting an `Interval` to an `Interval{T}`;
+    - define `Base.promote_rule(::Type{Interval{T}}, ::Type{S}) where {T<:Real,S<:Real}`, which returns `Interval{promote_type(T, S)}`, and the same rule for two interval types;
+    - finally, define `Base.:+(a::Interval, x::Real) = +(promote(a, x)...)` and the similar methods for `-`, `*`, with the number on the left or on the right.
+4. Let `f(x) = x * x - 2 * x + 1`. Compute `f(Interval(0, 1))`. Is the result the exact range $\{f(x),\ x \in [0, 1]\} = [0, 1]$? Why?
+5. Evaluate the polynomial `p` of Exercise 5 on `Interval(0, 1)`. Did you have to modify the code of `Poly`?
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 6
+```{julia}
+struct Interval{T<:Real}
+    lo::T
+    hi::T
+    function Interval{T}(lo, hi) where {T<:Real}
+        lo <= hi || throw(ArgumentError("lo must be smaller than hi"))
+        return new{T}(lo, hi)
+    end
+end
+
+Interval(lo::T, hi::T) where {T<:Real} = Interval{T}(lo, hi)
+Interval(lo::Real, hi::Real) = Interval(promote(lo, hi)...)
+Interval(x::Real) = Interval(x, x)
+
+# Operations between intervals
+Base.:+(a::Interval, b::Interval) = Interval(a.lo + b.lo, a.hi + b.hi)
+Base.:-(a::Interval, b::Interval) = Interval(a.lo - b.hi, a.hi - b.lo)
+function Base.:*(a::Interval, b::Interval)
+    products = (a.lo * b.lo, a.lo * b.hi, a.hi * b.lo, a.hi * b.hi)
+    return Interval(minimum(products), maximum(products))
+end
+Base.in(x::Real, a::Interval) = a.lo <= x <= a.hi
+
+# Conversion and promotion
+Base.convert(::Type{Interval{T}}, x::Real) where {T<:Real} = Interval{T}(x, x)
+Base.convert(::Type{Interval{T}}, a::Interval) where {T<:Real} = Interval{T}(a.lo, a.hi)
+Base.promote_rule(::Type{Interval{T}}, ::Type{S}) where {T<:Real,S<:Real} =
+    Interval{promote_type(T, S)}
+Base.promote_rule(::Type{Interval{T}}, ::Type{Interval{S}}) where {T<:Real,S<:Real} =
+    Interval{promote_type(T, S)}
+
+# Operations between intervals and numbers
+Base.:+(a::Interval, x::Real) = +(promote(a, x)...)
+Base.:+(x::Real, a::Interval) = +(promote(x, a)...)
+Base.:-(a::Interval, x::Real) = -(promote(a, x)...)
+Base.:-(x::Real, a::Interval) = -(promote(x, a)...)
+Base.:*(a::Interval, x::Real) = *(promote(a, x)...)
+Base.:*(x::Real, a::Interval) = *(promote(x, a)...)
+```
+
+```{julia}
+x = Interval(1, 2)
+@show x + Interval(0.5, 1.0)
+@show x * Interval(-1, 3)
+@show x + 1
+@show 2 * x
+@show promote(x, 2.5)
+@show 1.5 in x;
+```
+
+```{julia}
+#| error: true
+Interval(2, 1)
+```
+
+```{julia}
+f(x) = x * x - 2 * x + 1
+f(Interval(0, 1))
+```
+
+The result $[-1, 2]$ **contains** the exact range $[0, 1]$, but is larger: this is the *dependency problem*. Interval arithmetic treats each occurrence of `x` as an independent variable; for instance `x - x` gives $[-1, 1]$ and not $[0, 0]$. The way the function is written matters: with `g(x) = (x - 1) * (x - 1)`, which is the same function, `g(Interval(0, 1))` gives exactly $[0, 1]$.
+
+```{julia}
+p(Interval(0, 1))
+```
+
+The code of `Poly` works on intervals **without any modification**, since it only uses `*` and `+`, which are now defined for intervals and numbers. This is the power of multiple dispatch combined with promotion: generic code written for numbers works for any new type which defines the right operations.
+:::
