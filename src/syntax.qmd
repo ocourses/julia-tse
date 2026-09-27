@@ -447,7 +447,129 @@ person["email"] = "bob@example.com"
 
 Julia offers support through packages for standard file formats in data science. For instance, *JSON.jl* is associated to JSON (JavaScript Object Notation) and *CSV.jl* to CSV (Comma-Separated Values). To handle tabular data, you can store data into `DataFrame`s which are similar to pandas in Python or data.frame in R.
 
-## Exercise
+## Exercises
+
+### Exercise 1: Variables and types
+
+1. Assign the number $22$ to a variable called `age`.
+2. Use the macro `@show` to print the value.
+3. Use `typeof` to check what kind of data is stored in `age`.
+4. Reassign `age` to the text `"Twenty two"`.
+5. Again, print the value and the kind of data stored in `age`. What happened?
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 1
+```{julia}
+age = 22
+@show age
+@show typeof(age)
+age = "Twenty two"
+@show age
+@show typeof(age);
+```
+The same variable name can refer to values of different types: a variable is only a *name* attached to a value, and the type belongs to the value, not to the name. This is called **dynamic typing** (see the page [Types](types.qmd)).
+:::
+
+### Exercise 2: Unicode variables
+
+1. Define two variables $\alpha = 7$ and $\beta = 3$ using Unicode characters (type `\alpha` then `Tab`).
+2. Create a new variable $\gamma = \alpha + \beta$.
+3. Print $\gamma$ with a message using `println("γ = $γ")`.
+4. Use `typeof` to check the kind of data of $\alpha$, $\beta$ and $\gamma$.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 2
+```{julia}
+α = 7
+β = 3
+γ = α + β
+println("γ = $γ")
+println(typeof(α), " ", typeof(β), " ", typeof(γ))
+```
+:::
+
+### Exercise 3: Printing output
+
+1. Assign your name to a variable `name` and the number $2025$ to a variable `year`.
+2. Print `name` and `year` with `println` and with `@show`.
+3. Compare the outputs produced by `println` and `@show`.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 3
+```{julia}
+name = "Ada"
+year = 2025
+println(name, " ", year)
+@show name year;
+```
+`println` prints only the values, while `@show` prints the **expression and its value**, and displays strings with their quotes. `@show` is therefore very convenient for debugging.
+:::
+
+### Exercise 4: Arithmetic operations
+
+1. Assign $a = 8$ and $b = 3$.
+2. Compute and print the results of `a + b`, `a - b`, `a * b`, `a / b`, `a // b` and `a % b`.
+3. Identify which results are integers ($\mathbb{N}$), rational numbers ($\mathbb{Q}$) and floating-point numbers ($\mathbb{R}$).
+4. Evaluate $2 + 3 \times 4^2$ and $(2 + 3) \times 4^2$. Explain how parentheses change the result.
+5. Use the modulo operation to check if the number $n = 17$ is even or odd.
+6. Compute the average of $x = 10$, $y = 20$ and $z = 35$, and print the result with its kind of data.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 4
+```{julia}
+a, b = 8, 3
+for result in (a + b, a - b, a * b, a / b, a // b, a % b)
+    println(result, " :: ", typeof(result))
+end
+```
+The results of `+`, `-`, `*` and `%` are integers (`Int64`), `/` always returns a floating-point number (`Float64`), even when the division is exact, and `//` builds a rational number (`Rational{Int64}`).
+
+```{julia}
+@show 2 + 3 * 4^2
+@show (2 + 3) * 4^2;
+```
+The power has priority over the multiplication, which has priority over the addition: $2 + 3 \times 16 = 50$, whereas the parentheses force the addition first: $5 \times 16 = 80$.
+
+```{julia}
+n = 17
+if n % 2 == 0
+    println("$n is even")
+else
+    println("$n is odd")
+end
+```
+
+```{julia}
+x, y, z = 10, 20, 35
+average = (x + y + z) / 3
+@show average typeof(average);
+```
+:::
+
+### Exercise 5: Logical operators
+
+1. Let $p = \texttt{true}$ and $q = \texttt{false}$.
+2. Compute and display the results of `p && q`, `p || q` and `!p`.
+3. Write a short program that checks whether a number `x` is both positive and even.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 5
+```{julia}
+p, q = true, false
+@show p && q
+@show p || q
+@show !p;
+```
+
+```{julia}
+x = 12
+if x > 0 && x % 2 == 0
+    println("$x is positive and even")
+else
+    println("$x is not positive and even")
+end
+```
+:::
 
 ### Least Squares Regression Line
 
