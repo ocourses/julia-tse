@@ -14,6 +14,8 @@
     href: syntax.qmd
   - text: Structure your code
     href: structure.qmd
+  - text: Testing your code
+    href: testing.qmd
   - text: Types
     href: types.qmd
   - text: Type stability for performance

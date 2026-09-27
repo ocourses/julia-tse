@@ -1,0 +1,703 @@
+---
+title: "Testing your code"
+page-layout: article
+jupyter: julia-1.12
+---
+
+```{julia}
+#| echo: false
+include("activate.jl")
+```
+
+Up to now, we have checked our functions by calling them and looking at what is printed: `println(convert_temperature(100, unit="C")) # Outputs: 212.0`. This is already a test, but a fragile one: *you* have to read the output, compare it with the expected value, and redo it by hand every time the code changes. In this page, you will learn to write **automated tests**: small pieces of code that check that your functions behave as expected, and that you can run again in one command after each modification.
+
+Tests are useful to:
+
+- **find bugs** early, while the code is still fresh in your mind;
+- **modify code without fear**: if you break something, a test will tell you;
+- **document** how a function is supposed to be used, with concrete examples.
+
+## The `Test` standard library
+
+Julia ships with the [`Test`](https://docs.julialang.org/en/v1/stdlib/Test/) standard library: there is nothing to install, just load it.
+
+```{julia}
+using Test
+```
+
+### The `@test` macro
+
+The macro `@test` evaluates an expression that must return `true` or `false`. If the result is `true`, the test **passes**.
+
+```{julia}
+@test 1 + 1 == 2
+```
+
+If the result is `false`, the test **fails** and Julia reports both sides of the comparison, which helps to understand what went wrong.
+
+```{julia}
+try #| hide_line
+@test 1 + 1 == 3
+catch end #| hide_line
+```
+
+### Comparing floating-point numbers
+
+Floating-point numbers are stored with a finite precision (see the page on [types](types.qmd)), so exact comparisons can fail even when the mathematics is correct:
+
+```{julia}
+try #| hide_line
+@test 0.1 + 0.2 == 0.3
+catch end #| hide_line
+```
+
+To compare floating-point numbers, use the approximate comparison `≈` (type `\approx` then `Tab`), which is the function `isapprox`. You can control the tolerance with the keyword arguments `atol` (absolute tolerance) and `rtol` (relative tolerance).
+
+```{julia}
+@test 0.1 + 0.2 ≈ 0.3
+@test π ≈ 3.14 atol = 1e-2
+```
+
+::: {.callout-warning}
+By default, `≈` uses only a relative tolerance. Therefore `x ≈ 0` is `true` only if `x == 0`! When the expected value is zero, always give an absolute tolerance: `@test x ≈ 0 atol = 1e-10`.
+:::
+
+### Testing errors with `@test_throws`
+
+A function must also behave correctly when it receives invalid inputs. Recall the function `convert_temperature` from the page [Structure your code](structure.qmd), which throws an `ArgumentError` for an unknown unit:
+
+```{julia}
+function convert_temperature(value; unit)
+    if unit == "C"
+        return value * 9/5 + 32
+    elseif unit == "F"
+        return (value - 32) * 5/9
+    else
+        throw(ArgumentError("Unit must be 'C' or 'F'"))
+    end
+end
+```
+
+The macro `@test_throws` checks that an expression throws an exception of the given type:
+
+```{julia}
+@test_throws ArgumentError convert_temperature(10, unit="K")
+```
+
+### Grouping tests with `@testset`
+
+Tests are grouped into **test sets**. A test set runs all its tests, even if some of them fail, and prints a summary at the end. Test sets can be nested.
+
+```{julia}
+@testset "convert_temperature" begin
+    @testset "Celsius to Fahrenheit" begin
+        @test convert_temperature(100, unit="C") ≈ 212
+        @test convert_temperature(0, unit="C") ≈ 32
+    end
+    @testset "Fahrenheit to Celsius" begin
+        @test convert_temperature(32, unit="F") ≈ 0 atol = 1e-12
+    end
+    @testset "invalid unit" begin
+        @test_throws ArgumentError convert_temperature(10, unit="K")
+    end
+end;
+```
+
+When at least one test fails, the summary shows where, and an error is raised at the end of the test set:
+
+```{julia}
+try #| hide_line
+@testset "a test set with a failure" begin
+    @test 2 * 3 == 6
+    @test 2 + 3 == 6
+    @test 2 - 3 == -1
+end;
+catch end #| hide_line
+```
+
+::: {.callout-tip}
+## Test sets and loops
+A `@testset` can be combined with a `for` loop to run the same tests on several inputs. Each iteration is reported separately.
+
+```{julia}
+@testset "round trip for T = $T" for T in (Float32, Float64)
+    x = T(37)
+    @test convert_temperature(convert_temperature(x, unit="C"), unit="F") ≈ x
+end;
+```
+:::
+
+### Other useful macros
+
+| Macro | Usage |
+|-------|-------|
+| `@test ex` | `ex` must return `true`. |
+| `@test a ≈ b atol=...` | approximate comparison. |
+| `@test_throws T ex` | `ex` must throw an exception of type `T`. |
+| `@testset "name" begin ... end` | groups tests and prints a summary. |
+| `@test_broken ex` | documents a *known* bug: the test is expected to fail. |
+| `@inferred f(x)` | checks that the return type of `f(x)` is inferred by the compiler (see [type stability](performance.qmd)). |
+
+## What should I test? The contract of a function
+
+Before writing tests, you need to know precisely **what the function is supposed to do**. This specification is called the **contract** of the function, and the right place to write it is the [docstring](https://docs.julialang.org/en/v1/manual/documentation/), just above the function. A contract states:
+
+- the **preconditions**: what the inputs must satisfy;
+- the **postconditions**: what the function returns (or modifies) when the preconditions hold;
+- what happens when the preconditions are **not** satisfied (typically, which error is thrown).
+
+```julia
+"""
+    my_mean(v)
+
+Return the arithmetic mean of the vector `v`.
+
+- Precondition: `v` is a non-empty vector of real numbers.
+- Postcondition: returns `sum(v) / length(v)`; `v` is not modified.
+- Throws an `ArgumentError` if `v` is empty.
+"""
+```
+
+Once the contract is written, a good test suite covers:
+
+1. **typical cases**: a few "normal" inputs for which you know the answer (computed by hand);
+2. **edge cases**: the smallest inputs (empty vector, one element), the values *exactly* at a boundary (if a condition reads `x >= 10`, test `9`, `10` and `11`), zeros, negative numbers...;
+3. **invalid inputs**: one `@test_throws` per error described in the contract;
+4. **properties**: relations that must always hold, even if you do not know the exact result (a converted temperature converted back gives the initial value, the output of a sort is sorted, the input is not modified...).
+
+::: {.callout-important}
+A test that is never red is useless. When you write a test, check that it is able to fail: temporarily break the code and verify that the test detects it.
+:::
+
+## Organising tests in a package
+
+In a notebook or in the REPL, you can write tests anywhere. In a real project, the code lives in a **package** and the tests in a separate folder, so that anyone can run them with a single command. Creating a package takes one line in the package mode of the REPL (see [Developer set up](developer_setup.qmd)):
+
+```julia
+] generate MyStats
+```
+
+Then add the folder `test` with a file `runtests.jl`, so that your project looks like this:
+
+```
+MyStats/
+├── Project.toml
+├── src/
+│   └── MyStats.jl      # the code: module MyStats ... end
+└── test/
+    └── runtests.jl     # the tests
+```
+
+The file `src/MyStats.jl` contains the module (see [Modules](structure.qmd#modules)):
+
+```julia
+module MyStats
+
+export my_mean
+
+"""
+    my_mean(v)
+
+Return the arithmetic mean of the non-empty vector `v`.
+Throw an `ArgumentError` if `v` is empty.
+"""
+function my_mean(v)
+    if isempty(v)
+        throw(ArgumentError("v must be non-empty"))
+    end
+    return sum(v) / length(v)
+end
+
+end
+```
+
+The file `test/runtests.jl` loads the package and runs the tests:
+
+```julia
+using MyStats
+using Test
+
+@testset "MyStats" begin
+    @test my_mean([1, 2, 3]) == 2
+    @test my_mean([1.0, 2.0]) ≈ 1.5
+end
+```
+
+Finally, declare `Test` as a dependency used *only for testing* by adding these lines at the end of `Project.toml`:
+
+```toml
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
+```
+
+### Running the tests
+
+From the folder `MyStats`, start Julia, activate the package and run its tests:
+
+```julia
+] activate .
+] test
+```
+
+```
+     Testing Running tests...
+Test Summary: | Pass  Total  Time
+MyStats       |    2      2  0.0s
+     Testing MyStats tests passed
+```
+
+### Code coverage
+
+All tests pass... but is all the code tested? The **code coverage** measures which lines of your code have been executed by the tests. The package [LocalCoverage.jl](https://github.com/JuliaCI/LocalCoverage.jl) runs the tests and prints a report. Install it once in your *global* environment (not in the package):
+
+```julia
+] activate
+] add LocalCoverage
+```
+
+Then, from the folder containing `MyStats`:
+
+```julia
+using LocalCoverage
+cov = generate_coverage("MyStats")               # runs the tests with coverage
+show(IOContext(stdout, :print_gaps => true), cov) # also print the missed lines
+```
+
+```
+┌────────────────┬───────┬─────┬──────┬─────┬──────┐
+│ Filename       │ Lines │ Hit │ Miss │   % │ Gaps │
+├────────────────┼───────┼─────┼──────┼─────┼──────┤
+│ src/MyStats.jl │     4 │   3 │    1 │ 75% │ 13   │
+├────────────────┼───────┼─────┼──────┼─────┼──────┤
+│ TOTAL          │     4 │   3 │    1 │ 75% │      │
+└────────────────┴───────┴─────┴──────┴─────┴──────┘
+```
+
+Line 13, `throw(ArgumentError(...))`, is never executed: we forgot to test the empty vector. Adding `@test_throws ArgumentError my_mean(Int[])` to the tests brings the coverage to 100%.
+
+::: {.callout-warning}
+## Coverage is a tool, not a goal
+A line that is **executed** is not necessarily **verified**: `my_mean([1, 2, 3])` executes every line of a wrong implementation as well. Moreover, coverage cannot see code that is *missing* (a forgotten `if`). A coverage of 100% does not mean that the code is correct; a low coverage, however, tells you for sure that some parts of the code are not tested.
+:::
+
+::: {.callout-note}
+In the package directory, `] test` can also be run from a terminal with `julia --project -e 'using Pkg; Pkg.test()'`. This is what continuous integration services (for instance GitHub Actions) do after each modification of the code.
+:::
+
+## Exercises
+
+The exercises are ranked by difficulty: ⭐ for getting started, ⭐⭐ for more involved ones. For each exercise, work in a script or in the REPL, after `using Test`.
+
+### Exercise 1 ⭐: Your first test set
+
+Consider the function `convert_temperature` defined above.
+
+1. Write a test set `"convert_temperature"` containing at least:
+    - two typical conversions from Celsius to Fahrenheit and two from Fahrenheit to Celsius (compute the expected values by hand);
+    - the particular value $-40$, which is the same in both units;
+    - a test checking that an invalid unit throws an `ArgumentError`.
+2. Add a **property** test: for several values `x` (use a `for` loop), converting `x` from Celsius to Fahrenheit and back gives `x`.
+3. Check that your tests are able to fail: replace `9/5` by `9/4` in the function, run the tests again and look at the report. Do not forget to restore the function!
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 1
+Remember to use `≈` and not `==` when comparing floating-point numbers. When the expected value is `0`, you need an absolute tolerance `atol`.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 1
+```{julia}
+@testset "convert_temperature" begin
+    @testset "Celsius to Fahrenheit" begin
+        @test convert_temperature(0, unit="C") ≈ 32
+        @test convert_temperature(100, unit="C") ≈ 212
+    end
+    @testset "Fahrenheit to Celsius" begin
+        @test convert_temperature(212, unit="F") ≈ 100
+        @test convert_temperature(32, unit="F") ≈ 0 atol = 1e-12
+    end
+    @testset "-40 is the same in both units" begin
+        @test convert_temperature(-40, unit="C") ≈ -40
+        @test convert_temperature(-40, unit="F") ≈ -40
+    end
+    @testset "invalid unit" begin
+        @test_throws ArgumentError convert_temperature(10, unit="K")
+        @test_throws ArgumentError convert_temperature(10, unit="c") # case matters
+    end
+    @testset "round trip" begin
+        for x in (-273.15, -10.5, 0.0, 37.2, 1000.0)
+            @test convert_temperature(convert_temperature(x, unit="C"), unit="F") ≈ x
+        end
+    end
+end;
+```
+:::
+
+### Exercise 2 ⭐⭐: Catch the bugs with your tests
+
+We want a function computing the median of a vector. Here is its contract:
+
+```julia
+"""
+    median(v)
+
+Return the median of the vector `v`.
+
+- Precondition: `v` is a non-empty vector of real numbers (not necessarily sorted).
+- Postcondition: if `length(v)` is odd, returns the middle value of the sorted vector;
+  if `length(v)` is even, returns the mean of the two middle values of the sorted vector.
+  The vector `v` is not modified.
+- Throws an `ArgumentError` if `v` is empty.
+"""
+```
+
+Six students have written an implementation, named `median_1`, ..., `median_6`: only **one** of them respects the contract.
+
+1. **Without reading the implementations**, write a function `test_median(median)` which takes an implementation as argument and runs a `@testset` checking the contract.
+2. Run `test_median` on the six implementations given below. A good test suite must **fail** for the five wrong implementations and **pass** for the correct one. How many bugs did you catch?
+3. If some wrong implementations pass your tests, read their code, find the bug, and add the missing tests.
+
+::: {.callout-note collapse="true" icon=false}
+## The six implementations (to copy in your script)
+```{julia}
+function median_1(v)
+    isempty(v) && throw(ArgumentError("v must be non-empty"))
+    s = sort!(v)
+    n = length(s)
+    return isodd(n) ? s[(n + 1) ÷ 2] : (s[n ÷ 2] + s[n ÷ 2 + 1]) / 2
+end
+
+function median_2(v)
+    isempty(v) && throw(ArgumentError("v must be non-empty"))
+    s = v
+    n = length(s)
+    return isodd(n) ? s[(n + 1) ÷ 2] : (s[n ÷ 2] + s[n ÷ 2 + 1]) / 2
+end
+
+function median_3(v)
+    isempty(v) && throw(ArgumentError("v must be non-empty"))
+    s = sort(v)
+    n = length(s)
+    return isodd(n) ? s[(n + 1) ÷ 2] : s[n ÷ 2]
+end
+
+function median_4(v)
+    isempty(v) && throw(ArgumentError("v must be non-empty"))
+    s = sort(v)
+    n = length(s)
+    return isodd(n) ? s[(n + 1) ÷ 2] : (s[n ÷ 2] + s[n ÷ 2 + 1]) / 2
+end
+
+function median_5(v)
+    s = sort(v)
+    n = length(s)
+    return isodd(n) ? s[(n + 1) ÷ 2] : (s[n ÷ 2] + s[n ÷ 2 + 1]) / 2
+end
+
+function median_6(v)
+    isempty(v) && throw(ArgumentError("v must be non-empty"))
+    s = sort(v)
+    n = length(s)
+    return isodd(n) ? s[(n + 1) ÷ 2] : (s[n ÷ 2] + s[n ÷ 2 + 1]) ÷ 2
+end
+```
+:::
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 2
+In Julia, functions are values: they can be passed as arguments to other functions. Inside `test_median`, call `median(...)` as usual, it refers to the argument. Then, for each item of the contract, ask yourself: *which input would reveal that this item is not respected?* Think about vectors of odd **and** even length, **unsorted** vectors, integer inputs whose median is not an integer, and the empty vector.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 2
+Each test set targets one item of the contract:
+
+```{julia}
+function test_median(median)
+    @testset "$median" begin
+        @testset "odd length" begin
+            @test median([3]) == 3
+            @test median([3, 1, 2]) == 2            # unsorted input
+        end
+        @testset "even length" begin
+            @test median([1, 2]) == 1.5             # the median is not an integer
+            @test median([4, 1, 3, 2]) == 2.5       # unsorted input
+        end
+        @testset "input is not modified" begin
+            v = [3, 1, 2]
+            median(v)
+            @test v == [3, 1, 2]
+        end
+        @testset "empty input" begin
+            @test_throws ArgumentError median(Int[])
+        end
+    end
+end;
+```
+
+We run it on the six implementations. The output of the tests is hidden with `@suppress` from the package `Suppressor`, and we only print whether the implementation passes the tests:
+
+```{julia}
+using Suppressor
+for median in (median_1, median_2, median_3, median_4, median_5, median_6)
+    passed = try
+        @suppress test_median(median)
+        true
+    catch
+        false
+    end
+    println(median, passed ? ": passes the tests" : ": bug caught!")
+end
+```
+
+The bugs were:
+
+- `median_1` uses `sort!`, which **modifies** the input vector;
+- `median_2` does **not sort** the vector;
+- `median_3` returns the lower middle value when the length is even;
+- `median_4` is correct;
+- `median_5` throws a `BoundsError` instead of an `ArgumentError` for an empty vector;
+- `median_6` uses the integer division `÷`: `median_6([1, 2])` returns `1` instead of `1.5`.
+:::
+
+### Exercise 3 ⭐⭐: The tests are red, fix the code
+
+The [bisection method](root_finding.qmd) finds a root of a continuous function $f$ on an interval $[a, b]$ such that $f(a)$ and $f(b)$ have opposite signs, by halving the interval repeatedly. Here is a first implementation, with its contract:
+
+```julia
+"""
+    bisection(f, a, b; tol=1e-12, max_iter=100)
+
+Find a root of the continuous function `f` in the interval `[a, b]`.
+
+- Preconditions: `a < b` and `f(a) * f(b) ≤ 0`.
+- Postcondition: returns a tuple `(x, iter)` where `x` is an approximation of a root
+  of `f` in `[a, b]` and `iter` is the number of iterations. If `f(a) == 0` (resp.
+  `f(b) == 0`), then `x == a` (resp. `x == b`).
+- Throws an `ArgumentError` if a precondition is not satisfied.
+"""
+function bisection(f, a, b; tol=1e-12, max_iter=100)
+    if f(a) * f(b) > 0
+        error("The function must have opposite signs at the endpoints a and b.")
+    end
+    mid = (a + b) / 2
+    iter_count = 0
+    while (b - a) / 2 > tol && iter_count < max_iter
+        iter_count += 1
+        mid = (a + b) / 2
+        if abs(f(mid)) ≤ tol
+            return mid, iter_count
+        elseif f(a) * f(mid) < 0
+            b = mid
+        else
+            a = mid
+        end
+    end
+    return mid, iter_count
+end
+```
+
+Here are the tests of this function:
+
+```julia
+@testset "bisection" begin
+    @testset "typical cases" begin
+        x, _ = bisection(x -> cos(x) - x, 0, 1)
+        @test x ≈ 0.7390851332151607 atol = 1e-10
+        x, _ = bisection(x -> x^2 - 2, 0, 2)
+        @test x ≈ sqrt(2) atol = 1e-10
+        x, _ = bisection(x -> 1 - x, 0, 2)          # f is decreasing
+        @test x ≈ 1 atol = 1e-10
+    end
+    @testset "root at an endpoint" begin
+        @test bisection(x -> x, 0.0, 1.0)[1] == 0.0
+        @test bisection(x -> x - 1, 0.0, 1.0)[1] == 1.0
+    end
+    @testset "invalid inputs" begin
+        @test_throws ArgumentError bisection(x -> x^2 + 1, 0.0, 1.0) # no sign change
+        @test_throws ArgumentError bisection(x -> x, 1.0, -1.0)      # a > b
+    end
+end
+```
+
+1. Run the tests. Which ones fail? For each failing test, read the report and explain **why** the code does not respect its contract.
+2. Fix the function until all the tests pass. You must not modify the tests!
+3. *Bonus*: the function `f` is evaluated several times at the same point. Modify the code so that each iteration evaluates `f` only once, and check that the tests still pass. This is the main interest of tests: you can improve the code safely.
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 3
+Four tests fail. Look at what happens in the loop when `f(a) == 0`: what is the value of `f(a) * f(mid)`? Also, which type of exception does the function `error` throw?
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 3
+The failing tests are:
+
+- `bisection(x -> x, 0.0, 1.0)`: since `f(a) == 0`, the product `f(a) * f(mid)` is always `0`, so the code always executes `a = mid` and moves away from the root. It returns a value close to `1` instead of `0`.
+- `bisection(x -> x - 1, 0.0, 1.0)`: the method converges to `1` but never returns exactly `b`.
+- `bisection(x -> x^2 + 1, 0.0, 1.0)`: `error(...)` throws an `ErrorException`, not an `ArgumentError`.
+- `bisection(x -> x, 1.0, -1.0)`: the condition `a < b` is never checked. The loop is not executed and the function returns silently.
+
+A corrected version, which also evaluates `f` only once per iteration:
+
+```{julia}
+function bisection(f, a, b; tol=1e-12, max_iter=100)
+    a < b || throw(ArgumentError("a must be smaller than b"))
+    fa, fb = f(a), f(b)
+    fa == 0 && return a, 0
+    fb == 0 && return b, 0
+    fa * fb < 0 || throw(ArgumentError("f(a) and f(b) must have opposite signs"))
+    mid = (a + b) / 2
+    iter_count = 0
+    while (b - a) / 2 > tol && iter_count < max_iter
+        iter_count += 1
+        mid = (a + b) / 2
+        fmid = f(mid)
+        if abs(fmid) ≤ tol
+            return mid, iter_count
+        elseif fa * fmid < 0
+            b = mid
+        else
+            a, fa = mid, fmid
+        end
+    end
+    return mid, iter_count
+end
+
+@testset "bisection" begin
+    @testset "typical cases" begin
+        x, _ = bisection(x -> cos(x) - x, 0, 1)
+        @test x ≈ 0.7390851332151607 atol = 1e-10
+        x, _ = bisection(x -> x^2 - 2, 0, 2)
+        @test x ≈ sqrt(2) atol = 1e-10
+        x, _ = bisection(x -> 1 - x, 0, 2)
+        @test x ≈ 1 atol = 1e-10
+    end
+    @testset "root at an endpoint" begin
+        @test bisection(x -> x, 0.0, 1.0)[1] == 0.0
+        @test bisection(x -> x - 1, 0.0, 1.0)[1] == 1.0
+    end
+    @testset "invalid inputs" begin
+        @test_throws ArgumentError bisection(x -> x^2 + 1, 0.0, 1.0)
+        @test_throws ArgumentError bisection(x -> x, 1.0, -1.0)
+    end
+end;
+```
+:::
+
+### Exercise 4 ⭐⭐: Some tests are missing
+
+The following function gives the honours associated with an exam grade:
+
+```julia
+"""
+    honours(grade)
+
+Return the honours associated with a `grade`.
+
+- Precondition: `0 ≤ grade ≤ 20`.
+- Postcondition: returns
+    - `"Excellent"` if `grade ≥ 16`,
+    - `"Very good"` if `14 ≤ grade < 16`,
+    - `"Good"` if `12 ≤ grade < 14`,
+    - `"Pass"` if `10 ≤ grade < 12`,
+    - `"Fail"` if `grade < 10`.
+- Throws a `DomainError` if the precondition is not satisfied.
+"""
+function honours(grade::Real)
+    if grade < 0
+        throw(DomainError(grade, "grade must be in [0, 20]"))
+    end
+    if grade >= 16
+        return "Excellent"
+    elseif grade > 14
+        return "Very good"
+    elseif grade >= 12
+        return "Good"
+    elseif grade >= 10
+        return "Pass"
+    else
+        return "Fail"
+    end
+end
+```
+
+A colleague has started to write the tests, and they all pass:
+
+```julia
+@testset "honours" begin
+    @test honours(17) == "Excellent"
+    @test honours(11) == "Pass"
+    @test honours(5) == "Fail"
+end
+```
+
+1. These tests are not sufficient: list the items of the contract which are **not** checked.
+2. Complete the test set. Remember to test the values **exactly at the boundaries**.
+3. Your new tests should reveal two bugs: fix the function.
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 4
+There are five honours and two kinds of invalid grades (too small and too large). For each threshold $s \in \{10, 12, 14, 16\}$, test the grade $s$ itself.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 4
+The first test set checks neither `"Very good"`, nor `"Good"`, nor any boundary, nor the invalid grades. The corrected function:
+
+```{julia}
+function honours(grade::Real)
+    if grade < 0 || grade > 20                      # bug 1: grade > 20 was accepted
+        throw(DomainError(grade, "grade must be in [0, 20]"))
+    end
+    if grade >= 16
+        return "Excellent"
+    elseif grade >= 14                              # bug 2: it was grade > 14
+        return "Very good"
+    elseif grade >= 12
+        return "Good"
+    elseif grade >= 10
+        return "Pass"
+    else
+        return "Fail"
+    end
+end
+
+@testset "honours" begin
+    @testset "one grade per honours" begin
+        @test honours(17) == "Excellent"
+        @test honours(15) == "Very good"
+        @test honours(13) == "Good"
+        @test honours(11) == "Pass"
+        @test honours(5) == "Fail"
+    end
+    @testset "boundaries" begin
+        @test honours(20) == "Excellent"
+        @test honours(16) == "Excellent"
+        @test honours(15.99) == "Very good"
+        @test honours(14) == "Very good"
+        @test honours(12) == "Good"
+        @test honours(10) == "Pass"
+        @test honours(9.99) == "Fail"
+        @test honours(0) == "Fail"
+    end
+    @testset "invalid grades" begin
+        @test_throws DomainError honours(-1)
+        @test_throws DomainError honours(20.5)
+    end
+end;
+```
+:::
+
+::: {.callout-tip collapse="true" icon=false}
+## To go further: what does the coverage say?
+Create a package `Grades` (see [Organising tests in a package](#organising-tests-in-a-package)) containing the **initial** (buggy) function `honours`, with the **initial** tests of your colleague in `test/runtests.jl`. Run the coverage with `LocalCoverage`.
+
+1. Which lines are not covered? Are the bugs on these lines?
+2. One of the two bugs cannot be detected by the coverage, even in theory. Which one, and why?
+
+**Answer.** The lines returning `"Very good"`, `"Good"` and throwing the `DomainError` are never executed: the coverage invites you to write tests for them. Testing `"Very good"` at the boundary `14` reveals the bug `grade > 14`. However, the missing condition `grade > 20` is *absent* from the code: there is no line to cover. Only the contract tells us that this case must be tested. This is why tests are written from the **contract**, and coverage is only used to check that no part of the code has been forgotten.
+:::

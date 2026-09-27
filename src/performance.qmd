@@ -279,3 +279,247 @@ From this analysis we conclude the following rule.
 The type of the output of a function should be inferrable from the type of the inputs.
 
 :::
+## Exercises
+
+### Exercise 1: Memory hierarchy
+
+1. Draw a schematic representing the relationship between the CPU, the registers, the caches, the RAM and the disk, as explained above. Briefly explain the data flow and why minimising the trips to the RAM is important for performance.
+2. Look for the approximate number of clock cycles needed to move data from the RAM to the CPU. Explain how this latency influences the way we write high-performance code in Julia.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 1
+The CPU only computes on values stored in its **registers**. When a value is needed, it is looked for in the L1 cache, then L2, then L3, then in the RAM, and finally on the disk. Each level is larger but slower than the previous one. Orders of magnitude on a recent processor:
+
+| Memory | Size | Latency (clock cycles) |
+|--------|------|------------------------|
+| Registers | a few hundred bytes | ~1 |
+| L1 cache | tens of kB | ~4 |
+| L2 cache | hundreds of kB to a few MB | ~10–15 |
+| L3 cache | several MB | ~40–60 |
+| RAM | several GB | ~200–300 |
+
+Data is moved from the RAM by blocks (*cache lines*, of 64 bytes). During a trip to the RAM, the CPU could have performed hundreds of operations. Hence, in Julia, we try to:
+
+- access memory **contiguously**, following the column-major order of arrays;
+- avoid unnecessary **allocations** (for instance by using in-place functions with a `!`);
+- write **type-stable** code, so that values are stored unboxed, directly in registers or in contiguous arrays.
+:::
+
+### Exercise 2: Decimal to binary
+
+1. Convert **by hand** the decimal numbers $13$, $25$ and $42$ to binary, with the following algorithm:
+    - divide the number by $2$ and write down the remainder;
+    - take the quotient and repeat until the quotient is $0$;
+    - the binary representation is the sequence of remainders read from **last to first**.
+
+    For instance, for $13$: $13 = 2 \times 6 + 1$, $6 = 2 \times 3 + 0$, $3 = 2 \times 1 + 1$, $1 = 2 \times 0 + 1$, so $13$ is written `1101` in binary.
+2. Check your results with `string(n, base=2)`, and look at the 64 bits of the integer with `bitstring(n)`.
+3. Write a function `to_binary(n)` which implements the algorithm for a non-negative integer `n` and returns a `String`. Use the operators `÷` and `%`.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 2
+By hand: $25$ gives the remainders $1, 0, 0, 1, 1$, so `11001`, and $42$ gives $0, 1, 0, 1, 0, 1$, so `101010`.
+
+```{julia}
+function to_binary(n::Integer)
+    n >= 0 || throw(DomainError(n, "n must be non-negative"))
+    n == 0 && return "0"
+    bits = ""
+    while n > 0
+        bits = string(n % 2) * bits  # the last remainder is written first
+        n = n ÷ 2
+    end
+    return bits
+end
+
+for n in (13, 25, 42)
+    println(n, " => ", to_binary(n), " (", string(n, base=2), ")")
+end
+bitstring(42)
+```
+:::
+
+### Exercise 3: Reading the generated code
+
+Consider the following function, which concatenates or adds its inputs depending on their types:
+
+```{julia}
+function combine_values(a, b)
+    if isa(a, String) && isa(b, String)
+        return a * b   # String concatenation
+    else
+        return a + b   # Addition for numbers
+    end
+end
+```
+
+Use the macro `@code_llvm` to inspect the code generated for the calls `combine_values(2, 3)`, `combine_values(1.5, 2.5)`, `combine_values(3, 4.5)` and `combine_values("foo", "bar")`. How does the generated code differ between these calls? Is the test `isa(a, String) && isa(b, String)` executed at runtime?
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 3
+Use `@code_llvm debuginfo=:none` to get a shorter output.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 3
+```{julia}
+@code_llvm debuginfo=:none combine_values(3, 4.5)
+```
+
+Julia compiles a **specialised** version of `combine_values` for each combination of input types. Since the types are known at compile time, the test `isa(a, String) && isa(b, String)` is evaluated by the compiler and **disappears** from the generated code: only one branch is kept.
+
+- For two `Int64`, the code is a single integer addition `add i64`.
+- For two `Float64`, it is a single floating-point addition `fadd double`.
+- For an `Int64` and a `Float64`, the integer is first converted (`sitofp`, *signed integer to floating point*): this is the **promotion** to `Float64`, then `fadd double` is applied.
+- For two `String`, the generated code calls the function of the Julia runtime which concatenates strings.
+:::
+
+### Exercise 4: Parametric types and promotion
+
+1. Define a parametric immutable struct `Wrapper{T}` with a single field `value` of type `T`.
+2. Write a function `add_wrappers(a::Wrapper, b::Wrapper)` which returns a new `Wrapper` whose value is the sum of the values of `a` and `b`. Check its type stability with `@code_warntype` and `@inferred` for two `Wrapper{Int}`, two `Wrapper{Float64}`, and a `Wrapper{Int}` with a `Wrapper{Float64}`.
+3. Now consider the function which returns the wrapper with the larger value:
+    ```julia
+    larger_wrapper(a::Wrapper, b::Wrapper) = a.value >= b.value ? a : b
+    ```
+    Is it type-stable when mixing a `Wrapper{Int}` and a `Wrapper{Float64}`? Modify it with the function `promote` so that it always returns a `Wrapper` of a single concrete type.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 4
+```{julia}
+struct Wrapper{T}
+    value::T
+end
+
+add_wrappers(a::Wrapper, b::Wrapper) = Wrapper(a.value + b.value)
+
+@inferred add_wrappers(Wrapper(1), Wrapper(2))
+@inferred add_wrappers(Wrapper(1.0), Wrapper(2.0))
+@inferred add_wrappers(Wrapper(1), Wrapper(2.5))
+```
+
+`add_wrappers` is type-stable in the three cases, even when mixing types: the addition `+` of an `Int` and a `Float64` already promotes its arguments and always returns a `Float64`.
+
+On the contrary, `larger_wrapper` returns **either** `a` **or** `b`, whose types differ, depending on the *values*:
+
+```{julia}
+larger_wrapper(a::Wrapper, b::Wrapper) = a.value >= b.value ? a : b
+@code_warntype larger_wrapper(Wrapper(1), Wrapper(2.5))
+```
+
+The return type is a `Union{Wrapper{Float64}, Wrapper{Int64}}`, and `@inferred` fails:
+
+```{julia}
+#| error: true
+@inferred larger_wrapper(Wrapper(1), Wrapper(2.5))
+```
+
+With `promote`, both values are converted to a common type before building the result:
+
+```{julia}
+function larger_wrapper(a::Wrapper, b::Wrapper)
+    x, y = promote(a.value, b.value)
+    return Wrapper(max(x, y))
+end
+
+@inferred larger_wrapper(Wrapper(1), Wrapper(2.5))
+```
+
+Parametric types keep the concrete type of the field in the type of the struct (`Wrapper{Float64}`), so the compiler knows it; `promote` ensures that the output type depends only on the input **types**, not on their values.
+:::
+
+### Exercise 5 ⭐⭐: Hunting type instabilities
+
+Each of the following functions returns a correct value, but is **not type-stable**:
+
+```julia
+function sum_positive(v)
+    s = 0
+    for x in v
+        if x > 0
+            s += x
+        end
+    end
+    return s
+end
+
+relu(x) = x > 0 ? x : 0
+
+scale = 2.0
+scaled_sum(v) = scale * sum(v)
+```
+
+1. For each function, use `@code_warntype` and `@inferred` on a `Float64` input (for instance `sum_positive([1.5, -2.0])`, `relu(-1.5)` and `scaled_sum([1.0, 2.0])`) and explain the origin of the instability.
+2. Fix each function so that it is type-stable, whatever the numerical type of its input.
+3. **Lock** your corrections with a test set (see [Testing your code](testing.qmd)): for the types `Int`, `Float32` and `Float64`, check with `@inferred` that the output type is inferred, and that the returned value is correct. If someone modifies the code later and breaks type stability, the tests will fail.
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 5
+The functions `zero(x)` and `zero(T)` return the zero of the type of `x` or of the type `T`, and `eltype(v)` returns the type of the elements of the vector `v`. For the third function, remember that the compiler cannot know the type of a non-constant global variable, which can be modified at any time.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 5
+```{julia}
+function sum_positive(v)
+    s = 0
+    for x in v
+        if x > 0
+            s += x
+        end
+    end
+    return s
+end
+
+relu(x) = x > 0 ? x : 0
+
+scale = 2.0
+scaled_sum(v) = scale * sum(v)
+
+for (func, arg) in ((sum_positive, [1.5, -2.0]), (relu, -1.5), (scaled_sum, [1.0, 2.0]))
+    try
+        @inferred func(arg)
+        println(func, ": type-stable")
+    catch e
+        println(func, ": ", sprint(showerror, e))
+    end
+end
+```
+
+The three causes of instability are:
+
+- `sum_positive`: `s` is initialised with the integer `0` and becomes a `Float64` after the first addition, so the output is an `Int64` (empty vector or no positive value) or a `Float64`;
+- `relu`: the two branches return values of different types, `x` (a `Float64`) or `0` (an `Int64`);
+- `scaled_sum`: `scale` is a non-constant global variable, whose type may change at any time, so the compiler infers `Any`.
+
+Corrected versions:
+
+```{julia}
+function sum_positive(v)
+    s = zero(eltype(v))   # the zero of the type of the elements
+    for x in v
+        if x > 0
+            s += x
+        end
+    end
+    return s
+end
+
+relu(x) = x > 0 ? x : zero(x)
+
+scaled_sum(v, scale) = scale * sum(v)  # the scale is now an argument
+
+const SCALE = 2.0                      # or a constant global variable
+scaled_sum_const(v) = SCALE * sum(v)
+
+@testset "type stability" begin
+    @testset "T = $T" for T in (Int, Float32, Float64)
+        @test @inferred(sum_positive(T[1, -2, 3])) == 4
+        @test @inferred(relu(T(-1))) == 0
+        @test @inferred(relu(T(2))) == 2
+        @test @inferred(scaled_sum(T[1, 2], 2.0)) == 6
+        @test @inferred(scaled_sum_const(T[1, 2])) == 6
+    end
+end;
+```
+:::

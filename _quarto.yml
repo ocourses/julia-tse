@@ -90,6 +90,8 @@ website:
             href: src/syntax.qmd
           - text: Structure your code
             href: src/structure.qmd
+          - text: Testing your code
+            href: src/testing.qmd
           - text: Types
             href: src/types.qmd
           - text: Type stability for performance

@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Testing your code – Julia course</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../src/types.html" rel="next">
+<link href="../src/structure.html" rel="prev">
+<link href="../assets/images/logo-julia.svg" rel="icon" type="image/svg+xml">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-01c78b5cd655e4cd89133cf59d535862.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b8a408f8191a58825ae9d88cc0bba2d4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/quarto-auto-dark-mode-1.0.0/auto-dark-mode.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "?",
+    "H"
+  ],
+  "show-item-context": true,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script>
+
+    // fonction pour cacher les menus de navigation
+    function hideNavbar() {
+        // Sélection des éléments par leur ID
+        const sidebar = document.getElementById('quarto-sidebar');
+        const marginSidebar = document.getElementById('quarto-margin-sidebar');
+        const documentContent = document.getElementById('quarto-document-content');
+
+        // Cacher les éléments
+        sidebar.style.visibility = 'hidden';
+        marginSidebar.style.visibility = 'hidden';
+        documentContent.classList.add('column-page');
+
+        //
+        const sectionElements = document.getElementsByTagName("section");
+        const sectionPageColumn = Array.prototype.filter.call(
+            sectionElements,
+            (element) => element.classList.contains("page-columns") && element.classList.contains("page-full"),
+        );
+        for (const element of sectionPageColumn) {
+            element.classList.remove("page-columns");
+            element.classList.remove("page-full");
+            element.classList.add("page-columns-save");
+        }
+    }
+
+    // fonction pour rendre visibles les menus de navigation
+    function showNavbar() {
+        // Sélection des éléments par leur ID
+        const sidebar = document.getElementById('quarto-sidebar');
+        const marginSidebar = document.getElementById('quarto-margin-sidebar');
+        const documentContent = document.getElementById('quarto-document-content');
+
+        // Rendre visibles les éléments
+        sidebar.style.visibility = 'visible';
+        marginSidebar.style.visibility = 'visible';
+        documentContent.classList.remove('column-page');
+
+        //
+        var sectionPageColumn = document.getElementsByClassName("page-columns-save");
+        for (const element of sectionPageColumn) {
+            element.classList.remove("page-columns-save");
+            element.classList.add("page-columns");
+            element.classList.add("page-full");
+        }
+    }
+
+    // fonction pour basculer la visibilité des menus de navigation
+    function toggleHideNavbar() {
+        // Sélection des éléments par leur ID
+        const sidebar = document.getElementById('quarto-sidebar');
+        const marginSidebar = document.getElementById('quarto-margin-sidebar');
+
+        // Si le menu de navigation est visible, le cacher
+        if (sidebar.style.visibility === 'visible') {
+            hideNavbar();
+        } else {
+            showNavbar();
+        }
+    }
+
+    // fonction pour ajouter des écouteurs d'événements pour basculer la visibilité des menus de navigation
+    function addEventListenerToToggleHideNavbar() {
+
+        // Ajout aux objets de la classe 'quarto-reader-toggle' d'un écouteur d'événements pour le clic
+        document.querySelectorAll('.quarto-reader-toggle').forEach(function(element) {
+            element.addEventListener('click', function() {
+                toggleHideNavbar();
+                return false;
+            });
+        });
+
+        // Ajout d'un écouteur d'événements pour la touche 'r'
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'l') {
+                window.quartoToggleReader();
+                toggleHideNavbar();
+                return false;
+            }
+        });
+    }
+
+    // fonction pour cacher les menus de navigation lors du chargement de la page si 
+    // la classe 'quarto-reader-toggle' est accompagnée de la classe 'reader'
+    // (c'est-à-dire si le mode de lecture est activé)
+    // sinon, on affiche les menus de navigation
+    function hideNavbarIfReader() {
+        if (document.querySelector('.quarto-reader-toggle.reader')) {
+            hideNavbar();
+        } else {
+            showNavbar();
+        }
+    }
+
+    // Ajout d'un écouteur d'événements pour le chargement de la page
+    if (
+        document.readyState === "complete" ||
+        document.readyState === "interactive"
+    ) {
+        // call on next available tick
+        setTimeout(addEventListenerToToggleHideNavbar, 1);
+        setTimeout(hideNavbarIfReader, 1);
+    } else {
+        document.addEventListener("DOMContentLoaded", addEventListenerToToggleHideNavbar);
+        document.addEventListener("DOMContentLoaded", hideNavbarIfReader);
+    }
+
+</script>
+<script src="https://unpkg.com/freezeframe/dist/freezeframe.min.js"></script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../assets/css/styles.css">
+<meta property="og:title" content="Testing your code – Julia course">
+<meta property="og:description" content="">
+<meta property="og:image" content="https://ocourses.github.io/julia-tse/src/assets/images/logo-julia.png">
+<meta property="og:site_name" content="Julia course">
+<meta name="twitter:title" content="Testing your code – Julia course">
+<meta name="twitter:description" content="">
+<meta name="twitter:image" content="https://ocourses.github.io/julia-tse/src/assets/images/logo-julia.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/images/logo-julia.svg" alt="Julia course." class="navbar-logo">
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../src/index.html"> 
+<span class="menu-text">Content of the course</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/ocourses/julia-tse" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../src/syntax.html">Julia language</a></li><li class="breadcrumb-item"><a href="../src/testing.html">Testing your code</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/why_julia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Why Julia?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/getting_started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/developer_setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Developer set up</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/foretaste_of_julia_code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foretaste of Julia Code</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Julia language</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/syntax.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core Syntax and Operations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/structure.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Structure your code</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/testing.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Testing your code</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Types</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/performance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Type stability for performance</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/eval.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Auto-evaluation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Applications</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/root_finding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Root-Finding Methods</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../src/machine_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Machine Learning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-test-standard-library" id="toc-the-test-standard-library" class="nav-link active" data-scroll-target="#the-test-standard-library">The <code>Test</code> standard library</a>
+  <ul class="collapse">
+  <li><a href="#the-test-macro" id="toc-the-test-macro" class="nav-link" data-scroll-target="#the-test-macro">The <code>@test</code> macro</a></li>
+  <li><a href="#comparing-floating-point-numbers" id="toc-comparing-floating-point-numbers" class="nav-link" data-scroll-target="#comparing-floating-point-numbers">Comparing floating-point numbers</a></li>
+  <li><a href="#testing-errors-with-test_throws" id="toc-testing-errors-with-test_throws" class="nav-link" data-scroll-target="#testing-errors-with-test_throws">Testing errors with <code>@test_throws</code></a></li>
+  <li><a href="#grouping-tests-with-testset" id="toc-grouping-tests-with-testset" class="nav-link" data-scroll-target="#grouping-tests-with-testset">Grouping tests with <code>@testset</code></a></li>
+  <li><a href="#other-useful-macros" id="toc-other-useful-macros" class="nav-link" data-scroll-target="#other-useful-macros">Other useful macros</a></li>
+  </ul></li>
+  <li><a href="#what-should-i-test-the-contract-of-a-function" id="toc-what-should-i-test-the-contract-of-a-function" class="nav-link" data-scroll-target="#what-should-i-test-the-contract-of-a-function">What should I test? The contract of a function</a></li>
+  <li><a href="#organising-tests-in-a-package" id="toc-organising-tests-in-a-package" class="nav-link" data-scroll-target="#organising-tests-in-a-package">Organising tests in a package</a>
+  <ul class="collapse">
+  <li><a href="#running-the-tests" id="toc-running-the-tests" class="nav-link" data-scroll-target="#running-the-tests">Running the tests</a></li>
+  <li><a href="#code-coverage" id="toc-code-coverage" class="nav-link" data-scroll-target="#code-coverage">Code coverage</a></li>
+  </ul></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a>
+  <ul class="collapse">
+  <li><a href="#exercise-1-your-first-test-set" id="toc-exercise-1-your-first-test-set" class="nav-link" data-scroll-target="#exercise-1-your-first-test-set">Exercise 1 ⭐: Your first test set</a></li>
+  <li><a href="#exercise-2-catch-the-bugs-with-your-tests" id="toc-exercise-2-catch-the-bugs-with-your-tests" class="nav-link" data-scroll-target="#exercise-2-catch-the-bugs-with-your-tests">Exercise 2 ⭐⭐: Catch the bugs with your tests</a></li>
+  <li><a href="#exercise-3-the-tests-are-red-fix-the-code" id="toc-exercise-3-the-tests-are-red-fix-the-code" class="nav-link" data-scroll-target="#exercise-3-the-tests-are-red-fix-the-code">Exercise 3 ⭐⭐: The tests are red, fix the code</a></li>
+  <li><a href="#exercise-4-some-tests-are-missing" id="toc-exercise-4-some-tests-are-missing" class="nav-link" data-scroll-target="#exercise-4-some-tests-are-missing">Exercise 4 ⭐⭐: Some tests are missing</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ocourses/julia-tse/edit/main/src/testing.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/ocourses/julia-tse/blob/main/src/testing.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/ocourses/julia-tse/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../src/syntax.html">Julia language</a></li><li class="breadcrumb-item"><a href="../src/testing.html">Testing your code</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Testing your code</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Up to now, we have checked our functions by calling them and looking at what is printed: <code>println(convert_temperature(100, unit="C")) # Outputs: 212.0</code>. This is already a test, but a fragile one: <em>you</em> have to read the output, compare it with the expected value, and redo it by hand every time the code changes. In this page, you will learn to write <strong>automated tests</strong>: small pieces of code that check that your functions behave as expected, and that you can run again in one command after each modification.</p>
+<p>Tests are useful to:</p>
+<ul>
+<li><strong>find bugs</strong> early, while the code is still fresh in your mind;</li>
+<li><strong>modify code without fear</strong>: if you break something, a test will tell you;</li>
+<li><strong>document</strong> how a function is supposed to be used, with concrete examples.</li>
+</ul>
+<section id="the-test-standard-library" class="level2">
+<h2 class="anchored" data-anchor-id="the-test-standard-library">The <code>Test</code> standard library</h2>
+<p>Julia ships with the <a href="https://docs.julialang.org/en/v1/stdlib/Test/"><code>Test</code></a> standard library: there is nothing to install, just load it.</p>
+<div id="8dc8fac0" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Test</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="the-test-macro" class="level3">
+<h3 class="anchored" data-anchor-id="the-test-macro">The <code>@test</code> macro</h3>
+<p>The macro <code>@test</code> evaluates an expression that must return <code>true</code> or <code>false</code>. If the result is <code>true</code>, the test <strong>passes</strong>.</p>
+<div id="f4cad707" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@test</span> <span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span> <span class="op">==</span> <span class="fl">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="99">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-green-fg ansi-bold">Test Passed</span></pre>
+</div>
+</div>
+</div>
+<p>If the result is <code>false</code>, the test <strong>fails</strong> and Julia reports both sides of the comparison, which helps to understand what went wrong.</p>
+<div id="12746ea8" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@test</span> <span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span> <span class="op">==</span> <span class="fl">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Failed at In[100]:2
+  Expression: 1 + 1 == 3
+   Evaluated: 2 == 3
+</code></pre>
+</div>
+</div>
+</section>
+<section id="comparing-floating-point-numbers" class="level3">
+<h3 class="anchored" data-anchor-id="comparing-floating-point-numbers">Comparing floating-point numbers</h3>
+<p>Floating-point numbers are stored with a finite precision (see the page on <a href="../src/types.html">types</a>), so exact comparisons can fail even when the mathematics is correct:</p>
+<div id="2e817d29" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@test</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">==</span> <span class="fl">0.3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Failed at In[101]:2
+  Expression: 0.1 + 0.2 == 0.3
+   Evaluated: 0.30000000000000004 == 0.3
+</code></pre>
+</div>
+</div>
+<p>To compare floating-point numbers, use the approximate comparison <code>≈</code> (type <code>\approx</code> then <code>Tab</code>), which is the function <code>isapprox</code>. You can control the tolerance with the keyword arguments <code>atol</code> (absolute tolerance) and <code>rtol</code> (relative tolerance).</p>
+<div id="28b5499c" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@test</span> <span class="fl">0.1</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">≈</span> <span class="fl">0.3</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="pp">@test</span> <span class="cn">π</span> <span class="op">≈</span> <span class="fl">3.14</span> atol <span class="op">=</span> <span class="fl">1e-2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="102">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-green-fg ansi-bold">Test Passed</span></pre>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>By default, <code>≈</code> uses only a relative tolerance. Therefore <code>x ≈ 0</code> is <code>true</code> only if <code>x == 0</code>! When the expected value is zero, always give an absolute tolerance: <code>@test x ≈ 0 atol = 1e-10</code>.</p>
+</div>
+</div>
+</section>
+<section id="testing-errors-with-test_throws" class="level3">
+<h3 class="anchored" data-anchor-id="testing-errors-with-test_throws">Testing errors with <code>@test_throws</code></h3>
+<p>A function must also behave correctly when it receives invalid inputs. Recall the function <code>convert_temperature</code> from the page <a href="../src/structure.html">Structure your code</a>, which throws an <code>ArgumentError</code> for an unknown unit:</p>
+<div id="1b73013a" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">convert_temperature</span>(value; unit)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> unit <span class="op">==</span> <span class="st">"C"</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> value <span class="op">*</span> <span class="fl">9</span><span class="op">/</span><span class="fl">5</span> <span class="op">+</span> <span class="fl">32</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elseif</span> unit <span class="op">==</span> <span class="st">"F"</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> (value <span class="op">-</span> <span class="fl">32</span>) <span class="op">*</span> <span class="fl">5</span><span class="op">/</span><span class="fl">9</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">throw</span>(<span class="fu">ArgumentError</span>(<span class="st">"Unit must be 'C' or 'F'"</span>))</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="103">
+<pre><code>convert_temperature (generic function with 1 method)</code></pre>
+</div>
+</div>
+<p>The macro <code>@test_throws</code> checks that an expression throws an exception of the given type:</p>
+<div id="c3f323fb" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@test_throws</span> <span class="dt">ArgumentError</span> <span class="fu">convert_temperature</span>(<span class="fl">10</span>, unit<span class="op">=</span><span class="st">"K"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="104">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-green-fg ansi-bold">Test Passed</span>
+      Thrown: ArgumentError</pre>
+</div>
+</div>
+</div>
+</section>
+<section id="grouping-tests-with-testset" class="level3">
+<h3 class="anchored" data-anchor-id="grouping-tests-with-testset">Grouping tests with <code>@testset</code></h3>
+<p>Tests are grouped into <strong>test sets</strong>. A test set runs all its tests, even if some of them fail, and prints a summary at the end. Test sets can be nested.</p>
+<div id="2c459185" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"convert_temperature"</span> <span class="cf">begin</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"Celsius to Fahrenheit"</span> <span class="cf">begin</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="fl">100</span>, unit<span class="op">=</span><span class="st">"C"</span>) <span class="op">≈</span> <span class="fl">212</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="fl">0</span>, unit<span class="op">=</span><span class="st">"C"</span>) <span class="op">≈</span> <span class="fl">32</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"Fahrenheit to Celsius"</span> <span class="cf">begin</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="fl">32</span>, unit<span class="op">=</span><span class="st">"F"</span>) <span class="op">≈</span> <span class="fl">0</span> atol <span class="op">=</span> <span class="fl">1e-12</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"invalid unit"</span> <span class="cf">begin</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test_throws</span> <span class="dt">ArgumentError</span> <span class="fu">convert_temperature</span>(<span class="fl">10</span>, unit<span class="op">=</span><span class="st">"K"</span>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Summary:       | Pass  Total  Time
+convert_temperature |    4      4  0.0s</code></pre>
+</div>
+</div>
+<p>When at least one test fails, the summary shows where, and an error is raised at the end of the test set:</p>
+<div id="8f6da5e1" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"a test set with a failure"</span> <span class="cf">begin</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@test</span> <span class="fl">2</span> <span class="op">*</span> <span class="fl">3</span> <span class="op">==</span> <span class="fl">6</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@test</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">==</span> <span class="fl">6</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@test</span> <span class="fl">2</span> <span class="op">-</span> <span class="fl">3</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>a test set with a failure: Test Failed at In[106]:4
+  Expression: 2 + 3 == 6
+   Evaluated: 5 == 6
+
+Stacktrace:
+ [1] top-level scope
+   @ In[106]:3
+ [2] macro expansion
+   @ ~/.julia/juliaup/julia-1.12.6+0.aarch64.apple.darwin14/Julia-1.12.app/Contents/Resources/julia/share/julia/stdlib/v1.12/Test/src/Test.jl:1777 [inlined]
+ [3] macro expansion
+   @ In[106]:4 [inlined]
+ [4] macro expansion
+   @ ~/.julia/juliaup/julia-1.12.6+0.aarch64.apple.darwin14/Julia-1.12.app/Contents/Resources/julia/share/julia/stdlib/v1.12/Test/src/Test.jl:680 [inlined]
+Test Summary:             | Pass  Fail  Total  Time
+a test set with a failure |    2     1      3  0.0s
+RNG of the outermost testset: Random.Xoshiro(0x1d31c4f49ce10af2, 0xd8bfdca34d024beb, 0xd1c5d2f394f743fa, 0x280b764cc2869d0b, 0xd89eb5b9be6a8de2)</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Test sets and loops
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A <code>@testset</code> can be combined with a <code>for</code> loop to run the same tests on several inputs. Each iteration is reported separately.</p>
+<div id="e928dee9" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"round trip for T = </span><span class="sc">$</span>T<span class="st">"</span> <span class="cf">for</span> T <span class="kw">in</span> (<span class="dt">Float32</span>, <span class="dt">Float64</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="fu">T</span>(<span class="fl">37</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="fu">convert_temperature</span>(x, unit<span class="op">=</span><span class="st">"C"</span>), unit<span class="op">=</span><span class="st">"F"</span>) <span class="op">≈</span> x</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Summary:              | Pass  Total  Time
+round trip for T = Float32 |    1      1  0.0s
+Test Summary:              | Pass  Total  Time
+round trip for T = Float64 |    1      1  0.0s</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="other-useful-macros" class="level3">
+<h3 class="anchored" data-anchor-id="other-useful-macros">Other useful macros</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Macro</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>@test ex</code></td>
+<td><code>ex</code> must return <code>true</code>.</td>
+</tr>
+<tr class="even">
+<td><code>@test a ≈ b atol=...</code></td>
+<td>approximate comparison.</td>
+</tr>
+<tr class="odd">
+<td><code>@test_throws T ex</code></td>
+<td><code>ex</code> must throw an exception of type <code>T</code>.</td>
+</tr>
+<tr class="even">
+<td><code>@testset "name" begin ... end</code></td>
+<td>groups tests and prints a summary.</td>
+</tr>
+<tr class="odd">
+<td><code>@test_broken ex</code></td>
+<td>documents a <em>known</em> bug: the test is expected to fail.</td>
+</tr>
+<tr class="even">
+<td><code>@inferred f(x)</code></td>
+<td>checks that the return type of <code>f(x)</code> is inferred by the compiler (see <a href="../src/performance.html">type stability</a>).</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="what-should-i-test-the-contract-of-a-function" class="level2">
+<h2 class="anchored" data-anchor-id="what-should-i-test-the-contract-of-a-function">What should I test? The contract of a function</h2>
+<p>Before writing tests, you need to know precisely <strong>what the function is supposed to do</strong>. This specification is called the <strong>contract</strong> of the function, and the right place to write it is the <a href="https://docs.julialang.org/en/v1/manual/documentation/">docstring</a>, just above the function. A contract states:</p>
+<ul>
+<li>the <strong>preconditions</strong>: what the inputs must satisfy;</li>
+<li>the <strong>postconditions</strong>: what the function returns (or modifies) when the preconditions hold;</li>
+<li>what happens when the preconditions are <strong>not</strong> satisfied (typically, which error is thrown).</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="st">    my_mean(v)</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="st">Return the arithmetic mean of the vector `v`.</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="st">- Precondition: `v` is a non-empty vector of real numbers.</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="st">- Postcondition: returns `sum(v) / length(v)`; `v` is not modified.</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="st">- Throws an `ArgumentError` if `v` is empty.</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Once the contract is written, a good test suite covers:</p>
+<ol type="1">
+<li><strong>typical cases</strong>: a few “normal” inputs for which you know the answer (computed by hand);</li>
+<li><strong>edge cases</strong>: the smallest inputs (empty vector, one element), the values <em>exactly</em> at a boundary (if a condition reads <code>x &gt;= 10</code>, test <code>9</code>, <code>10</code> and <code>11</code>), zeros, negative numbers…;</li>
+<li><strong>invalid inputs</strong>: one <code>@test_throws</code> per error described in the contract;</li>
+<li><strong>properties</strong>: relations that must always hold, even if you do not know the exact result (a converted temperature converted back gives the initial value, the output of a sort is sorted, the input is not modified…).</li>
+</ol>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A test that is never red is useless. When you write a test, check that it is able to fail: temporarily break the code and verify that the test detects it.</p>
+</div>
+</div>
+</section>
+<section id="organising-tests-in-a-package" class="level2">
+<h2 class="anchored" data-anchor-id="organising-tests-in-a-package">Organising tests in a package</h2>
+<p>In a notebook or in the REPL, you can write tests anywhere. In a real project, the code lives in a <strong>package</strong> and the tests in a separate folder, so that anyone can run them with a single command. Creating a package takes one line in the package mode of the REPL (see <a href="../src/developer_setup.html">Developer set up</a>):</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>] generate MyStats</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then add the folder <code>test</code> with a file <code>runtests.jl</code>, so that your project looks like this:</p>
+<pre><code>MyStats/
+├── Project.toml
+├── src/
+│   └── MyStats.jl      # the code: module MyStats ... end
+└── test/
+    └── runtests.jl     # the tests</code></pre>
+<p>The file <code>src/MyStats.jl</code> contains the module (see <a href="../src/structure.html#modules">Modules</a>):</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> MyStats</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="kw">export</span> my_mean</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="st">    my_mean(v)</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="st">Return the arithmetic mean of the non-empty vector `v`.</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="st">Throw an `ArgumentError` if `v` is empty.</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">my_mean</span>(v)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="fu">isempty</span>(v)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">throw</span>(<span class="fu">ArgumentError</span>(<span class="st">"v must be non-empty"</span>))</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">sum</span>(v) <span class="op">/</span> <span class="fu">length</span>(v)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The file <code>test/runtests.jl</code> loads the package and runs the tests:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">MyStats</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Test</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"MyStats"</span> <span class="cf">begin</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@test</span> <span class="fu">my_mean</span>([<span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>]) <span class="op">==</span> <span class="fl">2</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@test</span> <span class="fu">my_mean</span>([<span class="fl">1.0</span>, <span class="fl">2.0</span>]) <span class="op">≈</span> <span class="fl">1.5</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Finally, declare <code>Test</code> as a dependency used <em>only for testing</em> by adding these lines at the end of <code>Project.toml</code>:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[extras]</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Test</span> <span class="op">=</span> <span class="st">"8dfed614-e22c-5e08-85e1-65c5234f0b40"</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="kw">[targets]</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="dt">test</span> <span class="op">=</span> <span class="op">[</span><span class="st">"Test"</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="running-the-tests" class="level3">
+<h3 class="anchored" data-anchor-id="running-the-tests">Running the tests</h3>
+<p>From the folder <code>MyStats</code>, start Julia, activate the package and run its tests:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>] activate .</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>] test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>     Testing Running tests...
+Test Summary: | Pass  Total  Time
+MyStats       |    2      2  0.0s
+     Testing MyStats tests passed</code></pre>
+</section>
+<section id="code-coverage" class="level3">
+<h3 class="anchored" data-anchor-id="code-coverage">Code coverage</h3>
+<p>All tests pass… but is all the code tested? The <strong>code coverage</strong> measures which lines of your code have been executed by the tests. The package <a href="https://github.com/JuliaCI/LocalCoverage.jl">LocalCoverage.jl</a> runs the tests and prints a report. Install it once in your <em>global</em> environment (not in the package):</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>] activate</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>] add LocalCoverage</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then, from the folder containing <code>MyStats</code>:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">LocalCoverage</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>cov <span class="op">=</span> <span class="fu">generate_coverage</span>(<span class="st">"MyStats"</span>)               <span class="co"># runs the tests with coverage</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(<span class="fu">IOContext</span>(<span class="cn">stdout</span>, <span class="op">:</span>print_gaps <span class="op">=&gt;</span> <span class="cn">true</span>), cov) <span class="co"># also print the missed lines</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>┌────────────────┬───────┬─────┬──────┬─────┬──────┐
+│ Filename       │ Lines │ Hit │ Miss │   % │ Gaps │
+├────────────────┼───────┼─────┼──────┼─────┼──────┤
+│ src/MyStats.jl │     4 │   3 │    1 │ 75% │ 13   │
+├────────────────┼───────┼─────┼──────┼─────┼──────┤
+│ TOTAL          │     4 │   3 │    1 │ 75% │      │
+└────────────────┴───────┴─────┴──────┴─────┴──────┘</code></pre>
+<p>Line 13, <code>throw(ArgumentError(...))</code>, is never executed: we forgot to test the empty vector. Adding <code>@test_throws ArgumentError my_mean(Int[])</code> to the tests brings the coverage to 100%.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Coverage is a tool, not a goal
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A line that is <strong>executed</strong> is not necessarily <strong>verified</strong>: <code>my_mean([1, 2, 3])</code> executes every line of a wrong implementation as well. Moreover, coverage cannot see code that is <em>missing</em> (a forgotten <code>if</code>). A coverage of 100% does not mean that the code is correct; a low coverage, however, tells you for sure that some parts of the code are not tested.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the package directory, <code>] test</code> can also be run from a terminal with <code>julia --project -e 'using Pkg; Pkg.test()'</code>. This is what continuous integration services (for instance GitHub Actions) do after each modification of the code.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<p>The exercises are ranked by difficulty: ⭐ for getting started, ⭐⭐ for more involved ones. For each exercise, work in a script or in the REPL, after <code>using Test</code>.</p>
+<section id="exercise-1-your-first-test-set" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-1-your-first-test-set">Exercise 1 ⭐: Your first test set</h3>
+<p>Consider the function <code>convert_temperature</code> defined above.</p>
+<ol type="1">
+<li>Write a test set <code>"convert_temperature"</code> containing at least:
+<ul>
+<li>two typical conversions from Celsius to Fahrenheit and two from Fahrenheit to Celsius (compute the expected values by hand);</li>
+<li>the particular value <span class="math inline">-40</span>, which is the same in both units;</li>
+<li>a test checking that an invalid unit throws an <code>ArgumentError</code>.</li>
+</ul></li>
+<li>Add a <strong>property</strong> test: for several values <code>x</code> (use a <code>for</code> loop), converting <code>x</code> from Celsius to Fahrenheit and back gives <code>x</code>.</li>
+<li>Check that your tests are able to fail: replace <code>9/5</code> by <code>9/4</code> in the function, run the tests again and look at the report. Do not forget to restore the function!</li>
+</ol>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint for Exercise 1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Remember to use <code>≈</code> and not <code>==</code> when comparing floating-point numbers. When the expected value is <code>0</code>, you need an absolute tolerance <code>atol</code>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Correction of Exercise 1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div id="5ac5d213" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"convert_temperature"</span> <span class="cf">begin</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"Celsius to Fahrenheit"</span> <span class="cf">begin</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="fl">0</span>, unit<span class="op">=</span><span class="st">"C"</span>) <span class="op">≈</span> <span class="fl">32</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="fl">100</span>, unit<span class="op">=</span><span class="st">"C"</span>) <span class="op">≈</span> <span class="fl">212</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"Fahrenheit to Celsius"</span> <span class="cf">begin</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="fl">212</span>, unit<span class="op">=</span><span class="st">"F"</span>) <span class="op">≈</span> <span class="fl">100</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="fl">32</span>, unit<span class="op">=</span><span class="st">"F"</span>) <span class="op">≈</span> <span class="fl">0</span> atol <span class="op">=</span> <span class="fl">1e-12</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"-40 is the same in both units"</span> <span class="cf">begin</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="op">-</span><span class="fl">40</span>, unit<span class="op">=</span><span class="st">"C"</span>) <span class="op">≈</span> <span class="op">-</span><span class="fl">40</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="op">-</span><span class="fl">40</span>, unit<span class="op">=</span><span class="st">"F"</span>) <span class="op">≈</span> <span class="op">-</span><span class="fl">40</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"invalid unit"</span> <span class="cf">begin</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test_throws</span> <span class="dt">ArgumentError</span> <span class="fu">convert_temperature</span>(<span class="fl">10</span>, unit<span class="op">=</span><span class="st">"K"</span>)</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test_throws</span> <span class="dt">ArgumentError</span> <span class="fu">convert_temperature</span>(<span class="fl">10</span>, unit<span class="op">=</span><span class="st">"c"</span>) <span class="co"># case matters</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"round trip"</span> <span class="cf">begin</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> x <span class="kw">in</span> (<span class="op">-</span><span class="fl">273.15</span>, <span class="op">-</span><span class="fl">10.5</span>, <span class="fl">0.0</span>, <span class="fl">37.2</span>, <span class="fl">1000.0</span>)</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>            <span class="pp">@test</span> <span class="fu">convert_temperature</span>(<span class="fu">convert_temperature</span>(x, unit<span class="op">=</span><span class="st">"C"</span>), unit<span class="op">=</span><span class="st">"F"</span>) <span class="op">≈</span> x</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Summary:       | Pass  Total  Time
+convert_temperature |   13     13  0.0s</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2-catch-the-bugs-with-your-tests" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-2-catch-the-bugs-with-your-tests">Exercise 2 ⭐⭐: Catch the bugs with your tests</h3>
+<p>We want a function computing the median of a vector. Here is its contract:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="st">    median(v)</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="st">Return the median of the vector `v`.</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="st">- Precondition: `v` is a non-empty vector of real numbers (not necessarily sorted).</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="st">- Postcondition: if `length(v)` is odd, returns the middle value of the sorted vector;</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="st">  if `length(v)` is even, returns the mean of the two middle values of the sorted vector.</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="st">  The vector `v` is not modified.</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="st">- Throws an `ArgumentError` if `v` is empty.</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Six students have written an implementation, named <code>median_1</code>, …, <code>median_6</code>: only <strong>one</strong> of them respects the contract.</p>
+<ol type="1">
+<li><strong>Without reading the implementations</strong>, write a function <code>test_median(median)</code> which takes an implementation as argument and runs a <code>@testset</code> checking the contract.</li>
+<li>Run <code>test_median</code> on the six implementations given below. A good test suite must <strong>fail</strong> for the five wrong implementations and <strong>pass</strong> for the correct one. How many bugs did you catch?</li>
+<li>If some wrong implementations pass your tests, read their code, find the bug, and add the missing tests.</li>
+</ol>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The six implementations (to copy in your script)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div id="b895bb83" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">median_1</span>(v)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">isempty</span>(v) <span class="op">&amp;&amp;</span> <span class="fu">throw</span>(<span class="fu">ArgumentError</span>(<span class="st">"v must be non-empty"</span>))</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fu">sort!</span>(v)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="fu">length</span>(s)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">isodd</span>(n) ? s[(n <span class="op">+</span> <span class="fl">1</span>) <span class="op">÷</span> <span class="fl">2</span>] <span class="op">:</span> (s[n <span class="op">÷</span> <span class="fl">2</span>] <span class="op">+</span> s[n <span class="op">÷</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span>]) <span class="op">/</span> <span class="fl">2</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">median_2</span>(v)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">isempty</span>(v) <span class="op">&amp;&amp;</span> <span class="fu">throw</span>(<span class="fu">ArgumentError</span>(<span class="st">"v must be non-empty"</span>))</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> v</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="fu">length</span>(s)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">isodd</span>(n) ? s[(n <span class="op">+</span> <span class="fl">1</span>) <span class="op">÷</span> <span class="fl">2</span>] <span class="op">:</span> (s[n <span class="op">÷</span> <span class="fl">2</span>] <span class="op">+</span> s[n <span class="op">÷</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span>]) <span class="op">/</span> <span class="fl">2</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">median_3</span>(v)</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">isempty</span>(v) <span class="op">&amp;&amp;</span> <span class="fu">throw</span>(<span class="fu">ArgumentError</span>(<span class="st">"v must be non-empty"</span>))</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fu">sort</span>(v)</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="fu">length</span>(s)</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">isodd</span>(n) ? s[(n <span class="op">+</span> <span class="fl">1</span>) <span class="op">÷</span> <span class="fl">2</span>] <span class="op">:</span> s[n <span class="op">÷</span> <span class="fl">2</span>]</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">median_4</span>(v)</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">isempty</span>(v) <span class="op">&amp;&amp;</span> <span class="fu">throw</span>(<span class="fu">ArgumentError</span>(<span class="st">"v must be non-empty"</span>))</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fu">sort</span>(v)</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="fu">length</span>(s)</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">isodd</span>(n) ? s[(n <span class="op">+</span> <span class="fl">1</span>) <span class="op">÷</span> <span class="fl">2</span>] <span class="op">:</span> (s[n <span class="op">÷</span> <span class="fl">2</span>] <span class="op">+</span> s[n <span class="op">÷</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span>]) <span class="op">/</span> <span class="fl">2</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">median_5</span>(v)</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fu">sort</span>(v)</span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="fu">length</span>(s)</span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">isodd</span>(n) ? s[(n <span class="op">+</span> <span class="fl">1</span>) <span class="op">÷</span> <span class="fl">2</span>] <span class="op">:</span> (s[n <span class="op">÷</span> <span class="fl">2</span>] <span class="op">+</span> s[n <span class="op">÷</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span>]) <span class="op">/</span> <span class="fl">2</span></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">median_6</span>(v)</span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">isempty</span>(v) <span class="op">&amp;&amp;</span> <span class="fu">throw</span>(<span class="fu">ArgumentError</span>(<span class="st">"v must be non-empty"</span>))</span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fu">sort</span>(v)</span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="fu">length</span>(s)</span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">isodd</span>(n) ? s[(n <span class="op">+</span> <span class="fl">1</span>) <span class="op">÷</span> <span class="fl">2</span>] <span class="op">:</span> (s[n <span class="op">÷</span> <span class="fl">2</span>] <span class="op">+</span> s[n <span class="op">÷</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span>]) <span class="op">÷</span> <span class="fl">2</span></span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="109">
+<pre><code>median_6 (generic function with 1 method)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint for Exercise 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>In Julia, functions are values: they can be passed as arguments to other functions. Inside <code>test_median</code>, call <code>median(...)</code> as usual, it refers to the argument. Then, for each item of the contract, ask yourself: <em>which input would reveal that this item is not respected?</em> Think about vectors of odd <strong>and</strong> even length, <strong>unsorted</strong> vectors, integer inputs whose median is not an integer, and the empty vector.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Correction of Exercise 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Each test set targets one item of the contract:</p>
+<div id="aeba248e" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">test_median</span>(median)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"</span><span class="sc">$</span>median<span class="st">"</span> <span class="cf">begin</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@testset</span> <span class="st">"odd length"</span> <span class="cf">begin</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>            <span class="pp">@test</span> <span class="fu">median</span>([<span class="fl">3</span>]) <span class="op">==</span> <span class="fl">3</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>            <span class="pp">@test</span> <span class="fu">median</span>([<span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">2</span>]) <span class="op">==</span> <span class="fl">2</span>            <span class="co"># unsorted input</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@testset</span> <span class="st">"even length"</span> <span class="cf">begin</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>            <span class="pp">@test</span> <span class="fu">median</span>([<span class="fl">1</span>, <span class="fl">2</span>]) <span class="op">==</span> <span class="fl">1.5</span>             <span class="co"># the median is not an integer</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>            <span class="pp">@test</span> <span class="fu">median</span>([<span class="fl">4</span>, <span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">2</span>]) <span class="op">==</span> <span class="fl">2.5</span>       <span class="co"># unsorted input</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@testset</span> <span class="st">"input is not modified"</span> <span class="cf">begin</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>            v <span class="op">=</span> [<span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">2</span>]</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>            <span class="fu">median</span>(v)</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>            <span class="pp">@test</span> v <span class="op">==</span> [<span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">2</span>]</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@testset</span> <span class="st">"empty input"</span> <span class="cf">begin</span></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>            <span class="pp">@test_throws</span> <span class="dt">ArgumentError</span> <span class="fu">median</span>(<span class="dt">Int</span>[])</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We run it on the six implementations. The output of the tests is hidden with <code>@suppress</code> from the package <code>Suppressor</code>, and we only print whether the implementation passes the tests:</p>
+<div id="55427edf" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Suppressor</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> median <span class="kw">in</span> (median_1, median_2, median_3, median_4, median_5, median_6)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    passed <span class="op">=</span> <span class="cf">try</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@suppress</span> <span class="fu">test_median</span>(median)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>        <span class="cn">true</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">catch</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>        <span class="cn">false</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">println</span>(median, passed ? <span class="st">": passes the tests"</span> <span class="op">:</span> <span class="st">": bug caught!"</span>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>median_1: bug caught!
+median_2: bug caught!
+median_3: bug caught!
+median_4: passes the tests
+median_5: bug caught!
+median_6: bug caught!</code></pre>
+</div>
+</div>
+<p>The bugs were:</p>
+<ul>
+<li><code>median_1</code> uses <code>sort!</code>, which <strong>modifies</strong> the input vector;</li>
+<li><code>median_2</code> does <strong>not sort</strong> the vector;</li>
+<li><code>median_3</code> returns the lower middle value when the length is even;</li>
+<li><code>median_4</code> is correct;</li>
+<li><code>median_5</code> throws a <code>BoundsError</code> instead of an <code>ArgumentError</code> for an empty vector;</li>
+<li><code>median_6</code> uses the integer division <code>÷</code>: <code>median_6([1, 2])</code> returns <code>1</code> instead of <code>1.5</code>.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-3-the-tests-are-red-fix-the-code" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-3-the-tests-are-red-fix-the-code">Exercise 3 ⭐⭐: The tests are red, fix the code</h3>
+<p>The <a href="../src/root_finding.html">bisection method</a> finds a root of a continuous function <span class="math inline">f</span> on an interval <span class="math inline">[a, b]</span> such that <span class="math inline">f(a)</span> and <span class="math inline">f(b)</span> have opposite signs, by halving the interval repeatedly. Here is a first implementation, with its contract:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="st">    bisection(f, a, b; tol=1e-12, max_iter=100)</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="st">Find a root of the continuous function `f` in the interval `[a, b]`.</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="st">- Preconditions: `a &lt; b` and `f(a) * f(b) ≤ 0`.</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="st">- Postcondition: returns a tuple `(x, iter)` where `x` is an approximation of a root</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="st">  of `f` in `[a, b]` and `iter` is the number of iterations. If `f(a) == 0` (resp.</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="st">  `f(b) == 0`), then `x == a` (resp. `x == b`).</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="st">- Throws an `ArgumentError` if a precondition is not satisfied.</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">bisection</span>(f, a, b; tol<span class="op">=</span><span class="fl">1e-12</span>, max_iter<span class="op">=</span><span class="fl">100</span>)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="fu">f</span>(a) <span class="op">*</span> <span class="fu">f</span>(b) <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">error</span>(<span class="st">"The function must have opposite signs at the endpoints a and b."</span>)</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    mid <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="fl">2</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    iter_count <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> (b <span class="op">-</span> a) <span class="op">/</span> <span class="fl">2</span> <span class="op">&gt;</span> tol <span class="op">&amp;&amp;</span> iter_count <span class="op">&lt;</span> max_iter</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>        iter_count <span class="op">+=</span> <span class="fl">1</span></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>        mid <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="fl">2</span></span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="fu">abs</span>(<span class="fu">f</span>(mid)) <span class="op">≤</span> tol</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> mid, iter_count</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elseif</span> <span class="fu">f</span>(a) <span class="op">*</span> <span class="fu">f</span>(mid) <span class="op">&lt;</span> <span class="fl">0</span></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>            b <span class="op">=</span> mid</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span></span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>            a <span class="op">=</span> mid</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mid, iter_count</span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here are the tests of this function:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"bisection"</span> <span class="cf">begin</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"typical cases"</span> <span class="cf">begin</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>        x, _ <span class="op">=</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> <span class="fu">cos</span>(x) <span class="op">-</span> x, <span class="fl">0</span>, <span class="fl">1</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> x <span class="op">≈</span> <span class="fl">0.7390851332151607</span> atol <span class="op">=</span> <span class="fl">1e-10</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>        x, _ <span class="op">=</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x<span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span>)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> x <span class="op">≈</span> <span class="fu">sqrt</span>(<span class="fl">2</span>) atol <span class="op">=</span> <span class="fl">1e-10</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>        x, _ <span class="op">=</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> <span class="fl">1</span> <span class="op">-</span> x, <span class="fl">0</span>, <span class="fl">2</span>)          <span class="co"># f is decreasing</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> x <span class="op">≈</span> <span class="fl">1</span> atol <span class="op">=</span> <span class="fl">1e-10</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"root at an endpoint"</span> <span class="cf">begin</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x, <span class="fl">0.0</span>, <span class="fl">1.0</span>)[<span class="fl">1</span>] <span class="op">==</span> <span class="fl">0.0</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x <span class="op">-</span> <span class="fl">1</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>)[<span class="fl">1</span>] <span class="op">==</span> <span class="fl">1.0</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"invalid inputs"</span> <span class="cf">begin</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test_throws</span> <span class="dt">ArgumentError</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x<span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>) <span class="co"># no sign change</span></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test_throws</span> <span class="dt">ArgumentError</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x, <span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>)      <span class="co"># a &gt; b</span></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol type="1">
+<li>Run the tests. Which ones fail? For each failing test, read the report and explain <strong>why</strong> the code does not respect its contract.</li>
+<li>Fix the function until all the tests pass. You must not modify the tests!</li>
+<li><em>Bonus</em>: the function <code>f</code> is evaluated several times at the same point. Modify the code so that each iteration evaluates <code>f</code> only once, and check that the tests still pass. This is the main interest of tests: you can improve the code safely.</li>
+</ol>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint for Exercise 3
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Four tests fail. Look at what happens in the loop when <code>f(a) == 0</code>: what is the value of <code>f(a) * f(mid)</code>? Also, which type of exception does the function <code>error</code> throw?</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Correction of Exercise 3
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The failing tests are:</p>
+<ul>
+<li><code>bisection(x -&gt; x, 0.0, 1.0)</code>: since <code>f(a) == 0</code>, the product <code>f(a) * f(mid)</code> is always <code>0</code>, so the code always executes <code>a = mid</code> and moves away from the root. It returns a value close to <code>1</code> instead of <code>0</code>.</li>
+<li><code>bisection(x -&gt; x - 1, 0.0, 1.0)</code>: the method converges to <code>1</code> but never returns exactly <code>b</code>.</li>
+<li><code>bisection(x -&gt; x^2 + 1, 0.0, 1.0)</code>: <code>error(...)</code> throws an <code>ErrorException</code>, not an <code>ArgumentError</code>.</li>
+<li><code>bisection(x -&gt; x, 1.0, -1.0)</code>: the condition <code>a &lt; b</code> is never checked. The loop is not executed and the function returns silently.</li>
+</ul>
+<p>A corrected version, which also evaluates <code>f</code> only once per iteration:</p>
+<div id="426f94b9" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">bisection</span>(f, a, b; tol<span class="op">=</span><span class="fl">1e-12</span>, max_iter<span class="op">=</span><span class="fl">100</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    a <span class="op">&lt;</span> b <span class="op">||</span> <span class="fu">throw</span>(<span class="fu">ArgumentError</span>(<span class="st">"a must be smaller than b"</span>))</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    fa, fb <span class="op">=</span> <span class="fu">f</span>(a), <span class="fu">f</span>(b)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    fa <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="cf">return</span> a, <span class="fl">0</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    fb <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="cf">return</span> b, <span class="fl">0</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    fa <span class="op">*</span> fb <span class="op">&lt;</span> <span class="fl">0</span> <span class="op">||</span> <span class="fu">throw</span>(<span class="fu">ArgumentError</span>(<span class="st">"f(a) and f(b) must have opposite signs"</span>))</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    mid <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="fl">2</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    iter_count <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> (b <span class="op">-</span> a) <span class="op">/</span> <span class="fl">2</span> <span class="op">&gt;</span> tol <span class="op">&amp;&amp;</span> iter_count <span class="op">&lt;</span> max_iter</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>        iter_count <span class="op">+=</span> <span class="fl">1</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>        mid <span class="op">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="fl">2</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>        fmid <span class="op">=</span> <span class="fu">f</span>(mid)</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="fu">abs</span>(fmid) <span class="op">≤</span> tol</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> mid, iter_count</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elseif</span> fa <span class="op">*</span> fmid <span class="op">&lt;</span> <span class="fl">0</span></span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>            b <span class="op">=</span> mid</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span></span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>            a, fa <span class="op">=</span> mid, fmid</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mid, iter_count</span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"bisection"</span> <span class="cf">begin</span></span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"typical cases"</span> <span class="cf">begin</span></span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>        x, _ <span class="op">=</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> <span class="fu">cos</span>(x) <span class="op">-</span> x, <span class="fl">0</span>, <span class="fl">1</span>)</span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> x <span class="op">≈</span> <span class="fl">0.7390851332151607</span> atol <span class="op">=</span> <span class="fl">1e-10</span></span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a>        x, _ <span class="op">=</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x<span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span>)</span>
+<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> x <span class="op">≈</span> <span class="fu">sqrt</span>(<span class="fl">2</span>) atol <span class="op">=</span> <span class="fl">1e-10</span></span>
+<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a>        x, _ <span class="op">=</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> <span class="fl">1</span> <span class="op">-</span> x, <span class="fl">0</span>, <span class="fl">2</span>)</span>
+<span id="cb38-31"><a href="#cb38-31" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> x <span class="op">≈</span> <span class="fl">1</span> atol <span class="op">=</span> <span class="fl">1e-10</span></span>
+<span id="cb38-32"><a href="#cb38-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb38-33"><a href="#cb38-33" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"root at an endpoint"</span> <span class="cf">begin</span></span>
+<span id="cb38-34"><a href="#cb38-34" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x, <span class="fl">0.0</span>, <span class="fl">1.0</span>)[<span class="fl">1</span>] <span class="op">==</span> <span class="fl">0.0</span></span>
+<span id="cb38-35"><a href="#cb38-35" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x <span class="op">-</span> <span class="fl">1</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>)[<span class="fl">1</span>] <span class="op">==</span> <span class="fl">1.0</span></span>
+<span id="cb38-36"><a href="#cb38-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb38-37"><a href="#cb38-37" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"invalid inputs"</span> <span class="cf">begin</span></span>
+<span id="cb38-38"><a href="#cb38-38" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test_throws</span> <span class="dt">ArgumentError</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x<span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>)</span>
+<span id="cb38-39"><a href="#cb38-39" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test_throws</span> <span class="dt">ArgumentError</span> <span class="fu">bisection</span>(x <span class="op">-&gt;</span> x, <span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>)</span>
+<span id="cb38-40"><a href="#cb38-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb38-41"><a href="#cb38-41" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Summary: | Pass  Total  Time
+bisection     |    7      7  0.1s</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-4-some-tests-are-missing" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-4-some-tests-are-missing">Exercise 4 ⭐⭐: Some tests are missing</h3>
+<p>The following function gives the honours associated with an exam grade:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="st">    honours(grade)</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="st">Return the honours associated with a `grade`.</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="st">- Precondition: `0 ≤ grade ≤ 20`.</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="st">- Postcondition: returns</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="st">    - `"Excellent"` if `grade ≥ 16`,</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="st">    - `"Very good"` if `14 ≤ grade &lt; 16`,</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="st">    - `"Good"` if `12 ≤ grade &lt; 14`,</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a><span class="st">    - `"Pass"` if `10 ≤ grade &lt; 12`,</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="st">    - `"Fail"` if `grade &lt; 10`.</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="st">- Throws a `DomainError` if the precondition is not satisfied.</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">honours</span>(grade<span class="op">::</span><span class="dt">Real</span>)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> grade <span class="op">&lt;</span> <span class="fl">0</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">throw</span>(<span class="fu">DomainError</span>(grade, <span class="st">"grade must be in [0, 20]"</span>))</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> grade <span class="op">&gt;=</span> <span class="fl">16</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Excellent"</span></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elseif</span> grade <span class="op">&gt;</span> <span class="fl">14</span></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Very good"</span></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elseif</span> grade <span class="op">&gt;=</span> <span class="fl">12</span></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Good"</span></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elseif</span> grade <span class="op">&gt;=</span> <span class="fl">10</span></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Pass"</span></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Fail"</span></span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A colleague has started to write the tests, and they all pass:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"honours"</span> <span class="cf">begin</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">17</span>) <span class="op">==</span> <span class="st">"Excellent"</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">11</span>) <span class="op">==</span> <span class="st">"Pass"</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">5</span>) <span class="op">==</span> <span class="st">"Fail"</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol type="1">
+<li>These tests are not sufficient: list the items of the contract which are <strong>not</strong> checked.</li>
+<li>Complete the test set. Remember to test the values <strong>exactly at the boundaries</strong>.</li>
+<li>Your new tests should reveal two bugs: fix the function.</li>
+</ol>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint for Exercise 4
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>There are five honours and two kinds of invalid grades (too small and too large). For each threshold <span class="math inline">s \in \{10, 12, 14, 16\}</span>, test the grade <span class="math inline">s</span> itself.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Correction of Exercise 4
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The first test set checks neither <code>"Very good"</code>, nor <code>"Good"</code>, nor any boundary, nor the invalid grades. The corrected function:</p>
+<div id="315495ad" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">honours</span>(grade<span class="op">::</span><span class="dt">Real</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> grade <span class="op">&lt;</span> <span class="fl">0</span> <span class="op">||</span> grade <span class="op">&gt;</span> <span class="fl">20</span>                      <span class="co"># bug 1: grade &gt; 20 was accepted</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">throw</span>(<span class="fu">DomainError</span>(grade, <span class="st">"grade must be in [0, 20]"</span>))</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> grade <span class="op">&gt;=</span> <span class="fl">16</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Excellent"</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elseif</span> grade <span class="op">&gt;=</span> <span class="fl">14</span>                              <span class="co"># bug 2: it was grade &gt; 14</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Very good"</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elseif</span> grade <span class="op">&gt;=</span> <span class="fl">12</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Good"</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elseif</span> grade <span class="op">&gt;=</span> <span class="fl">10</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Pass"</span></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">"Fail"</span></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"honours"</span> <span class="cf">begin</span></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"one grade per honours"</span> <span class="cf">begin</span></span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">17</span>) <span class="op">==</span> <span class="st">"Excellent"</span></span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">15</span>) <span class="op">==</span> <span class="st">"Very good"</span></span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">13</span>) <span class="op">==</span> <span class="st">"Good"</span></span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">11</span>) <span class="op">==</span> <span class="st">"Pass"</span></span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">5</span>) <span class="op">==</span> <span class="st">"Fail"</span></span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"boundaries"</span> <span class="cf">begin</span></span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">20</span>) <span class="op">==</span> <span class="st">"Excellent"</span></span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">16</span>) <span class="op">==</span> <span class="st">"Excellent"</span></span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">15.99</span>) <span class="op">==</span> <span class="st">"Very good"</span></span>
+<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">14</span>) <span class="op">==</span> <span class="st">"Very good"</span></span>
+<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">12</span>) <span class="op">==</span> <span class="st">"Good"</span></span>
+<span id="cb42-32"><a href="#cb42-32" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">10</span>) <span class="op">==</span> <span class="st">"Pass"</span></span>
+<span id="cb42-33"><a href="#cb42-33" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">9.99</span>) <span class="op">==</span> <span class="st">"Fail"</span></span>
+<span id="cb42-34"><a href="#cb42-34" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="fu">honours</span>(<span class="fl">0</span>) <span class="op">==</span> <span class="st">"Fail"</span></span>
+<span id="cb42-35"><a href="#cb42-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb42-36"><a href="#cb42-36" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"invalid grades"</span> <span class="cf">begin</span></span>
+<span id="cb42-37"><a href="#cb42-37" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test_throws</span> <span class="dt">DomainError</span> <span class="fu">honours</span>(<span class="op">-</span><span class="fl">1</span>)</span>
+<span id="cb42-38"><a href="#cb42-38" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test_throws</span> <span class="dt">DomainError</span> <span class="fu">honours</span>(<span class="fl">20.5</span>)</span>
+<span id="cb42-39"><a href="#cb42-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb42-40"><a href="#cb42-40" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Summary: | Pass  Total  Time
+honours       |   15     15  0.0s</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+To go further: what does the coverage say?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Create a package <code>Grades</code> (see <a href="#organising-tests-in-a-package">Organising tests in a package</a>) containing the <strong>initial</strong> (buggy) function <code>honours</code>, with the <strong>initial</strong> tests of your colleague in <code>test/runtests.jl</code>. Run the coverage with <code>LocalCoverage</code>.</p>
+<ol type="1">
+<li>Which lines are not covered? Are the bugs on these lines?</li>
+<li>One of the two bugs cannot be detected by the coverage, even in theory. Which one, and why?</li>
+</ol>
+<p><strong>Answer.</strong> The lines returning <code>"Very good"</code>, <code>"Good"</code> and throwing the <code>DomainError</code> are never executed: the coverage invites you to write tests for them. Testing <code>"Very good"</code> at the boundary <code>14</code> reveals the bug <code>grade &gt; 14</code>. However, the missing condition <code>grade &gt; 20</code> is <em>absent</em> from the code: there is no line to cover. Only the contract tells us that this case must be tested. This is why tests are written from the <strong>contract</strong>, and coverage is only used to check that no part of the code has been forgotten.</p>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/ocourses\.github\.io\/julia-tse\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../src/structure.html" class="pagination-link" aria-label="Structure your code">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Structure your code</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../src/types.html" class="pagination-link" aria-label="Types">
+        <span class="nav-page-text">Types</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Copyright 2025, Olivier Cots</p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ocourses/julia-tse/edit/main/src/testing.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/ocourses/julia-tse/blob/main/src/testing.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/ocourses/julia-tse/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

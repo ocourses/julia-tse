@@ -447,7 +447,318 @@ person["email"] = "bob@example.com"
 
 Julia offers support through packages for standard file formats in data science. For instance, *JSON.jl* is associated to JSON (JavaScript Object Notation) and *CSV.jl* to CSV (Comma-Separated Values). To handle tabular data, you can store data into `DataFrame`s which are similar to pandas in Python or data.frame in R.
 
-## Exercise
+## Exercises
+
+### Exercise 1: Variables and types
+
+1. Assign the number $22$ to a variable called `age`.
+2. Use the macro `@show` to print the value.
+3. Use `typeof` to check what kind of data is stored in `age`.
+4. Reassign `age` to the text `"Twenty two"`.
+5. Again, print the value and the kind of data stored in `age`. What happened?
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 1
+```{julia}
+age = 22
+@show age
+@show typeof(age)
+age = "Twenty two"
+@show age
+@show typeof(age);
+```
+The same variable name can refer to values of different types: a variable is only a *name* attached to a value, and the type belongs to the value, not to the name. This is called **dynamic typing** (see the page [Types](types.qmd)).
+:::
+
+### Exercise 2: Unicode variables
+
+1. Define two variables $\alpha = 7$ and $\beta = 3$ using Unicode characters (type `\alpha` then `Tab`).
+2. Create a new variable $\gamma = \alpha + \beta$.
+3. Print $\gamma$ with a message using `println("γ = $γ")`.
+4. Use `typeof` to check the kind of data of $\alpha$, $\beta$ and $\gamma$.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 2
+```{julia}
+α = 7
+β = 3
+γ = α + β
+println("γ = $γ")
+println(typeof(α), " ", typeof(β), " ", typeof(γ))
+```
+:::
+
+### Exercise 3: Printing output
+
+1. Assign your name to a variable `name` and the number $2025$ to a variable `year`.
+2. Print `name` and `year` with `println` and with `@show`.
+3. Compare the outputs produced by `println` and `@show`.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 3
+```{julia}
+name = "Ada"
+year = 2025
+println(name, " ", year)
+@show name year;
+```
+`println` prints only the values, while `@show` prints the **expression and its value**, and displays strings with their quotes. `@show` is therefore very convenient for debugging.
+:::
+
+### Exercise 4: Arithmetic operations
+
+1. Assign $a = 8$ and $b = 3$.
+2. Compute and print the results of `a + b`, `a - b`, `a * b`, `a / b`, `a // b` and `a % b`.
+3. Identify which results are integers ($\mathbb{N}$), rational numbers ($\mathbb{Q}$) and floating-point numbers ($\mathbb{R}$).
+4. Evaluate $2 + 3 \times 4^2$ and $(2 + 3) \times 4^2$. Explain how parentheses change the result.
+5. Use the modulo operation to check if the number $n = 17$ is even or odd.
+6. Compute the average of $x = 10$, $y = 20$ and $z = 35$, and print the result with its kind of data.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 4
+```{julia}
+a, b = 8, 3
+for result in (a + b, a - b, a * b, a / b, a // b, a % b)
+    println(result, " :: ", typeof(result))
+end
+```
+The results of `+`, `-`, `*` and `%` are integers (`Int64`), `/` always returns a floating-point number (`Float64`), even when the division is exact, and `//` builds a rational number (`Rational{Int64}`).
+
+```{julia}
+@show 2 + 3 * 4^2
+@show (2 + 3) * 4^2;
+```
+The power has priority over the multiplication, which has priority over the addition: $2 + 3 \times 16 = 50$, whereas the parentheses force the addition first: $5 \times 16 = 80$.
+
+```{julia}
+n = 17
+if n % 2 == 0
+    println("$n is even")
+else
+    println("$n is odd")
+end
+```
+
+```{julia}
+x, y, z = 10, 20, 35
+average = (x + y + z) / 3
+@show average typeof(average);
+```
+:::
+
+### Exercise 5: Logical operators
+
+1. Let $p = \texttt{true}$ and $q = \texttt{false}$.
+2. Compute and display the results of `p && q`, `p || q` and `!p`.
+3. Write a short program that checks whether a number `x` is both positive and even.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 5
+```{julia}
+p, q = true, false
+@show p && q
+@show p || q
+@show !p;
+```
+
+```{julia}
+x = 12
+if x > 0 && x % 2 == 0
+    println("$x is positive and even")
+else
+    println("$x is not positive and even")
+end
+```
+:::
+
+### Exercise 6: Mental traces for debugging
+
+The following exercises have been solved by a student, who might have made some mistakes. Read the assignment and go over the code **in your head**. Explain the mistakes or explain why the code is correct. Do not execute the code snippets on your computer!
+
+**Snippet 1.** Let `array` be a list of letters. Replace every `"r"` by `"l"`.
+
+```julia
+array   = ["a", "r", "b", "l", "c", "r", "d"]
+s_array = length(array)
+for i in 1:s_array
+    if array[i] = "r"
+        array[i] = "l"
+    end
+end
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 1
+The condition `array[i] = "r"` is an **assignment**, not a comparison: Julia raises a `ParseError`. The comparison operator is `==`: `if array[i] == "r"`.
+:::
+
+**Snippet 2.** Let `x` be a variable which takes values in $\mathbb{N}$. If the value is even, print `x`.
+
+```julia
+x = 4
+if x%2 == 0
+    println(x)
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 2
+The `if` block is not closed: an `end` is missing, and Julia raises a `ParseError`.
+:::
+
+**Snippet 3.** Let `y` be a variable. As long as `y` is not greater than $42$, print `"No answer yet"` and increment `y`.
+
+```julia
+y = 26
+while (y < 42)
+    println("No answer yet")
+end
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 3
+`y` is never incremented: the condition `y < 42` stays `true` forever and the loop **never stops**. Add `y += 1` in the loop. Moreover, "not greater than $42$" means `y <= 42`, so the condition should be `while y <= 42`.
+:::
+
+**Snippet 4.** Let `z` be a variable taking values in $\mathbb{R}$. Print `"Big"` when it is greater than or equal to $2000$ and `"Small"` otherwise.
+
+```julia
+z = 1999
+if z >= 2000
+    println("Big")
+    else
+    println("Small")
+          end
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 4
+The code is **correct** and prints `"Small"`. The indentation is ugly but, unlike in Python, it has no meaning in Julia: only the keywords `else` and `end` matter. It is nevertheless good practice to indent the code properly.
+:::
+
+**Snippet 5.** Let `n` be an integer larger than $30$. Going over all the integers from $1$ to `n`, print only those in the range $[10, 20]$. Then print the value of the last integer of the loop plus $5$.
+
+```julia
+n = 55
+for i in 1:n
+    if i >= 10 && i <= 20
+        println(i)
+    end
+end
+println(i+5)
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 5
+The loop prints correctly the integers from $10$ to $20$. However, the variable `i` of a `for` loop only exists **inside** the loop (see [Scope of variables in `for` loops](structure.qmd#scope-of-variables-in-for-loops)): the last line raises an `UndefVarError`. Since the last integer of the loop is `n`, write `println(n + 5)`.
+:::
+
+### Exercise 7 ⭐: The Collatz sequence
+
+Starting from an integer $n \geq 1$, the [Collatz sequence](https://en.wikipedia.org/wiki/Collatz_conjecture) is built as follows: if $n$ is even, divide it by $2$; otherwise, replace it by $3n + 1$. The (still unproven!) Collatz conjecture states that the sequence always reaches $1$.
+
+1. Starting from $n = 6$, compute by hand the sequence until it reaches $1$.
+2. Using a `while` loop, compute for $n = 27$ the number of steps needed to reach $1$, and the highest value reached by the sequence.
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 7
+Use the ternary operator `? :` for the update, the integer division `÷` (type `\div` then `Tab`) so that `n` remains an integer, and `max` to keep track of the highest value.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 7
+From $6$: $6 \to 3 \to 10 \to 5 \to 16 \to 8 \to 4 \to 2 \to 1$, that is $8$ steps.
+
+```{julia}
+n = 27
+steps = 0
+highest = n
+while n != 1
+    n = n % 2 == 0 ? n ÷ 2 : 3n + 1
+    steps += 1
+    highest = max(highest, n)
+end
+println("steps = $steps, highest value = $highest")
+```
+Starting from $27$, a small number, the sequence climbs up to $9232$ before going back down to $1$!
+:::
+
+### Exercise 8 ⭐: The sieve of Eratosthenes
+
+The [sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes) finds all the prime numbers up to $N$:
+
+- write all the integers from $2$ to $N$;
+- take the first integer $i$ which is not crossed out: it is prime. Cross out all its multiples $i^2, i^2 + i, i^2 + 2i, \dots$;
+- repeat with the next integer not crossed out, as long as $i^2 \leq N$.
+
+1. Create a vector `is_prime` of $N = 100$ Booleans, all equal to `true` (use the function `trues`), and set `is_prime[1]` to `false`.
+2. Implement the sieve with two nested `for` loops.
+3. Print the list of prime numbers up to $100$. How many are there?
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 8
+The range `i^2:i:N` goes from `i^2` to `N` by steps of `i`. The function `findall` returns the indices of the `true` values of a vector, and `isqrt(N)` is the integer part of $\sqrt{N}$.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 8
+```{julia}
+N = 100
+is_prime = trues(N)
+is_prime[1] = false
+for i in 2:isqrt(N)
+    if is_prime[i]
+        for j in i^2:i:N
+            is_prime[j] = false  # j is a multiple of i
+        end
+    end
+end
+primes = findall(is_prime)
+println(primes)
+println(length(primes), " prime numbers up to $N")
+```
+:::
+
+### Exercise 9 ⭐⭐⭐: Fast matrix exponentiation
+
+The Fibonacci numbers, defined by $F_0 = 0$, $F_1 = 1$ and $F_{k+1} = F_k + F_{k-1}$, satisfy
+$$
+A^n = \begin{pmatrix} F_{n+1} & F_n \\ F_n & F_{n-1} \end{pmatrix}
+\quad \text{with} \quad
+A = \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix}.
+$$
+Computing $A^n$ with $n - 1$ matrix products is slow for large $n$. The **exponentiation by squaring** uses the binary decomposition of $n$: for instance, $A^{13} = A^{8} A^{4} A^{1}$ since $13 = 8 + 4 + 1$, and $A^2, A^4, A^8$ are obtained by squaring successively. The algorithm reads:
+
+- start with `result` equal to the identity matrix and `base` equal to $A$;
+- while $n > 0$: if $n$ is odd, multiply `result` by `base`; then square `base` and divide $n$ by $2$ (integer division).
+
+1. Implement this algorithm for $n = 30$ and deduce $F_{30}$.
+2. Compare your result with `A^n`, computed by Julia.
+3. Count the number of matrix products performed, and compare with the naive method.
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 9
+```{julia}
+A = [1 1; 1 0]
+n = 30
+result = [1 0; 0 1]  # identity matrix
+base = A
+k = n
+products = 0
+while k > 0
+    if k % 2 == 1
+        result = result * base
+        products += 1
+    end
+    base = base * base
+    products += 1
+    k = k ÷ 2
+end
+println("F_$n = ", result[1, 2])
+println("Same as A^n: ", result == A^n)
+println("Number of products: $products (instead of $(n - 1))")
+```
+The number of products is of the order of $2 \log_2(n)$ instead of $n - 1$: for $n = 10^6$, about $40$ products instead of a million! Julia uses the same idea to compute `A^n` when `n` is an integer (see the function `Base.power_by_squaring`).
+:::
 
 ### Least Squares Regression Line
 
