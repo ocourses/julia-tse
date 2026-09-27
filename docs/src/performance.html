@@ -447,6 +447,7 @@ window.Quarto = {
   <li><a href="#exercise-2-decimal-to-binary" id="toc-exercise-2-decimal-to-binary" class="nav-link" data-scroll-target="#exercise-2-decimal-to-binary">Exercise 2: Decimal to binary</a></li>
   <li><a href="#exercise-3-reading-the-generated-code" id="toc-exercise-3-reading-the-generated-code" class="nav-link" data-scroll-target="#exercise-3-reading-the-generated-code">Exercise 3: Reading the generated code</a></li>
   <li><a href="#exercise-4-parametric-types-and-promotion" id="toc-exercise-4-parametric-types-and-promotion" class="nav-link" data-scroll-target="#exercise-4-parametric-types-and-promotion">Exercise 4: Parametric types and promotion</a></li>
+  <li><a href="#exercise-5-hunting-type-instabilities" id="toc-exercise-5-hunting-type-instabilities" class="nav-link" data-scroll-target="#exercise-5-hunting-type-instabilities">Exercise 5 ⭐⭐: Hunting type instabilities</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/ocourses/julia-tse/edit/main/src/performance.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/ocourses/julia-tse/blob/main/src/performance.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li><li><a href="https://github.com/ocourses/julia-tse/issues/new/choose" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -530,7 +531,7 @@ The documentation of Julia mentions “Multidimensional arrays in Julia are stor
 <p>In column-major order, the elements of each column are stored contiguously in memory. When the CPU accesses data, it pulls in cache lines (typically 64 bytes) from RAM into cache. So access patterns matter a lot.</p>
 <section id="cache-friendly-access" class="level5">
 <h5 class="anchored" data-anchor-id="cache-friendly-access">Cache-Friendly Access</h5>
-<div id="a2dbeeef" class="cell" data-execution_count="2">
+<div id="8c0dd589" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sum <span class="op">=</span> <span class="fl">0</span>.</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>m</span>
@@ -541,7 +542,7 @@ The documentation of Julia mentions “Multidimensional arrays in Julia are stor
 </section>
 <section id="cache-unfriendly-access" class="level5">
 <h5 class="anchored" data-anchor-id="cache-unfriendly-access">Cache-Unfriendly Access</h5>
-<div id="aa526ac0" class="cell" data-execution_count="3">
+<div id="719bd002" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sum <span class="op">=</span> <span class="fl">0</span>.</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>m</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n</span>
@@ -627,11 +628,11 @@ Remember
 <section id="hinting-the-type" class="level3">
 <h3 class="anchored" data-anchor-id="hinting-the-type">Hinting the type</h3>
 <p>In the Julia programming language, type information is not mandatory. Let us examine, from the <em>software</em> perspective, how providing hints to the type inference algorithm allows us to maximize fast executing. First, let’s try to understand what the type inference algorithm is trying to do.</p>
-<div id="82ebc126" class="cell" data-execution_count="4">
+<div id="fbb75e8e" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="fl">2</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fl">3</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>a<span class="op">+</span>b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="63">
+<div class="cell-output cell-output-display" data-execution_count="25">
 <pre><code>5</code></pre>
 </div>
 </div>
@@ -652,24 +653,24 @@ How does the type inference algorithm proceed on this code snipped?
 </div>
 </div>
 <p>The type of <code>a</code> and <code>b</code> was found here by human knowledge. The type inference algorithm would have associated <code>Any</code> to both <code>a</code> and <code>b</code>. Indeed, the global scope of the REPL is too dynamic to be optimized. Further in thid section we will, thus, only consider type inference in functions.</p>
-<div id="416ba05f" class="cell" data-execution_count="5">
+<div id="4d851a6a" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">f</span>(a,b)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">+</span>b</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="64">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <pre><code>f (generic function with 1 method)</code></pre>
 </div>
 </div>
 <p>Function <code>f</code> adds input variables <code>a</code> and <code>b</code>, for which no type hints are provided. Using <code>@code_llvm</code>, let us have a look at the associated CPU instructions for input variables of different types. <em>The instructions generated by the compiler bellow are not in the Assembly language but in the intermediate representation (IR). It could be seen as a hardware agnostic Assembly language.</em></p>
 <p>First, we run <code>f</code> to sum two integers, <code>1+2</code>.</p>
-<div id="ffcd10b6" class="cell" data-execution_count="6">
+<div id="3cbe8ac2" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_llvm</span> <span class="fu">f</span>(<span class="fl">1</span>,<span class="fl">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>; Function Signature: f(Int64, Int64)
-;  @ In[64]:1 within `f`
-define i64 @julia_f_8320(i64 signext %"a::Int64", i64 signext %"b::Int64") #0 {
+;  @ In[26]:1 within `f`
+define i64 @julia_f_8879(i64 signext %"a::Int64", i64 signext %"b::Int64") #0 {
 top:
-;  @ In[64]:2 within `f`
+;  @ In[26]:2 within `f`
 ; ┌ @ int.jl:87 within `+`
    %0 = add i64 %"b::Int64", %"a::Int64"
 ; └
@@ -678,14 +679,14 @@ top:
 </div>
 </div>
 <p>Then, we run <code>f</code> to sum two floating point numbers, <code>1.5+2.5</code>.</p>
-<div id="6e5022fd" class="cell" data-execution_count="7">
+<div id="bf9ba2f0" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_llvm</span> <span class="fu">f</span>(<span class="fl">1.5</span>,<span class="fl">2.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>; Function Signature: f(Float64, Float64)
-;  @ In[64]:1 within `f`
-define double @julia_f_8322(double %"a::Float64", double %"b::Float64") #0 {
+;  @ In[26]:1 within `f`
+define double @julia_f_8881(double %"a::Float64", double %"b::Float64") #0 {
 top:
-;  @ In[64]:2 within `f`
+;  @ In[26]:2 within `f`
 ; ┌ @ float.jl:495 within `+`
    %0 = fadd double %"a::Float64", %"b::Float64"
 ; └
@@ -711,14 +712,14 @@ How does the type of the input variables influence the type of the returned valu
 </div>
 </div>
 <p>Let us have a look at what happens when we mix types in the function call. We run <code>f</code> to add an integer <code>1</code> and a floating point number <code>2.5</code>.</p>
-<div id="f9bbfae0" class="cell" data-execution_count="8">
+<div id="40814290" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_llvm</span> <span class="fu">f</span>(<span class="fl">1</span>,<span class="fl">2.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>; Function Signature: f(Int64, Float64)
-;  @ In[64]:1 within `f`
-define double @julia_f_8325(i64 signext %"a::Int64", double %"b::Float64") #0 {
+;  @ In[26]:1 within `f`
+define double @julia_f_8884(i64 signext %"a::Int64", double %"b::Float64") #0 {
 top:
-;  @ In[64]:2 within `f`
+;  @ In[26]:2 within `f`
 ; ┌ @ promotion.jl:433 within `+`
 ; │┌ @ promotion.jl:404 within `promote`
 ; ││┌ @ promotion.jl:379 within `_promote`
@@ -738,7 +739,7 @@ top:
 <section id="type-unstability" class="level3">
 <h3 class="anchored" data-anchor-id="type-unstability">Type unstability</h3>
 <p>In the previous examples, identifying the type of the returned value was a relatively straightforward process. Let us examine the function <code>h</code>, which breaks type stability. We are interested in understanding the reasons behind this problem and techniques to prevent it in our own code, with the aim of achieving optimal performance.</p>
-<div id="ddbebdce" class="cell" data-execution_count="9">
+<div id="67749093" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">h</span>(x,y)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  z <span class="op">=</span> x <span class="op">+</span> y</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> z <span class="op">&lt;</span> <span class="fl">2</span></span>
@@ -747,16 +748,16 @@ top:
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">Float64</span>(z)</span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="68">
+<div class="cell-output cell-output-display" data-execution_count="30">
 <pre><code>h (generic function with 1 method)</code></pre>
 </div>
 </div>
 <p>Using <code>@code_warntype</code> provides type labels for all the variables of a function. We are particularly interested in the type returned by <code>h</code>.</p>
-<div id="01f20258" class="cell" data-execution_count="10">
+<div id="c0b44c7e" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_warntype</span> <span class="fu">h</span>(<span class="fl">2</span>,<span class="fl">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>MethodInstance for h(::Int64, ::Int64)
-  from h(x, y) @ Main In[68]:1
+  from h(x, y) @ Main In[30]:1
 Arguments
   #self#::Core.Const(Main.h)
   x::Int64
@@ -797,7 +798,7 @@ Why does <code>h</code> break type stability?
 </div>
 </div>
 <p>An other maner to determine type-stability of a function is to use <code>@inferred</code>.</p>
-<div id="f32c5263" class="cell" data-execution_count="11">
+<div id="a7084205" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Test</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="pp">@inferred</span> <span class="fu">h</span>(<span class="fl">2</span>,<span class="fl">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
@@ -808,7 +809,7 @@ Stacktrace:
  [1] <span class="ansi-bold">error</span><span class="ansi-bold">(</span><span class="ansi-bright-black-fg">s</span>::String<span class="ansi-bold">)</span>
 <span class="ansi-bright-black-fg">   @</span> <span class="ansi-bright-black-fg">Base</span> <span class="ansi-bright-black-fg">./</span><span style="text-decoration:underline" class="ansi-bright-black-fg">error.jl:44</span>
  [2] top-level scope
-<span class="ansi-bright-black-fg">   @</span> <span style="text-decoration:underline" class="ansi-bright-black-fg">In[70]:2</span>
+<span class="ansi-bright-black-fg">   @</span> <span style="text-decoration:underline" class="ansi-bright-black-fg">In[32]:2</span>
  [3] <span class="ansi-bold">eval</span><span class="ansi-bold">(</span><span class="ansi-bright-black-fg">m</span>::Module, <span class="ansi-bright-black-fg">e</span>::Any<span class="ansi-bold">)</span>
 <span class="ansi-bright-black-fg">   @</span> <span class="ansi-bright-black-fg">Core</span> <span class="ansi-bright-black-fg">./</span><span style="text-decoration:underline" class="ansi-bright-black-fg">boot.jl:489</span></pre>
 </div>
@@ -827,11 +828,11 @@ Try <code>@warn_type</code> and <code>@inferred</code> out on previously defined
 </div>
 <div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div id="de8d20e6" class="cell" data-execution_count="12">
+<div id="a6ba1db0" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_warntype</span> <span class="fu">f</span>(<span class="fl">2</span>,<span class="fl">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>MethodInstance for f(::Int64, ::Int64)
-  from f(a, b) @ Main In[64]:1
+  from f(a, b) @ Main In[26]:1
 Arguments
   #self#::Core.Const(Main.f)
   a::Int64
@@ -844,9 +845,9 @@ Body::Int64
 </div>
 </div>
 <p>The type of the sum of those two integers was correctly inferred: <code>Body::Int64</code>. Let us confirm with <code>@inferred</code>.</p>
-<div id="21f2ef85" class="cell" data-execution_count="13">
+<div id="db25af71" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@inferred</span> <span class="fu">f</span>(<span class="fl">2</span>,<span class="fl">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="72">
+<div class="cell-output cell-output-display" data-execution_count="34">
 <pre><code>7</code></pre>
 </div>
 </div>
@@ -963,7 +964,7 @@ Correction of Exercise 2
 <div id="callout-12" class="callout-12-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>By hand: <span class="math inline">25</span> gives the remainders <span class="math inline">1, 0, 0, 1, 1</span>, so <code>11001</code>, and <span class="math inline">42</span> gives <span class="math inline">0, 1, 0, 1, 0, 1</span>, so <code>101010</code>.</p>
-<div id="375f3ded" class="cell" data-execution_count="14">
+<div id="31019929" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">to_binary</span>(n<span class="op">::</span><span class="dt">Integer</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    n <span class="op">&gt;=</span> <span class="fl">0</span> <span class="op">||</span> <span class="fu">throw</span>(<span class="fu">DomainError</span>(n, <span class="st">"n must be non-negative"</span>))</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    n <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="cf">return</span> <span class="st">"0"</span></span>
@@ -984,7 +985,7 @@ Correction of Exercise 2
 25 =&gt; 11001 (11001)
 42 =&gt; 101010 (101010)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="73">
+<div class="cell-output cell-output-display" data-execution_count="35">
 <pre><code>"0000000000000000000000000000000000000000000000000000000000101010"</code></pre>
 </div>
 </div>
@@ -995,7 +996,7 @@ Correction of Exercise 2
 <section id="exercise-3-reading-the-generated-code" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-3-reading-the-generated-code">Exercise 3: Reading the generated code</h3>
 <p>Consider the following function, which concatenates or adds its inputs depending on their types:</p>
-<div id="da053cc6" class="cell" data-execution_count="15">
+<div id="27fb386b" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">combine_values</span>(a, b)</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="fu">isa</span>(a, <span class="dt">String</span>) <span class="op">&amp;&amp;</span> <span class="fu">isa</span>(b, <span class="dt">String</span>)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> a <span class="op">*</span> b   <span class="co"># String concatenation</span></span>
@@ -1003,7 +1004,7 @@ Correction of Exercise 2
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> a <span class="op">+</span> b   <span class="co"># Addition for numbers</span></span>
 <span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
 <span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="74">
+<div class="cell-output cell-output-display" data-execution_count="36">
 <pre><code>combine_values (generic function with 1 method)</code></pre>
 </div>
 </div>
@@ -1036,11 +1037,11 @@ Correction of Exercise 3
 </div>
 <div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div id="8c10407d" class="cell" data-execution_count="16">
+<div id="6fc3cbe9" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_llvm</span> debuginfo<span class="op">=:</span>none <span class="fu">combine_values</span>(<span class="fl">3</span>, <span class="fl">4.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>; Function Signature: combine_values(Int64, Float64)
-define double @julia_combine_values_8346(i64 signext %"a::Int64", double %"b::Float64") #0 {
+define double @julia_combine_values_8905(i64 signext %"a::Int64", double %"b::Float64") #0 {
 top:
   %0 = sitofp i64 %"a::Int64" to double
   %1 = fadd double %0, %"b::Float64"
@@ -1078,7 +1079,7 @@ Correction of Exercise 4
 </div>
 <div id="callout-15" class="callout-15-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<div id="c8849d30" class="cell" data-execution_count="17">
+<div id="61ff3471" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Wrapper{T}</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    value<span class="op">::</span><span class="dt">T</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
@@ -1088,18 +1089,18 @@ Correction of Exercise 4
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="pp">@inferred</span> <span class="fu">add_wrappers</span>(<span class="fu">Wrapper</span>(<span class="fl">1</span>), <span class="fu">Wrapper</span>(<span class="fl">2</span>))</span>
 <span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="pp">@inferred</span> <span class="fu">add_wrappers</span>(<span class="fu">Wrapper</span>(<span class="fl">1.0</span>), <span class="fu">Wrapper</span>(<span class="fl">2.0</span>))</span>
 <span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="pp">@inferred</span> <span class="fu">add_wrappers</span>(<span class="fu">Wrapper</span>(<span class="fl">1</span>), <span class="fu">Wrapper</span>(<span class="fl">2.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="76">
+<div class="cell-output cell-output-display" data-execution_count="38">
 <pre><code>Wrapper{Float64}(3.5)</code></pre>
 </div>
 </div>
 <p><code>add_wrappers</code> is type-stable in the three cases, even when mixing types: the addition <code>+</code> of an <code>Int</code> and a <code>Float64</code> already promotes its arguments and always returns a <code>Float64</code>.</p>
 <p>On the contrary, <code>larger_wrapper</code> returns <strong>either</strong> <code>a</code> <strong>or</strong> <code>b</code>, whose types differ, depending on the <em>values</em>:</p>
-<div id="6ecd1c03" class="cell" data-execution_count="18">
+<div id="31c5c6a4" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">larger_wrapper</span>(a<span class="op">::</span><span class="dt">Wrapper</span>, b<span class="op">::</span><span class="dt">Wrapper</span>) <span class="op">=</span> a.value <span class="op">&gt;=</span> b.value ? a <span class="op">:</span> b</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="pp">@code_warntype</span> <span class="fu">larger_wrapper</span>(<span class="fu">Wrapper</span>(<span class="fl">1</span>), <span class="fu">Wrapper</span>(<span class="fl">2.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>MethodInstance for larger_wrapper(::Wrapper{Int64}, ::Wrapper{Float64})
-  from larger_wrapper(a::Wrapper, b::Wrapper) @ Main In[77]:1
+  from larger_wrapper(a::Wrapper, b::Wrapper) @ Main In[39]:1
 Arguments
   #self#::Core.Const(Main.larger_wrapper)
   a::Wrapper{Int64}
@@ -1118,7 +1119,7 @@ Body::Union{Wrapper{Float64}, Wrapper{Int64}}
 </div>
 </div>
 <p>The return type is a <code>Union{Wrapper{Float64}, Wrapper{Int64}}</code>, and <code>@inferred</code> fails:</p>
-<div id="796e0fa4" class="cell" data-execution_count="19">
+<div id="8df86e85" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@inferred</span> <span class="fu">larger_wrapper</span>(<span class="fu">Wrapper</span>(<span class="fl">1</span>), <span class="fu">Wrapper</span>(<span class="fl">2.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <div class="ansi-escaped-output">
@@ -1128,25 +1129,148 @@ Stacktrace:
  [1] <span class="ansi-bold">error</span><span class="ansi-bold">(</span><span class="ansi-bright-black-fg">s</span>::String<span class="ansi-bold">)</span>
 <span class="ansi-bright-black-fg">   @</span> <span class="ansi-bright-black-fg">Base</span> <span class="ansi-bright-black-fg">./</span><span style="text-decoration:underline" class="ansi-bright-black-fg">error.jl:44</span>
  [2] top-level scope
-<span class="ansi-bright-black-fg">   @</span> <span style="text-decoration:underline" class="ansi-bright-black-fg">In[78]:1</span>
+<span class="ansi-bright-black-fg">   @</span> <span style="text-decoration:underline" class="ansi-bright-black-fg">In[40]:1</span>
  [3] <span class="ansi-bold">eval</span><span class="ansi-bold">(</span><span class="ansi-bright-black-fg">m</span>::Module, <span class="ansi-bright-black-fg">e</span>::Any<span class="ansi-bold">)</span>
 <span class="ansi-bright-black-fg">   @</span> <span class="ansi-bright-black-fg">Core</span> <span class="ansi-bright-black-fg">./</span><span style="text-decoration:underline" class="ansi-bright-black-fg">boot.jl:489</span></pre>
 </div>
 </div>
 </div>
 <p>With <code>promote</code>, both values are converted to a common type before building the result:</p>
-<div id="ae221af6" class="cell" data-execution_count="20">
+<div id="579d7bbf" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">larger_wrapper</span>(a<span class="op">::</span><span class="dt">Wrapper</span>, b<span class="op">::</span><span class="dt">Wrapper</span>)</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    x, y <span class="op">=</span> <span class="fu">promote</span>(a.value, b.value)</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">Wrapper</span>(<span class="fu">max</span>(x, y))</span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
 <span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="pp">@inferred</span> <span class="fu">larger_wrapper</span>(<span class="fu">Wrapper</span>(<span class="fl">1</span>), <span class="fu">Wrapper</span>(<span class="fl">2.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="79">
+<div class="cell-output cell-output-display" data-execution_count="41">
 <pre><code>Wrapper{Float64}(2.5)</code></pre>
 </div>
 </div>
 <p>Parametric types keep the concrete type of the field in the type of the struct (<code>Wrapper{Float64}</code>), so the compiler knows it; <code>promote</code> ensures that the output type depends only on the input <strong>types</strong>, not on their values.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-5-hunting-type-instabilities" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-5-hunting-type-instabilities">Exercise 5 ⭐⭐: Hunting type instabilities</h3>
+<p>Each of the following functions returns a correct value, but is <strong>not type-stable</strong>:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">sum_positive</span>(v)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> v</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> x <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>            s <span class="op">+=</span> x</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="fu">relu</span>(x) <span class="op">=</span> x <span class="op">&gt;</span> <span class="fl">0</span> ? x <span class="op">:</span> <span class="fl">0</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>scale <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="fu">scaled_sum</span>(v) <span class="op">=</span> scale <span class="op">*</span> <span class="fu">sum</span>(v)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol type="1">
+<li>For each function, use <code>@code_warntype</code> and <code>@inferred</code> on a <code>Float64</code> input (for instance <code>sum_positive([1.5, -2.0])</code>, <code>relu(-1.5)</code> and <code>scaled_sum([1.0, 2.0])</code>) and explain the origin of the instability.</li>
+<li>Fix each function so that it is type-stable, whatever the numerical type of its input.</li>
+<li><strong>Lock</strong> your corrections with a test set (see <a href="../src/testing.html">Testing your code</a>): for the types <code>Int</code>, <code>Float32</code> and <code>Float64</code>, check with <code>@inferred</code> that the output type is inferred, and that the returned value is correct. If someone modifies the code later and breaks type stability, the tests will fail.</li>
+</ol>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Hint for Exercise 5
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The functions <code>zero(x)</code> and <code>zero(T)</code> return the zero of the type of <code>x</code> or of the type <code>T</code>, and <code>eltype(v)</code> returns the type of the elements of the vector <code>v</code>. For the third function, remember that the compiler cannot know the type of a non-constant global variable, which can be modified at any time.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Correction of Exercise 5
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div id="fb85b3d8" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">sum_positive</span>(v)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> v</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> x <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>            s <span class="op">+=</span> x</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="fu">relu</span>(x) <span class="op">=</span> x <span class="op">&gt;</span> <span class="fl">0</span> ? x <span class="op">:</span> <span class="fl">0</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>scale <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a><span class="fu">scaled_sum</span>(v) <span class="op">=</span> scale <span class="op">*</span> <span class="fu">sum</span>(v)</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (func, arg) <span class="kw">in</span> ((sum_positive, [<span class="fl">1.5</span>, <span class="op">-</span><span class="fl">2.0</span>]), (relu, <span class="op">-</span><span class="fl">1.5</span>), (scaled_sum, [<span class="fl">1.0</span>, <span class="fl">2.0</span>]))</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@inferred</span> <span class="fu">func</span>(arg)</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">println</span>(func, <span class="st">": type-stable"</span>)</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">catch</span> <span class="cn">e</span></span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">println</span>(func, <span class="st">": "</span>, <span class="fu">sprint</span>(showerror, <span class="cn">e</span>))</span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>sum_positive: return type Float64 does not match inferred return type Union{Float64, Int64}
+relu: return type Int64 does not match inferred return type Union{Float64, Int64}
+scaled_sum: return type Float64 does not match inferred return type Any</code></pre>
+</div>
+</div>
+<p>The three causes of instability are:</p>
+<ul>
+<li><code>sum_positive</code>: <code>s</code> is initialised with the integer <code>0</code> and becomes a <code>Float64</code> after the first addition, so the output is an <code>Int64</code> (empty vector or no positive value) or a <code>Float64</code>;</li>
+<li><code>relu</code>: the two branches return values of different types, <code>x</code> (a <code>Float64</code>) or <code>0</code> (an <code>Int64</code>);</li>
+<li><code>scaled_sum</code>: <code>scale</code> is a non-constant global variable, whose type may change at any time, so the compiler infers <code>Any</code>.</li>
+</ul>
+<p>Corrected versions:</p>
+<div id="5793ebd3" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">sum_positive</span>(v)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> <span class="fu">zero</span>(<span class="fu">eltype</span>(v))   <span class="co"># the zero of the type of the elements</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> v</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> x <span class="op">&gt;</span> <span class="fl">0</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>            s <span class="op">+=</span> x</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">end</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> s</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="fu">relu</span>(x) <span class="op">=</span> x <span class="op">&gt;</span> <span class="fl">0</span> ? x <span class="op">:</span> <span class="fu">zero</span>(x)</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a><span class="fu">scaled_sum</span>(v, scale) <span class="op">=</span> scale <span class="op">*</span> <span class="fu">sum</span>(v)  <span class="co"># the scale is now an argument</span></span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> SCALE <span class="op">=</span> <span class="fl">2.0</span>                      <span class="co"># or a constant global variable</span></span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a><span class="fu">scaled_sum_const</span>(v) <span class="op">=</span> SCALE <span class="op">*</span> <span class="fu">sum</span>(v)</span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a><span class="pp">@testset</span> <span class="st">"type stability"</span> <span class="cf">begin</span></span>
+<span id="cb39-19"><a href="#cb39-19" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@testset</span> <span class="st">"T = </span><span class="sc">$</span>T<span class="st">"</span> <span class="cf">for</span> T <span class="kw">in</span> (<span class="dt">Int</span>, <span class="dt">Float32</span>, <span class="dt">Float64</span>)</span>
+<span id="cb39-20"><a href="#cb39-20" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="pp">@inferred</span>(<span class="fu">sum_positive</span>(T[<span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">3</span>])) <span class="op">==</span> <span class="fl">4</span></span>
+<span id="cb39-21"><a href="#cb39-21" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="pp">@inferred</span>(<span class="fu">relu</span>(<span class="fu">T</span>(<span class="op">-</span><span class="fl">1</span>))) <span class="op">==</span> <span class="fl">0</span></span>
+<span id="cb39-22"><a href="#cb39-22" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="pp">@inferred</span>(<span class="fu">relu</span>(<span class="fu">T</span>(<span class="fl">2</span>))) <span class="op">==</span> <span class="fl">2</span></span>
+<span id="cb39-23"><a href="#cb39-23" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="pp">@inferred</span>(<span class="fu">scaled_sum</span>(T[<span class="fl">1</span>, <span class="fl">2</span>], <span class="fl">2.0</span>)) <span class="op">==</span> <span class="fl">6</span></span>
+<span id="cb39-24"><a href="#cb39-24" aria-hidden="true" tabindex="-1"></a>        <span class="pp">@test</span> <span class="pp">@inferred</span>(<span class="fu">scaled_sum_const</span>(T[<span class="fl">1</span>, <span class="fl">2</span>])) <span class="op">==</span> <span class="fl">6</span></span>
+<span id="cb39-25"><a href="#cb39-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb39-26"><a href="#cb39-26" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Summary:  | Pass  Total  Time
+type stability |   15     15  0.0s</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>

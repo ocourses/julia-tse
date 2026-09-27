@@ -427,3 +427,99 @@ end
 
 Parametric types keep the concrete type of the field in the type of the struct (`Wrapper{Float64}`), so the compiler knows it; `promote` ensures that the output type depends only on the input **types**, not on their values.
 :::
+
+### Exercise 5 ⭐⭐: Hunting type instabilities
+
+Each of the following functions returns a correct value, but is **not type-stable**:
+
+```julia
+function sum_positive(v)
+    s = 0
+    for x in v
+        if x > 0
+            s += x
+        end
+    end
+    return s
+end
+
+relu(x) = x > 0 ? x : 0
+
+scale = 2.0
+scaled_sum(v) = scale * sum(v)
+```
+
+1. For each function, use `@code_warntype` and `@inferred` on a `Float64` input (for instance `sum_positive([1.5, -2.0])`, `relu(-1.5)` and `scaled_sum([1.0, 2.0])`) and explain the origin of the instability.
+2. Fix each function so that it is type-stable, whatever the numerical type of its input.
+3. **Lock** your corrections with a test set (see [Testing your code](testing.qmd)): for the types `Int`, `Float32` and `Float64`, check with `@inferred` that the output type is inferred, and that the returned value is correct. If someone modifies the code later and breaks type stability, the tests will fail.
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 5
+The functions `zero(x)` and `zero(T)` return the zero of the type of `x` or of the type `T`, and `eltype(v)` returns the type of the elements of the vector `v`. For the third function, remember that the compiler cannot know the type of a non-constant global variable, which can be modified at any time.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 5
+```{julia}
+function sum_positive(v)
+    s = 0
+    for x in v
+        if x > 0
+            s += x
+        end
+    end
+    return s
+end
+
+relu(x) = x > 0 ? x : 0
+
+scale = 2.0
+scaled_sum(v) = scale * sum(v)
+
+for (func, arg) in ((sum_positive, [1.5, -2.0]), (relu, -1.5), (scaled_sum, [1.0, 2.0]))
+    try
+        @inferred func(arg)
+        println(func, ": type-stable")
+    catch e
+        println(func, ": ", sprint(showerror, e))
+    end
+end
+```
+
+The three causes of instability are:
+
+- `sum_positive`: `s` is initialised with the integer `0` and becomes a `Float64` after the first addition, so the output is an `Int64` (empty vector or no positive value) or a `Float64`;
+- `relu`: the two branches return values of different types, `x` (a `Float64`) or `0` (an `Int64`);
+- `scaled_sum`: `scale` is a non-constant global variable, whose type may change at any time, so the compiler infers `Any`.
+
+Corrected versions:
+
+```{julia}
+function sum_positive(v)
+    s = zero(eltype(v))   # the zero of the type of the elements
+    for x in v
+        if x > 0
+            s += x
+        end
+    end
+    return s
+end
+
+relu(x) = x > 0 ? x : zero(x)
+
+scaled_sum(v, scale) = scale * sum(v)  # the scale is now an argument
+
+const SCALE = 2.0                      # or a constant global variable
+scaled_sum_const(v) = SCALE * sum(v)
+
+@testset "type stability" begin
+    @testset "T = $T" for T in (Int, Float32, Float64)
+        @test @inferred(sum_positive(T[1, -2, 3])) == 4
+        @test @inferred(relu(T(-1))) == 0
+        @test @inferred(relu(T(2))) == 2
+        @test @inferred(scaled_sum(T[1, 2], 2.0)) == 6
+        @test @inferred(scaled_sum_const(T[1, 2])) == 6
+    end
+end;
+```
+:::
