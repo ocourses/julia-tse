@@ -27,6 +27,8 @@ jobs:
 
       - name: Set up Julia
         uses: julia-actions/setup-julia@latest
+        with:
+          version: '1.12'  # must match the Jupyter kernel julia-1.12 used by the .qmd files
       - run: |
           julia --project -e 'using Pkg;
                               Pkg.add("Suppressor");
