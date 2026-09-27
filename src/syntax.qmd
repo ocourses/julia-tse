@@ -571,6 +571,87 @@ end
 ```
 :::
 
+### Exercise 6: Mental traces for debugging
+
+The following exercises have been solved by a student, who might have made some mistakes. Read the assignment and go over the code **in your head**. Explain the mistakes or explain why the code is correct. Do not execute the code snippets on your computer!
+
+**Snippet 1.** Let `array` be a list of letters. Replace every `"r"` by `"l"`.
+
+```julia
+array   = ["a", "r", "b", "l", "c", "r", "d"]
+s_array = length(array)
+for i in 1:s_array
+    if array[i] = "r"
+        array[i] = "l"
+    end
+end
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 1
+The condition `array[i] = "r"` is an **assignment**, not a comparison: Julia raises a `ParseError`. The comparison operator is `==`: `if array[i] == "r"`.
+:::
+
+**Snippet 2.** Let `x` be a variable which takes values in $\mathbb{N}$. If the value is even, print `x`.
+
+```julia
+x = 4
+if x%2 == 0
+    println(x)
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 2
+The `if` block is not closed: an `end` is missing, and Julia raises a `ParseError`.
+:::
+
+**Snippet 3.** Let `y` be a variable. As long as `y` is not greater than $42$, print `"No answer yet"` and increment `y`.
+
+```julia
+y = 26
+while (y < 42)
+    println("No answer yet")
+end
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 3
+`y` is never incremented: the condition `y < 42` stays `true` forever and the loop **never stops**. Add `y += 1` in the loop. Moreover, "not greater than $42$" means `y <= 42`, so the condition should be `while y <= 42`.
+:::
+
+**Snippet 4.** Let `z` be a variable taking values in $\mathbb{R}$. Print `"Big"` when it is greater than or equal to $2000$ and `"Small"` otherwise.
+
+```julia
+z = 1999
+if z >= 2000
+    println("Big")
+    else
+    println("Small")
+          end
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 4
+The code is **correct** and prints `"Small"`. The indentation is ugly but, unlike in Python, it has no meaning in Julia: only the keywords `else` and `end` matter. It is nevertheless good practice to indent the code properly.
+:::
+
+**Snippet 5.** Let `n` be an integer larger than $30$. Going over all the integers from $1$ to `n`, print only those in the range $[10, 20]$. Then print the value of the last integer of the loop plus $5$.
+
+```julia
+n = 55
+for i in 1:n
+    if i >= 10 && i <= 20
+        println(i)
+    end
+end
+println(i+5)
+```
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Snippet 5
+The loop prints correctly the integers from $10$ to $20$. However, the variable `i` of a `for` loop only exists **inside** the loop (see [Scope of variables in `for` loops](structure.qmd#scope-of-variables-in-for-loops)): the last line raises an `UndefVarError`. Since the last integer of the loop is `n`, write `println(n + 5)`.
+:::
+
 ### Least Squares Regression Line
 
 We propose a first exercise about [simple linear regression](https://en.wikipedia.org/wiki/Simple_linear_regression). The data are excerpted from this [example](https://www.ncl.ac.uk/webtemplate/ask-assets/external/maths-resources/statistics/regression-and-correlation/simple-linear-regression.html) and saved into [data.csv](data.csv). We propose an [ordinary least squares](https://en.wikipedia.org/wiki/Ordinary_least_squares) formulation which is a type of [linear least squares](https://en.wikipedia.org/wiki/Linear_least_squares) method for choosing the unknown parameters in a linear regression model by the principle of least squares: minimizing the sum of the squares of the differences between the observed dependent variable (values of the variable being observed) in the input dataset and the output of the (linear) function of the independent variable.

@@ -628,3 +628,103 @@ even_numbers = filter_even(numbers)
 println(even_numbers)  # Outputs: [2, 4, 6, 8, 10]
 ```
 :::
+### Exercise 5: Mental debugging, the final boss
+
+This script, written by a student, computes basic statistics of a list of numbers: the mean, the variance, the standard deviation and the $3/4$ quartile (the value below which $75\%$ of the data lie). There are **five mistakes** in it. Find them by going over the script in your head, without executing it. Then write a corrected version and run it.
+
+```julia
+# This script computes basic statistics and the 3/4 quartile for a list of numbers
+
+function compute_stats(data)
+    n = length(data)
+    sum_val = 0
+
+    # Check
+    @assert n >= 0 "The dataset must contain at least one value!"
+
+    # Compute 3/4 quartile
+    sorted_data = sort(data)
+    idx = Int(floor(3 * n / 4))
+    q34 = sorted_data[idx]
+
+    # Compute mean value
+    for x in data
+        sum_val += x
+    end
+
+    mean_val = sum_val / n
+
+    # Compute variance
+    variance = sum([(x - mean_val)^2 for x in data]) / (n - 1)
+    std_dev = squareroot(variance)
+
+    return mean_val, variance, q34
+end
+
+# Array
+numbers = [3, 7, 2, 9, 11, 14, 17, 21]
+
+# Evaluation
+mean_val, var_val, std_val, q34 = compute_stats(numbers)
+
+# Show
+println("The mean value is "*string(numbers[mean_val]))
+```
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 5
+Check each line against these questions: is the condition of `@assert` the right one? Can the index `idx` be out of bounds for a small dataset? Does the function `squareroot` exist? Does the number of returned values match the number of variables on the left of `=`? What is `numbers[mean_val]`?
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 5
+The five mistakes:
+
+1. `@assert n >= 0` is always true: to require at least one value, the condition must be `n > 0` (or `n >= 1`).
+2. `Int(floor(3 * n / 4))` is `0` when `n = 1`, and `0` is not a valid index in Julia, where indices start at `1`: use `ceil` instead of `floor`.
+3. The function `squareroot` does not exist: it is `sqrt`.
+4. The function returns 3 values but 4 are expected by `mean_val, var_val, std_val, q34 = ...`: the standard deviation `std_dev` must also be returned.
+5. `numbers[mean_val]` tries to use the mean (here `10.5`) as an **index**: we want to print the mean itself, `string(mean_val)`.
+
+```{julia}
+function compute_stats(data)
+    n = length(data)
+    sum_val = 0
+
+    # Check
+    @assert n > 0 "The dataset must contain at least one value!"
+
+    # Compute 3/4 quartile
+    sorted_data = sort(data)
+    idx = Int(ceil(3 * n / 4))
+    q34 = sorted_data[idx]
+
+    # Compute mean value
+    for x in data
+        sum_val += x
+    end
+
+    mean_val = sum_val / n
+
+    # Compute variance
+    variance = sum([(x - mean_val)^2 for x in data]) / (n - 1)
+    std_dev = sqrt(variance)
+
+    return mean_val, variance, std_dev, q34
+end
+
+# Array
+numbers = [3, 7, 2, 9, 11, 14, 17, 21]
+
+# Evaluation
+mean_val, var_val, std_val, q34 = compute_stats(numbers)
+
+# Show
+println("The mean value is " * string(mean_val))
+println("The 3/4 quartile is " * string(q34))
+```
+
+::: {.callout-note}
+Even corrected, this function still has a problem with a dataset of size `n = 1`: the variance divides by `n - 1 = 0` and returns `NaN`. Writing a precise **contract** for the function, and **tests** to check it, is the subject of the page [Testing your code](testing.qmd).
+:::
+:::
