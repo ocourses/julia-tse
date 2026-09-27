@@ -728,3 +728,97 @@ println("The 3/4 quartile is " * string(q34))
 Even corrected, this function still has a problem with a dataset of size `n = 1`: the variance divides by `n - 1 = 0` and returns `NaN`. Writing a precise **contract** for the function, and **tests** to check it, is the subject of the page [Testing your code](testing.qmd).
 :::
 :::
+
+### Exercise 6 ⭐⭐: Remember the results with a closure
+
+Some functions are expensive to evaluate. If they are called several times with the same argument, we can store the results in a *cache* to avoid recomputing them: this technique is called **memoization**.
+
+1. Write a function `memoize(f)` which returns a closure `memoized_f(x)`. The closure captures a dictionary `cache`: if `x` is a key of `cache`, it returns the stored value; otherwise, it computes `f(x)`, stores it in `cache` and returns it.
+2. To check that it works, define a function `slow_square(x)` which returns `x^2` and increments a global counter `ncalls` at each call. Call `memoize(slow_square)` three times, with the arguments `3`, `3` and `4`. How many times has `slow_square` been called?
+3. *Bonus.* Consider the recursive function `fib(n) = n <= 1 ? n : fib(n - 1) + fib(n - 2)` and `fib_memo = memoize(fib)`. Measure with `@time` the durations of `fib_memo(35)`, again `fib_memo(35)`, then `fib_memo(36)`. Why is `fib_memo(36)` not faster than `fib(36)`?
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 6
+See the section [Closures](#closures). The function `haskey(cache, x)` tells whether `x` is a key of the dictionary `cache`. To modify a global variable inside a function, write `global ncalls += 1`.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 6
+```{julia}
+function memoize(f)
+    cache = Dict()  # captured by the closure: it persists between the calls
+    function memoized_f(x)
+        if !haskey(cache, x)
+            cache[x] = f(x)
+        end
+        return cache[x]
+    end
+    return memoized_f
+end
+
+ncalls = 0
+function slow_square(x)
+    global ncalls += 1
+    return x^2
+end
+
+fast_square = memoize(slow_square)
+@show fast_square(3) fast_square(3) fast_square(4)
+println("slow_square has been called $ncalls times")
+```
+The second call `fast_square(3)` reads the result in the cache without calling `slow_square`.
+
+```{julia}
+fib(n) = n <= 1 ? n : fib(n - 1) + fib(n - 2)
+fib_memo = memoize(fib)
+@time fib_memo(35)
+@time fib_memo(35)
+@time fib_memo(36);
+```
+The second call of `fib_memo(35)` is instantaneous: the result is in the cache. But `fib_memo(36)` calls `fib(36)`, whose recursive calls `fib(35)` and `fib(34)` call **`fib`**, not `fib_memo`: they do not use the cache. To benefit from memoization in a recursive function, the recursive calls must themselves go through the cache.
+:::
+
+### Exercise 7 ⭐⭐: Variable number of arguments and keywords
+
+Write a function `summary_line` which takes **any number** of numerical values and returns a string giving their minimum, their mean and their maximum:
+
+```julia
+summary_line(12.5, 17.25, 14)                          # "min = 12.5, mean = 14.58, max = 17.25"
+summary_line(12.5, 17.25, 14; unit=" °C", digits=1)    # "min = 12.5 °C, mean = 14.6 °C, max = 17.25 °C"
+```
+
+1. The values are given as a variable number of positional arguments (see [Variable Number of Arguments](#variable-number-of-arguments)).
+2. Two optional keyword arguments are accepted: `unit` (a string appended to each value, empty by default) and `digits` (the number of digits of the rounded mean, `2` by default).
+3. If no value is given, the function throws an `ArgumentError`.
+4. How can you call `summary_line` on the values of a vector `v = [3, 1, 4, 1, 5]`?
+
+::: {.callout-tip collapse="true" icon=false}
+## Hint for Exercise 7
+Inside the function, the arguments `values...` form a tuple: you can use `length`, `sum`, `minimum` and `maximum` on it. The function `round(x; digits=2)` rounds `x` to 2 digits.
+:::
+
+::: {.callout-caution collapse="true" icon=false}
+## Correction of Exercise 7
+```{julia}
+function summary_line(values...; unit="", digits=2)
+    isempty(values) && throw(ArgumentError("at least one value is required"))
+    mean_value = round(sum(values) / length(values); digits=digits)
+    return "min = $(minimum(values))$unit, mean = $mean_value$unit, max = $(maximum(values))$unit"
+end
+
+println(summary_line(12.5, 17.25, 14))
+println(summary_line(12.5, 17.25, 14; unit=" °C", digits=1))
+```
+
+The elements of a vector are passed as separate arguments with the *splat* operator `...`:
+
+```{julia}
+v = [3, 1, 4, 1, 5]
+println(summary_line(v...))
+```
+
+```{julia}
+#| error: true
+summary_line()
+```
+:::
