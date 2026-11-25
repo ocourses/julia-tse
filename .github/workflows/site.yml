@@ -1,0 +1,44 @@
+# Site du cours (Quarto) : rendu et publication sur la branche gh-pages.
+# Les sources sont dans site/ (copiées depuis le dépôt enseignant par scripts/publier-etudiant).
+name: Quarto Publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches: main
+    paths:
+      - 'site/**'
+      - '.github/workflows/site.yml'
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: quarto-dev/quarto-actions/setup@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+          cache-dependency-path: site/requirements.txt
+      - run: pip install jupyter
+      - run: pip install -r site/requirements.txt
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.12'  # doit correspondre au noyau julia-1.12 des .qmd
+      - run: |
+          julia --project=site/src -e 'using Pkg;
+                              Pkg.add("Suppressor");
+                              Pkg.add("IJulia");
+                              Pkg.build("IJulia");
+                              Pkg.instantiate()'
+      - run: quarto check jupyter
+        working-directory: site
+      - uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          path: site
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
