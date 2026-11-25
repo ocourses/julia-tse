@@ -1,0 +1,290 @@
+---
+title: "Foretaste of Julia Code"
+page-layout: article
+jupyter: julia-1.12
+---
+
+```{julia}
+#| echo: false
+include("activate.jl")
+```
+
+Julia is a high-level, high-performance programming language primarily designed for numerical and scientific computing. Its syntax is familiar to users of other technical computing environments, while its flexibility and performance make it an excellent choice for a wide range of applications. In this section, we will look at a few simple examples to illustrate some core features of Julia and demonstrate its intuitive and powerful design.
+
+## Variables
+
+### Simple Assignment
+
+In Julia, you can assign values to variables directly:
+
+```{julia}
+x = 1   # Assign an integer to x
+2x      # The result of 2 * x
+```
+
+### Mathematical Operations
+
+You can also perform mathematical operations directly on variables:
+
+```{julia}
+x = sqrt(2)    # Assign the square root of 2 to x
+x              # Output the value of x
+```
+
+### Using Unicode
+
+Julia allows you to use Unicode characters in your code, which makes it more expressive:
+
+```{julia}
+# Unicode is great
+x = √(2)        # Square root symbol for 2
+x               # The value of x is the square root of 2
+```
+
+### Custom Variable Names
+
+Julia even allows using emojis for variable names:
+
+```{julia}
+😄 = sqrt(2)    # Assign the square root of 2 to the emoji variable
+2😄              # Result of 2 times 😄
+```
+
+::: {.callout-note}
+Visit the list of [Unicode Input](https://docs.julialang.org/en/v1/manual/unicode-input/) for more examples.
+:::
+
+## Functions
+
+### Simple Function Definition
+
+In Julia, you can define a function using the `function` keyword:
+
+```{julia}
+# this is a function
+function f(x)
+  return 2x + 1   # Return a value that is double x plus 1
+end
+```
+
+To evaluate a function, simply call it with an argument:
+
+```{julia}
+f(2)  # Output: 5
+```
+
+### Function Definition in Assignment Form
+
+Julia also supports defintion of functions in assignement form, which are often used for short operations:
+
+```{julia}
+# This is also a function
+g(x) = 2x + 1   # A shorthand for defining a function
+g(2)            # Output: 5
+```
+
+### Anonymous Functions
+
+Julia also supports anonymous functions (functions without a name):
+
+```{julia}
+# Another example with anonymous function
+h = x -> 2x^2    # Function definition using the arrow syntax
+h(1)             # Output: 2, since 2 * 1^2 = 2
+```
+
+### Function Priority and Operator Precedence
+
+In some cases, you need to be cautious about operator precedence:
+
+```{julia}
+# Be careful of operator priorities
+h(1 + 1)  # The correct evaluation is 2 * (1+1)^2 = 8
+```
+
+## Side Effects
+
+In Julia, functions can have **side effects**, meaning they modify variables or objects outside the scope of the function. Here’s an example:
+
+### Mutating Vectors
+
+Let's consider the following vector:
+
+```{julia}
+x = [1, 3, 12]
+```
+
+You can access an element of the vector like this:
+
+```{julia}
+x[2]  # Output: 3, the second element of the array
+```
+
+To update an element, simply reassign it:
+
+```{julia}
+x[2] = 5  # Changes the second element to 5
+x         # Now x = [1, 5, 12]
+```
+
+### Side Effects in Functions
+
+If you mutate data inside a function, it will have side effects. For example, consider this function:
+
+```{julia}
+function f(x, y)
+    x[1] = 42        # Mutates x
+    y = 7 + sum(x)   # New binding for y, no mutation
+    return y
+end
+
+a = [4, 5, 6]
+b = 3
+
+println("f($a, $b) = ", f(a, b))  # f modifies 'a' but not 'b'
+println("a = ", a, " # a[1] is changed to 42 by f")
+println("b = ", b, " # b remains unchanged")
+```
+
+### The Bang Convention
+
+When a function has side effects, it's a good practice to use the `!` symbol at the end of the function's name. This is called the **bang convention**, and it signals that the function mutates its arguments:
+
+```{julia}
+function put_at_second_place!(x, value)
+  x[2] = value
+  return nothing  # No explicit return, it's just a side effect
+end
+
+x = [1, 3, 12]
+println("x[2] before: ", x[2])
+
+put_at_second_place!(x, 5)  # Mutates x
+println("x[2] after: ", x[2])
+```
+
+### Caution with Slices
+
+When you pass a slice of an array to a function in Julia, the slice is actually a copy, so modifying it does **not** alter the original array:
+
+```{julia}
+x = [1, 2, 3, 4]
+println("x[2] before slice modification: ", x[2])
+
+put_at_second_place!(x[1:3], 15)  # Safe to modify the slice
+
+println("x[2] after slice modification: ", x[2])  # Original array remains unchanged
+```
+
+::: {.callout-tip} 
+When working with slices, remember that they are copies in Julia. Modifying a slice will not impact the original array, which helps prevent unintentional changes to your data. 
+:::
+
+## Methods
+
+Julia supports multiple methods for the same function name, which allows for more flexible and dynamic behavior. Here's an example:
+
+### Method Overloading
+
+You can define several methods for the same function with different types:
+
+```{julia}
+Σ(x::Float64, y::Float64) = 2x + y   # Method for Float64 inputs
+```
+
+Calling the function:
+
+```{julia}
+Σ(2.0, 3.0)  # Output: 7.0
+```
+
+If you call `Σ` with arguments that don't match the types, Julia will throw an error:
+
+```{julia}
+#| error: true
+Σ(2, 3.0)  # Error: no method matching Σ(::Int64, ::Float64)
+```
+
+### Multiple Methods for Different Types
+
+You can define more methods that work with different types:
+
+```{julia}
+φ(x::Number, y::Number) = 2x - y           # General method for numbers
+φ(x::Int, y::Int)     = 2x * y             # Method for integers
+φ(x::Float64, y::Float64) = 2x + y         # Method for Float64
+```
+
+### Method Dispatch Example
+
+Julia will select the appropriate method based on the argument types:
+
+```{julia}
+println("φ(2,   3.0) = ", φ(2, 3.0))       # Uses general method
+println("φ(2,   3)   = ", φ(2, 3))         # Uses the integer method
+println("φ(2.0, 3.0) = ", φ(2.0, 3.0))     # Uses the Float64 method
+```
+
+## Iterators
+
+In Julia, iterators allow you to loop through collections in a memory-efficient way. Here’s an example of using `1:5` as an iterator:
+
+```{julia}
+for i in 1:5
+    println(i)
+end
+```
+
+This prints the numbers from 1 to 5. You can also iterate through ranges and collections:
+
+```{julia}
+for i in [10, 20, 30]
+    println(i)
+end
+```
+
+### Working with Lazy Collections
+
+Julia’s `Iterators` package allows for lazy collections, where values are computed on demand. Here’s an example:
+
+```{julia}
+using Base.Iterators: cycle
+round = 1
+for i in cycle([1, 2, 3])
+    println(i)
+    if i == 3
+      if round == 2
+        break
+      else
+        round += 1
+      end
+    end
+end
+```
+
+This loops over the values 1, 2, and 3, repeating as a cycle.
+
+## Type Stability
+
+Julia has **type stability** for fast compilation and execution. When writing functions, it's important to ensure that the type of the return value can be determined without ambiguity. 
+
+Example of type **instability**:
+
+```{julia}
+function f(x)
+    if x > 0
+        return 1
+    else
+        return 0.0
+    end
+end
+
+println("The value  2 of type ", typeof( 2), " produces an output of type ", typeof(f( 2)))
+println("The value -2 of type ", typeof(-2), " produces an output of type ", typeof(f(-2)))
+```
+
+Julia is dynamically typed, but ensuring **type stability** within functions helps the compiler optimize code for better performance.
+
+::: {.callout-tip}
+For better performance, always try to ensure type stability in your functions. This can be achieved by making the return type predictable, from the types of input variables and not their values.
+:::

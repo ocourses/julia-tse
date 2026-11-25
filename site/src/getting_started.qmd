@@ -1,0 +1,269 @@
+---
+title: "Getting Started with Julia"
+page-layout: article
+jupyter: julia-1.12
+---
+
+```{julia}
+#| echo: false
+include("activate.jl")
+```
+
+This page is designed to help you with the installation process. You'll learn how to install Julia on different operating systems and how to verify the installation. It also covers using the Julia REPL for interactive coding. Additionally, this page provides resources for learning and getting help with Julia based on the official documentation.
+
+## Installing Julia
+
+### Download Julia
+
+To get started with Julia, you first need to install the language on your computer. The official Julia website provides the installation files for various operating systems, including Windows, macOS, and Linux. Follow these steps:
+
+1. Visit the official [Julia Downloads](https://julialang.org/downloads/) page.
+2. Choose the appropriate version of Julia for your operating system.
+3. Download the installer (the latest stable version is recommended for most users).
+
+### Installation Instructions
+
+Before you can start using Julia, you need to install it on your system. Below are the steps for installing Julia on different operating systems: Mac, Linux, and Windows.
+
+::: {.panel-tabset}
+
+### Mac / Linux
+
+To install the latest stable version of Julia on Mac or Linux, follow these simple steps:
+
+1. Open your terminal.
+2. Run the following command to download and install Julia:
+
+```bash
+curl -fsSL https://install.julialang.org | sh
+```
+
+This command downloads the Julia installation script and runs it automatically. It will install Julia and place it in your /usr/local/bin directory by default.
+
+### Windows
+
+To install Julia on Windows, follow these steps:
+
+1. Open the [Microsoft Store page for Julia](https://www.microsoft.com/store/apps/9NJNWW8PVKMN).
+2. Click "Get" to download and install the latest version of Julia from the Microsoft Store.
+
+Alternatively, you can install Julia using the Windows Package Manager (winget). Open the command prompt and run the following command:
+
+```bash
+winget install julia -s msstore
+```
+
+After installation, you can launch Julia by searching for it in the Start menu or by running julia in the command prompt.
+:::
+
+### Verify Installation
+
+After installation, you can verify that Julia is correctly installed by opening a terminal or command prompt and typing the following command:
+
+```bash
+julia
+```
+
+This will launch the Julia REPL (Read-Eval-Print Loop), where you can start running Julia commands interactively. You should see something similar to the following:
+
+```{julia}
+#| echo: false
+using REPL
+io = IOBuffer()
+REPL.banner(io)
+banner = String(take!(io))
+import Markdown
+Markdown.parse("```julia\n$(banner)\njulia>\n```")
+```
+
+If you see this prompt, it means Julia is installed and **working correctly!**
+
+## Using the Julia REPL
+
+The [Julia REPL](https://docs.julialang.org/en/v1/stdlib/REPL/) (Read-Eval-Print Loop) is an interactive command-line environment for executing Julia code. It allows you to run Julia code line-by-line, evaluate expressions, and see the results immediately. 
+
+You have already used it when checking the installation of Julia by typing `julia` in a terminal or command prompt. Let us start typing Julia expressions.
+
+### Basic Commands
+
+In the REPL, you can type expressions and commands. For example:
+
+- To perform a simple arithmetic operation, type:
+
+```julia
+3 + 4
+```
+
+The result will appear right below the command, like so:
+
+```julia
+7
+```
+
+- To assign a value to a variable, use the `=` sign:
+
+```julia
+x = 10
+```
+
+Now, `x` holds the value 10. You can use it in further expressions:
+
+```julia
+x * 2
+```
+
+The result will be:
+
+```julia
+20
+```
+
+### Using REPL Features
+
+The Julia REPL has several features that make it more convenient to use:
+
+1. **History:** You can use the up and down arrow keys to scroll through your command history and reuse previous commands.
+
+2. **Tab Completion:** Type part of a function or variable name and press `Tab` to automatically complete it or show suggestions.
+
+3. **Help:** Type `?` followed by a function or type name to get documentation directly in the REPL. For example:
+
+```julia
+?sum
+```
+
+This will show information about the `sum` function.
+
+4. **Exiting the REPL:** To exit the REPL, simply type:
+
+```julia
+exit()
+```
+
+Or press `Ctrl-D` (on most systems).
+
+### REPL Modes
+
+The Julia REPL has different prompt modes that can be very useful to install / remove packages (libraries), run shell commands, search for help, etc.
+The different modes are:
+
+- The Julia mode
+- Help mode
+- Package mode
+- Shell mode
+
+Visit the [command-line REPL](https://docs.julialang.org/en/v1/stdlib/REPL/) page for more details.
+
+::: {.panel-tabset}
+
+#### Help mode
+
+By pressing `?` you can obtain information and metadata about Julia objects (functions, types, etc.) or unicode symbols.
+The query fetches the docstring of the object, which explains how to use it.
+
+```julia
+help?> println
+```
+
+If you don't know the exact name you are looking for, type a word surrounded by quotes to see in which docstrings it pops up.
+To come back to Julia mode, hit backspace.
+
+#### Package mode
+
+By pressing `]` you access [Pkg.jl](https://github.com/JuliaLang/Pkg.jl), Julia's integrated package manager.
+Please visit the [documentation](https://pkgdocs.julialang.org/v1/getting-started/) for details.
+Pkg.jl allows you to:
+
+* `]activate` different local, shared or temporary environments;
+* `]instantiate` them by downloading the necessary packages;
+* `]add`, `]update` (or `]up`) and `]remove` (or `]rm`) packages;
+* get the `]status` (or `]st`) of your current environment.
+
+As an illustration, we download the package Plots.jl inside our current environment:
+
+```julia
+pkg> add Plots
+```
+
+Note that you can do the same in Julia mode:
+
+```julia
+julia> using Pkg
+julia> Pkg.rm("Plots")
+```
+
+The package mode itself also has a help mode, accessed with `?`.
+To come back to Julia mode, hit backspace.
+
+#### Shell mode
+
+By pressing `;` you enter a terminal, where you can execute any command you want.
+Here's an example for Unix systems:
+
+```julia
+shell> pwd
+```
+
+To come back to Julia mode, hit backspace.
+
+:::
+
+## Julia Documentation
+
+One of the key strengths of Julia is its comprehensive and easy-to-navigate documentation. Julia’s official documentation provides detailed explanations of the language features, standard libraries, and tools available for developers.
+
+### Official Documentation
+
+The official Julia documentation is a complete reference guide for the language. You can find it here:
+
+- [Julia Documentation Website](https://docs.julialang.org)
+
+This documentation covers everything from basic syntax to advanced topics like parallel computing and package management.
+
+**Example.** Search how to compute the norm of a vector.
+
+<img width="100%" src="images/doc-norm-1.png"/>
+
+The `norm` function comes from the standard librairy `LinearAlgebra`.
+
+<img width="100%" src="images/doc-norm-2.png"/>
+
+However, we are not directly at the right place, so I recommend to use the `Search docs` field.
+
+<img width="100%" src="images/doc-norm-3.png"/>
+
+And now, we have the documentation.
+
+<img width="100%" src="images/doc-norm-4.png"/>
+
+::: {.callout-note}
+You can also access the Julia documentation directly from the Julia REPL using the `?` (help) command.
+:::
+
+### Accessing Help in the REPL
+
+The REPL provides a built-in help system that can assist you in looking up functions, types, and more. Here’s how you can use it:
+
+1. **Look up a function or keyword**: Type `?` followed by the function name or keyword you want help with.
+   
+   ```julia
+   ?println
+   ```
+
+   This will display the documentation for the `println` function.
+
+2. **Search for a keyword**: You can also type just `?` followed by a search term to find relevant functions or types in the documentation.
+   
+   ```julia
+   ?array
+   ```
+
+   This will display documentation related to arrays in Julia.
+
+### Additional Resources
+
+- **Julia Language GitHub**: [Julia GitHub Repository](https://github.com/JuliaLang/julia) — Contains the source code and development discussion.
+- **Julia Discourse**: [Julia Discourse Forum](https://discourse.julialang.org) — A community forum where you can ask questions, share ideas, and discuss Julia-related topics.
+- **JuliaLang Slack**: [Join Slack Community](https://julialang.slack.com/join/shared_invite/zt-2tyfzahid-QwVkpO13UA~9hyffV7UYMg#/shared-invite/email) — An official Slack workspace for the Julia community.
+- **Julia Community**: [Julia Community](https://julialang.org/community/) — A hub for Julia community resources, including events, blogs, and videos.
+
